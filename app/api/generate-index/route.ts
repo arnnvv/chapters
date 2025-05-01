@@ -1,26 +1,29 @@
 import { NextResponse } from "next/server";
-import { callGeminiForJson } from "@/lib/gemini"; // Use the JSON helper
+import { callGeminiForJson } from "@/lib/gemini";
+import { db } from "@/lib/db";
+import { getCurrentSession } from "@/app/actions";
+import type { Conversation, ChapterIndexItem } from "@/lib/db/types";
 
-// Define the expected structure for the request body
 interface GenerateIndexRequest {
   content: string;
-  userBackground: string; // Add userBackground here
+  userBackground: string;
 }
 
-// Define the expected structure for a single chapter in the index
-export interface ChapterIndexItem {
-  chapter: number;
-  title: string;
+export interface GenerateIndexApiResponse {
+  index: ChapterIndexItem[];
+  conversationId: number;
 }
 
-// Define the expected structure for the successful response body
-export type GenerateIndexResponse = ChapterIndexItem[];
+export type GenerateIndexResponseData = ChapterIndexItem[];
 
 export async function POST(request: Request) {
-  let requestBody: GenerateIndexRequest;
-  let userBackground: string; // Declare variable here
+  const { session, user } = await getCurrentSession();
+  if (!session || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const userId = user.id;
 
-  // 1. Parse and Validate Request Body
+  let requestBody: GenerateIndexRequest;
   try {
     requestBody = (await request.json()) as GenerateIndexRequest;
     if (
@@ -28,29 +31,18 @@ export async function POST(request: Request) {
       typeof requestBody.content !== "string" ||
       requestBody.content.trim() === ""
     ) {
-      return NextResponse.json(
-        {
-          error: "Invalid request body. 'content' must be a non-empty string.",
-        },
-        { status: 400 }, // Bad Request
-      );
+      return NextResponse.json({ error: "Invalid 'content'" }, { status: 400 });
     }
-    // Validate userBackground
     if (
       !requestBody.userBackground ||
       typeof requestBody.userBackground !== "string" ||
       requestBody.userBackground.trim() === ""
     ) {
       return NextResponse.json(
-        {
-          error:
-            "Invalid request body. 'userBackground' must be a non-empty string.",
-        },
+        { error: "Invalid 'userBackground'" },
         { status: 400 },
       );
     }
-    // Assign userBackground after validation
-    userBackground = requestBody.userBackground;
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to parse request body." },
@@ -58,64 +50,82 @@ export async function POST(request: Request) {
     );
   }
 
-  // Destructure content *after* validation
-  const { content } = requestBody;
+  const { content, userBackground } = requestBody;
 
-  // 2. Construct Prompt for Gemini - Use the correct variable name
   const prompt = `
 Analyze the document below and extract logical learning units (chapters) as if you're designing the **index of a beginner-friendly book**.
-
-Context:
-- The material should be structured for someone with this background: "${userBackground}"
+Context: - The material should be structured for someone with this background: "${userBackground}"
 - The book starts from **first principles** and builds up concepts gradually.
 - Aim to create **25–40 chapters** to cover the material thoroughly but in digestible units.
-
-Instructions:
-- Treat the document as educational material (code, research paper, etc.).
-- Output a **JSON array** of objects with:
-  - "chapter" (number, starting from 1)
-  - "title" (concise, clearly reflects the topic of that chapter)
-
-Constraints:
-- Titles must aid structured learning and reflect progressive understanding.
+Instructions: - Treat the document as educational material (code, research paper, etc.).
+- Output a **JSON array** of objects with: "chapter" (number, starting from 1), "title" (concise, clearly reflects the topic of that chapter)
+Constraints: - Titles must aid structured learning and reflect progressive understanding.
 - No explanations, no markdown, no text before/after the JSON.
-
 Document:
 ---
 ${content}
 ---
-
 JSON Output:
 `;
 
-  // 3. Call Gemini API
+  const client = await db.connect();
   try {
-    // Use the specific JSON helper function
-    const index: GenerateIndexResponse =
-      await callGeminiForJson<GenerateIndexResponse>(prompt);
+    await client.query("BEGIN");
 
-    // Optional: Add validation for the received index structure if needed
+    const indexData: GenerateIndexResponseData =
+      await callGeminiForJson<GenerateIndexResponseData>(prompt);
+
     if (
-      !Array.isArray(index) ||
-      index.some(
+      !Array.isArray(indexData) ||
+      indexData.length === 0 ||
+      indexData.some(
         (item) =>
           typeof item.chapter !== "number" || typeof item.title !== "string",
       )
     ) {
-      console.error("Gemini returned malformed JSON for index:", index);
-      throw new Error("Received malformed index structure from AI.");
+      console.error("Gemini returned invalid index data:", indexData);
+      throw new Error("Received invalid or empty index structure from AI.");
     }
 
-    // 4. Return Successful Response
-    return NextResponse.json(index);
+    const conversationResult = await client.query<Conversation>(
+      `INSERT INTO conversations (user_id, original_content, user_background, created_at)
+       VALUES ($1, $2, $3, NOW())
+       RETURNING id`,
+      [userId, content, userBackground],
+    );
+
+    const newConversationId = conversationResult.rows[0]?.id;
+    if (!newConversationId) {
+      throw new Error("Failed to insert conversation into database.");
+    }
+
+    const insertPromises = indexData.map((item) =>
+      client.query(
+        `INSERT INTO chapter_index_items (conversation_id, chapter_number, title)
+         VALUES ($1, $2, $3)`,
+        [newConversationId, item.chapter, item.title],
+      ),
+    );
+
+    await Promise.all(insertPromises);
+
+    await client.query("COMMIT");
+
+    const responseBody: GenerateIndexApiResponse = {
+      index: indexData,
+      conversationId: newConversationId,
+    };
+    return NextResponse.json(responseBody);
   } catch (error) {
-    console.error("Error generating index:", error);
-    // Determine if it was a Gemini/parsing error or something else
+    await client.query("ROLLBACK");
+    console.error("Error generating index or saving conversation:", error);
     const errorMessage =
       error instanceof Error ? error.message : "An unknown error occurred.";
     return NextResponse.json(
-      { error: `Failed to generate chapter index: ${errorMessage}` },
-      { status: 500 }, // Internal Server Error
+      { error: `Failed to process request: ${errorMessage}` },
+      { status: 500 },
     );
+  } finally {
+    client.release();
   }
 }

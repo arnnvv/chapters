@@ -3,17 +3,15 @@
 import type { QAItem } from "@/app/api/ask-question/route";
 import type { FormEvent } from "react";
 
-interface QASidebarProps {
-  history: QAItem[];
-  onAskQuestion: (question: string) => void;
-  isLoading: boolean;
-}
-
 export function QASidebar({
   history,
   onAskQuestion,
   isLoading,
-}: QASidebarProps) {
+}: {
+  history: QAItem[];
+  onAskQuestion: (question: string) => void;
+  isLoading: boolean;
+}) {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -26,45 +24,60 @@ export function QASidebar({
 
   return (
     <div className="flex flex-col h-full p-4 border-l border-border bg-muted/40">
-      <h3 className="text-lg font-semibold mb-4 text-muted-foreground">
+      <h3 className="text-lg font-semibold mb-4 text-muted-foreground shrink-0">
         Ask Questions
       </h3>
-      <div className="flex-grow overflow-y-auto mb-4 space-y-4">
-        {history.length === 0 && (
-          <p className="text-sm text-muted-foreground">
+
+      <div className="flex-grow overflow-y-auto mb-4 space-y-4 pr-2">
+        {history.length === 0 && !isLoading && (
+          <p className="text-sm text-muted-foreground italic">
             Ask a question about the content.
           </p>
         )}
-        {history.map((item) => (
-          <div key={item.question} className="text-sm">
-            <p className="font-semibold text-primary mb-1">You:</p>
-            <p className="mb-2 pl-2">{item.question}</p>
-            <p className="font-semibold text-accent-foreground mb-1">
-              Assistant:
-            </p>
-            <pre className="whitespace-pre-wrap font-sans text-sm pl-2 bg-background/50 p-2 rounded">
-              {item.answer}
-            </pre>
+        {history.map((item, index) => (
+          <div key={index} className="text-sm space-y-1">
+            <div>
+              <p className="font-semibold text-primary mb-0.5">You:</p>
+              <p className="pl-2">{item.question}</p>
+            </div>
+            <div>
+              <p className="font-semibold text-accent-foreground mb-0.5">
+                Assistant:
+              </p>
+              <pre className="whitespace-pre-wrap font-sans text-sm pl-2 bg-background/50 p-2 rounded border border-border/50">
+                {item.answer}
+              </pre>
+            </div>
           </div>
         ))}
-        {isLoading && (
-          <p className="text-sm text-muted-foreground">
+        {isLoading && history.length === 0 && (
+          <p className="text-sm text-muted-foreground italic">
+            Assistant is preparing...
+          </p>
+        )}
+        {isLoading && history.length > 0 && (
+          <p className="text-sm text-muted-foreground italic">
             Assistant is thinking...
           </p>
         )}
       </div>
-      <form onSubmit={handleSubmit} className="mt-auto">
+
+      <form
+        onSubmit={handleSubmit}
+        className="mt-auto pt-4 border-t border-border shrink-0"
+      >
         <textarea
           name="question"
           rows={3}
           placeholder="Ask anything about the document..."
-          className="w-full p-2 border rounded bg-input text-foreground border-border mb-2"
+          className="w-full p-2 border rounded bg-input text-foreground border-border mb-2 text-sm focus:ring-ring focus:ring-1"
           required
           disabled={isLoading}
+          aria-label="Ask a question"
         />
         <button
           type="submit"
-          className="w-full px-4 py-2 rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          className="w-full px-4 py-2 rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm"
           disabled={isLoading}
         >
           {isLoading ? "Asking..." : "Ask"}

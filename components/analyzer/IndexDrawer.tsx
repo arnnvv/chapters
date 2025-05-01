@@ -5,15 +5,14 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"; // Adjust path if needed
 import { Button } from "@/components/ui/button";
 import { Menu, BookOpen } from "lucide-react";
-import type { ChapterIndexItem } from "@/app/api/generate-index/route"; // Import type
 import { cn } from "@/lib/utils";
+import type { ChapterIndexItem } from "@/lib/db/types";
 
 interface IndexDrawerProps {
   index: ChapterIndexItem[];

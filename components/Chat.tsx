@@ -1,11 +1,9 @@
+// components/Chat.tsx
 "use client";
 
 import type { AskQuestionResponse, QAItem } from "@/app/api/ask-question/route";
 import type { GenerateChapterResponse } from "@/app/api/generate-chapter/route";
-import type {
-  ChapterIndexItem,
-  GenerateIndexResponse,
-} from "@/app/api/generate-index/route";
+import type { GenerateIndexApiResponse } from "@/app/api/generate-index/route";
 import { useState, useCallback } from "react";
 import type { JSX } from "react";
 import { toast } from "sonner";
@@ -24,7 +22,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LogOut, User as UserIcon } from "lucide-react";
 import { signOutAction } from "@/app/actions";
-import { SignOutFormComponent } from "./SignoutForm";
+import { SignOutFormComponent } from "./SignoutForm"; // Ensure this path is correct
+import type { ChapterIndexItem } from "@/lib/db/types";
 
 export function Chat({
   user,
@@ -52,6 +51,7 @@ export function Chat({
   const [isAnswering, setIsAnswering] = useState<boolean>(false);
 
   const [error, setError] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<number | null>(null);
 
   const fetchChapterContent = useCallback(
     async (chapterNumber: number) => {
@@ -59,12 +59,25 @@ export function Chat({
         !originalContent ||
         chapterIndex.length === 0 ||
         chapterNumber < 1 ||
-        !userBackground
-      )
+        !userBackground ||
+        !conversationId
+      ) {
         return;
+      }
 
-      if (chapterNumber === currentChapter && generatedChapters[chapterNumber])
+      if (
+        chapterNumber === currentChapter &&
+        generatedChapters[chapterNumber]
+      ) {
+        setDisplayedChapterContent(generatedChapters[chapterNumber]);
         return;
+      }
+
+      if (generatedChapters[chapterNumber]) {
+        setDisplayedChapterContent(generatedChapters[chapterNumber]);
+        setCurrentChapter(chapterNumber);
+        return;
+      }
 
       setIsGeneratingChapter(true);
       setError(null);
@@ -83,11 +96,11 @@ export function Chat({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            fullContent: originalContent,
-            index: chapterIndex,
+            conversationId: conversationId,
             targetChapterNumber: chapterNumber,
-            generatedChapters: previousChaptersContext,
+            fullContent: originalContent,
             userBackground: userBackground,
+            generatedChapters: previousChaptersContext,
           }),
         });
 
@@ -124,6 +137,7 @@ export function Chat({
       generatedChapters,
       userBackground,
       currentChapter,
+      conversationId,
     ],
   );
 
@@ -142,6 +156,7 @@ export function Chat({
     setGeneratedChapters({});
     setDisplayedChapterContent("");
     setQaHistory([]);
+    setConversationId(null);
 
     try {
       const response = await fetch("/api/generate-index", {
@@ -157,14 +172,13 @@ export function Chat({
         );
       }
 
-      const indexData = (await response.json()) as GenerateIndexResponse;
-      if (indexData && indexData.length > 0) {
-        setChapterIndex(indexData);
+      const data = (await response.json()) as GenerateIndexApiResponse;
+      if (data.index && data.index.length > 0 && data.conversationId) {
+        setChapterIndex(data.index);
+        setConversationId(data.conversationId);
         await fetchChapterContent(1);
       } else {
-        setError(
-          "Could not generate a chapter index from the provided content.",
-        );
+        setError("Could not generate a chapter index or conversation record.");
         toast.error("Could not generate a chapter index.");
         setIsContentSubmitted(false);
       }
@@ -180,20 +194,32 @@ export function Chat({
   };
 
   const handleAskQuestion = async (question: string) => {
-    if (!originalContent || !question.trim() || !userBackground) return;
+    if (
+      !originalContent ||
+      !question.trim() ||
+      !userBackground ||
+      !conversationId
+    ) {
+      toast.warning("Cannot ask question without an active conversation.");
+      return;
+    }
 
     setIsAnswering(true);
     setError(null);
+
+    // Add user question optimistically
+    // Note: If API fails, we don't remove this, which might be desired UX
+    setQaHistory((prev) => [...prev, { question, answer: "" }]); // Show question immediately
 
     try {
       const response = await fetch("/api/ask-question", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          conversationId: conversationId,
           fullContent: originalContent,
-          index: chapterIndex,
           generatedChapters: generatedChapters,
-          qaHistory: qaHistory,
+          qaHistory: qaHistory.slice(0, -1), // Send history *before* the current question
           userQuestion: question,
           userBackground: userBackground,
         }),
@@ -201,6 +227,8 @@ export function Chat({
 
       if (!response.ok) {
         const errorData = await response.json();
+        // Remove the optimistically added question if API call failed
+        setQaHistory((prev) => prev.slice(0, -1));
         throw new Error(
           errorData.error || `HTTP error! status: ${response.status}`,
         );
@@ -208,12 +236,20 @@ export function Chat({
 
       const data = (await response.json()) as AskQuestionResponse;
 
-      setQaHistory((prev) => [...prev, { question, answer: data.answer }]);
+      // Update the last item (the optimistically added question) with the answer
+      setQaHistory((prev) => {
+        const newHistory = [...prev];
+        if (newHistory.length > 0) {
+          newHistory[newHistory.length - 1].answer = data.answer;
+        }
+        return newHistory;
+      });
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Unknown error asking question.";
       setError(`Failed to get answer: ${message}`);
       toast.error(`Failed to get answer: ${message}`);
+      // If optimistic add failed, question was already removed or we keep it without answer
     } finally {
       setIsAnswering(false);
     }
@@ -321,7 +357,7 @@ export function Chat({
       </div>
 
       {isContentSubmitted && (
-        <aside className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0 h-screen overflow-y-hidden">
+        <aside className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0 h-screen flex flex-col">
           <QASidebar
             history={qaHistory}
             onAskQuestion={handleAskQuestion}

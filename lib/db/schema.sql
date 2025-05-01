@@ -1,54 +1,44 @@
-create table users (
-    id serial primary key,
-    google_id text not null,
-    email varchar not null,
-    name text not null,
-    picture text not null,
-    constraint users_google_id_unique unique (google_id),
-    constraint users_email_unique unique (email)
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    google_id TEXT NOT NULL UNIQUE,
+    email VARCHAR NOT NULL UNIQUE,
+    name TEXT NOT NULL,
+    picture TEXT NOT NULL
 );
+CREATE INDEX idx_users_google_id ON users (google_id);
+CREATE INDEX idx_users_email ON users (email);
 
-create index google_id_idx on users (google_id);
-create index email_idx on users (email);
-
-create table sessions (
-    id text primary key not null,
-    user_id integer not null,
-    expires_at timestamptz not null,
-    constraint sessions_user_id_users_id_fk
-        foreign key (user_id) references users(id)
-        on delete no action on update no action
+CREATE TABLE sessions (
+    id TEXT PRIMARY KEY NOT NULL,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expires_at TIMESTAMPTZ NOT NULL
 );
+CREATE INDEX idx_sessions_user_id ON sessions (user_id);
 
-create index session_user_id_idx on sessions (user_id);
-
-create table conversations (
-    id serial primary key,
-    user_id integer not null references users(id) on delete cascade,
-    input_text text not null,
-    background_context text not null,
-    created_at timestamptz not null default now()
+CREATE TABLE conversations (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    original_content TEXT NOT NULL,
+    user_background TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+CREATE INDEX idx_conversations_user_id ON conversations (user_id);
 
-create index conversation_user_id_idx on conversations (user_id);
-
-create table lessons (
-    id serial primary key,
-    conversation_id integer not null references conversations(id) on delete cascade,
-    title text not null,
-    summary text not null,
-    created_at timestamptz not null default now()
+CREATE TABLE chapter_index_items (
+    id SERIAL PRIMARY KEY,
+    conversation_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    chapter_number INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    CONSTRAINT uq_chapter_index_items_conversation_chapter UNIQUE (conversation_id, chapter_number)
 );
+CREATE INDEX idx_chapter_index_items_conversation_id ON chapter_index_items (conversation_id);
 
-create index lesson_conversation_id_idx on lessons (conversation_id);
-
-create table messages (
-    id serial primary key,
-    lesson_id integer not null references lessons(id) on delete cascade,
-    sender text not null check (sender in ('user', 'ai')),
-    content text not null,
-    created_at timestamptz not null default now()
+CREATE TABLE messages (
+    id SERIAL PRIMARY KEY,
+    conversation_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    sender TEXT NOT NULL CHECK (sender IN ('user', 'ai')),
+    content TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
-create index message_lesson_id_idx on messages (lesson_id);
-create index message_sender_idx on messages (sender);
+CREATE INDEX idx_messages_conversation_id ON messages (conversation_id);
+CREATE INDEX idx_messages_sender ON messages (sender);
