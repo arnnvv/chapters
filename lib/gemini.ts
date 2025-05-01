@@ -1,21 +1,15 @@
-// lib/gemini.ts
-import { ObjectParser } from "./parser"; // Assuming parser exists as provided earlier
+import { ObjectParser } from "./parser";
 
 const API_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta";
-const MODEL_NAME = "models/gemini-2.5-pro-exp-03-25"; // As requested
+const MODEL_NAME = "models/gemini-2.5-pro-exp-03-25";
 
-// Define expected structure for Gemini API request body
 interface GeminiGenerateContentRequest {
   contents: Array<{
     parts: Array<{ text: string }>;
-    role?: "user" | "model"; // Optional role for conversational context
+    role?: "user" | "model";
   }>;
-  // Add safety settings, generation config if needed later
-  // safetySettings?: any;
-  // generationConfig?: any;
 }
 
-// Define expected structure for successful Gemini API response
 interface GeminiGenerateContentResponse {
   candidates: Array<{
     content: {
@@ -23,21 +17,18 @@ interface GeminiGenerateContentResponse {
       role: "model";
     };
     finishReason: string;
-    // other fields like safetyRatings, citationMetadata etc. might exist
   }>;
   usageMetadata?: {
     promptTokenCount: number;
     candidatesTokenCount: number;
     totalTokenCount: number;
   };
-  // promptFeedback might exist on error/block
 }
 
 interface GeminiErrorDetail {
   "@type": string;
   reason: string;
   message: string;
-  // other potential fields
 }
 
 interface GeminiErrorResponse {

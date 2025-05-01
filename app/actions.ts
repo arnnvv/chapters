@@ -45,7 +45,10 @@ export const signOutAction = async (): Promise<{
   try {
     await invalidateSession(session.id);
     await deleteSessionTokenCookie();
-    return redirect("/login");
+    return {
+      success: true,
+      message: "Logged Out",
+    };
   } catch (e) {
     return {
       message: `Error LoggingOut ${e}`,
