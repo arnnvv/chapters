@@ -29,7 +29,9 @@ export async function POST(request: Request) {
       requestBody.content.trim() === ""
     ) {
       return NextResponse.json(
-        { error: "Invalid request body. 'content' must be a non-empty string." },
+        {
+          error: "Invalid request body. 'content' must be a non-empty string.",
+        },
         { status: 400 }, // Bad Request
       );
     }
@@ -40,13 +42,15 @@ export async function POST(request: Request) {
       requestBody.userBackground.trim() === ""
     ) {
       return NextResponse.json(
-        { error: "Invalid request body. 'userBackground' must be a non-empty string." },
+        {
+          error:
+            "Invalid request body. 'userBackground' must be a non-empty string.",
+        },
         { status: 400 },
       );
     }
     // Assign userBackground after validation
     userBackground = requestBody.userBackground;
-
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to parse request body." },
@@ -87,21 +91,28 @@ JSON Output:
   // 3. Call Gemini API
   try {
     // Use the specific JSON helper function
-    const index: GenerateIndexResponse = await callGeminiForJson<GenerateIndexResponse>(prompt);
+    const index: GenerateIndexResponse =
+      await callGeminiForJson<GenerateIndexResponse>(prompt);
 
     // Optional: Add validation for the received index structure if needed
-    if (!Array.isArray(index) || index.some(item => typeof item.chapter !== 'number' || typeof item.title !== 'string')) {
+    if (
+      !Array.isArray(index) ||
+      index.some(
+        (item) =>
+          typeof item.chapter !== "number" || typeof item.title !== "string",
+      )
+    ) {
       console.error("Gemini returned malformed JSON for index:", index);
       throw new Error("Received malformed index structure from AI.");
     }
 
     // 4. Return Successful Response
     return NextResponse.json(index);
-
   } catch (error) {
     console.error("Error generating index:", error);
     // Determine if it was a Gemini/parsing error or something else
-    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred.";
     return NextResponse.json(
       { error: `Failed to generate chapter index: ${errorMessage}` },
       { status: 500 }, // Internal Server Error

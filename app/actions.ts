@@ -27,16 +27,19 @@ export const getCurrentSession = cache(
 
 export const signOutAction = async (): Promise<{
   message: string;
+  success: boolean;
 }> => {
   const { session } = await getCurrentSession();
   if (session === null)
     return {
       message: "Not authenticated",
+      success: false,
     };
 
   if (!(await globalPOSTRateLimit())) {
     return {
       message: "Too many requests",
+      success: false,
     };
   }
   try {
@@ -46,6 +49,7 @@ export const signOutAction = async (): Promise<{
   } catch (e) {
     return {
       message: `Error LoggingOut ${e}`,
+      success: false,
     };
   }
 };

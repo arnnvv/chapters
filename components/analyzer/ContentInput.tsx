@@ -32,7 +32,10 @@ export function ContentInput({ onSubmit, isLoading }: ContentInputProps) {
         />
       </div>
       <div>
-        <label htmlFor="userBackground" className="block text-sm font-medium mb-1">
+        <label
+          htmlFor="userBackground"
+          className="block text-sm font-medium mb-1"
+        >
           Your Background Knowledge
         </label>
         <textarea

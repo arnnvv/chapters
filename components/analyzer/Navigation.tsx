@@ -1,13 +1,4 @@
-// components/analyzer/Navigation.tsx
 "use client";
-
-interface NavigationProps {
-  currentChapter: number;
-  totalChapters: number;
-  onNext: () => void;
-  onPrev: () => void;
-  isLoading: boolean;
-}
 
 export function Navigation({
   currentChapter,
@@ -15,27 +6,33 @@ export function Navigation({
   onNext,
   onPrev,
   isLoading,
-}: NavigationProps) {
+}: {
+  currentChapter: number;
+  totalChapters: number;
+  onNext: () => void;
+  onPrev: () => void;
+  isLoading: boolean;
+}) {
   const canGoPrev = currentChapter > 1;
   const canGoNext = currentChapter < totalChapters;
 
   return (
     <div className="flex justify-between mt-4">
       <button
-        onClick={onPrev}
+        onMouseDown={onPrev}
         disabled={!canGoPrev || isLoading}
+        type="button"
         className="px-4 py-2 rounded bg-secondary text-secondary-foreground hover:bg-secondary/80 disabled:opacity-50"
-      >
-      </button>
+      />
       <span>
         Chapter {currentChapter} of {totalChapters}
       </span>
       <button
-        onClick={onNext}
+        onMouseDown={onNext}
         disabled={!canGoNext || isLoading}
+        type="button"
         className="px-4 py-2 rounded bg-secondary text-secondary-foreground hover:bg-secondary/80 disabled:opacity-50"
-      >
-      </button>
+      />
     </div>
   );
 }

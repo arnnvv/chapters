@@ -7,6 +7,7 @@ import { useActionState } from "react";
 export function LogoutButton(): JSX.Element {
   const [, action] = useActionState(signOutAction, {
     message: "",
+    success: false,
   });
   return (
     <form action={action}>

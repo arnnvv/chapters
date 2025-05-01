@@ -13,7 +13,7 @@ interface AskQuestionRequest {
   generatedChapters: Record<string | number, string>;
   qaHistory: QAItem[];
   userQuestion: string;
-  userBackground: string; // Added
+  userBackground: string;
 }
 
 export interface AskQuestionResponse {
@@ -31,28 +31,54 @@ export async function POST(request: Request) {
       generatedChapters,
       qaHistory,
       userQuestion,
-      userBackground, // Added
+      userBackground,
     } = requestBody;
 
-    if (!fullContent || typeof fullContent !== "string" || fullContent.trim() === "") {
-      return NextResponse.json({ error: "'fullContent' is required." }, { status: 400 });
+    if (
+      !fullContent ||
+      typeof fullContent !== "string" ||
+      fullContent.trim() === ""
+    ) {
+      return NextResponse.json(
+        { error: "'fullContent' is required." },
+        { status: 400 },
+      );
     }
     if (!Array.isArray(index)) {
-      return NextResponse.json({ error: "'index' must be an array." }, { status: 400 });
+      return NextResponse.json(
+        { error: "'index' must be an array." },
+        { status: 400 },
+      );
     }
-    if (typeof generatedChapters !== 'object' || generatedChapters === null) {
-      return NextResponse.json({ error: "'generatedChapters' must be an object." }, { status: 400 });
+    if (typeof generatedChapters !== "object" || generatedChapters === null) {
+      return NextResponse.json(
+        { error: "'generatedChapters' must be an object." },
+        { status: 400 },
+      );
     }
     if (!Array.isArray(qaHistory)) {
-      return NextResponse.json({ error: "'qaHistory' must be an array." }, { status: 400 });
+      return NextResponse.json(
+        { error: "'qaHistory' must be an array." },
+        { status: 400 },
+      );
     }
-    if (!userQuestion || typeof userQuestion !== "string" || userQuestion.trim() === "") {
-      return NextResponse.json({ error: "'userQuestion' is required and must be non-empty." }, { status: 400 });
+    if (
+      !userQuestion ||
+      typeof userQuestion !== "string" ||
+      userQuestion.trim() === ""
+    ) {
+      return NextResponse.json(
+        { error: "'userQuestion' is required and must be non-empty." },
+        { status: 400 },
+      );
     }
-    if (!userBackground || typeof userBackground !== 'string') { // Validate background
-      return NextResponse.json({ error: "'userBackground' must be a non-empty string." }, { status: 400 });
+    if (!userBackground || typeof userBackground !== "string") {
+      // Validate background
+      return NextResponse.json(
+        { error: "'userBackground' must be a non-empty string." },
+        { status: 400 },
+      );
     }
-
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to parse request body." },
@@ -73,17 +99,23 @@ export async function POST(request: Request) {
 
   let chaptersContext = "No chapters generated yet.";
   const chapterNumbers = Object.keys(generatedChapters)
-    .map(numStr => parseInt(numStr, 10))
-    .filter(num => !isNaN(num))
+    .map((numStr) => Number.parseInt(numStr, 10))
+    .filter((num) => !Number.isNaN(num))
     .sort((a, b) => a - b);
 
   if (chapterNumbers.length > 0) {
     const relevantTitles: Record<number, string> = {};
-    index.forEach(item => { relevantTitles[item.chapter] = item.title; });
-    const chapterContentParts = chapterNumbers.map(num => {
+    for (const item of index) {
+      relevantTitles[item.chapter] = item.title;
+    }
+    const chapterContentParts = chapterNumbers.map((num) => {
       const title = relevantTitles[num] || `Chapter ${num}`;
-      const content = generatedChapters[num] || generatedChapters[String(num)] || "[Content not found]";
-      const truncatedContent = content.length > 500 ? content.substring(0, 500) + "..." : content;
+      const content =
+        generatedChapters[num] ||
+        generatedChapters[String(num)] ||
+        "[Content not found]";
+      const truncatedContent =
+        content.length > 500 ? `${content.substring(0, 500)}...` : content;
       return `Chapter ${num} ("${title}") Summary:\n${truncatedContent}\n---`;
     });
     chaptersContext = `Generated Chapter Content Summary:\n${chapterContentParts.join("\n")}`;
@@ -91,13 +123,18 @@ export async function POST(request: Request) {
 
   const maxHistoryItems = 5;
   const recentHistory = qaHistory.slice(-maxHistoryItems);
-  const historyJsonString = JSON.stringify(recentHistory.map(item => ({
-    User: item.question,
-    Assistant: item.answer
-  })), null, 2);
-  const historyContext = recentHistory.length > 0
-    ? `Recent Conversation History:\n${historyJsonString}`
-    : "No previous conversation history.";
+  const historyJsonString = JSON.stringify(
+    recentHistory.map((item) => ({
+      User: item.question,
+      Assistant: item.answer,
+    })),
+    null,
+    2,
+  );
+  const historyContext =
+    recentHistory.length > 0
+      ? `Recent Conversation History:\n${historyJsonString}`
+      : "No previous conversation history.";
 
   // Modified Prompt for Q&A
   // Prompt for Q&A (Modified for Markdown Breaks)
@@ -137,7 +174,8 @@ Now, answer the following user question. Remember your role as a teacher and con
     return NextResponse.json(responseBody);
   } catch (error) {
     console.error("Error answering question:", error);
-    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred.";
     return NextResponse.json(
       { error: `Failed to get answer: ${errorMessage}` },
       { status: 500 },

@@ -19,52 +19,104 @@ export async function POST(request: Request) {
 
   try {
     requestBody = (await request.json()) as GenerateChapterRequest;
-    const { fullContent, index, targetChapterNumber, generatedChapters, userBackground } = requestBody; // Added userBackground
+    const {
+      fullContent,
+      index,
+      targetChapterNumber,
+      generatedChapters,
+      userBackground,
+    } = requestBody; // Added userBackground
 
-    if (!fullContent || typeof fullContent !== "string" || fullContent.trim() === "") {
-      return NextResponse.json({ error: "'fullContent' must be a non-empty string." }, { status: 400 });
+    if (
+      !fullContent ||
+      typeof fullContent !== "string" ||
+      fullContent.trim() === ""
+    ) {
+      return NextResponse.json(
+        { error: "'fullContent' must be a non-empty string." },
+        { status: 400 },
+      );
     }
     if (!Array.isArray(index) || index.length === 0) {
-      return NextResponse.json({ error: "'index' must be a non-empty array." }, { status: 400 });
+      return NextResponse.json(
+        { error: "'index' must be a non-empty array." },
+        { status: 400 },
+      );
     }
     if (typeof targetChapterNumber !== "number" || targetChapterNumber < 1) {
-      return NextResponse.json({ error: "'targetChapterNumber' must be a positive number." }, { status: 400 });
+      return NextResponse.json(
+        { error: "'targetChapterNumber' must be a positive number." },
+        { status: 400 },
+      );
     }
-    if (typeof generatedChapters !== 'object' || generatedChapters === null) {
-      return NextResponse.json({ error: "'generatedChapters' must be an object (can be empty)." }, { status: 400 });
+    if (typeof generatedChapters !== "object" || generatedChapters === null) {
+      return NextResponse.json(
+        { error: "'generatedChapters' must be an object (can be empty)." },
+        { status: 400 },
+      );
     }
-    if (!userBackground || typeof userBackground !== 'string') { // Validate background
-      return NextResponse.json({ error: "'userBackground' must be a non-empty string." }, { status: 400 });
+    if (!userBackground || typeof userBackground !== "string") {
+      // Validate background
+      return NextResponse.json(
+        { error: "'userBackground' must be a non-empty string." },
+        { status: 400 },
+      );
     }
 
-    const targetChapterInfo = index.find(item => item.chapter === targetChapterNumber);
+    const targetChapterInfo = index.find(
+      (item) => item.chapter === targetChapterNumber,
+    );
     if (!targetChapterInfo) {
-      return NextResponse.json({ error: `Chapter number ${targetChapterNumber} not found in the provided index.` }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: `Chapter number ${targetChapterNumber} not found in the provided index.`,
+        },
+        { status: 400 },
+      );
     }
-
   } catch (error) {
-    return NextResponse.json({ error: "Failed to parse request body." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Failed to parse request body." },
+      { status: 400 },
+    );
   }
 
-  const { fullContent, index, targetChapterNumber, generatedChapters, userBackground } = requestBody;
-  const targetChapterInfo = index.find(item => item.chapter === targetChapterNumber)!;
+  const {
+    fullContent,
+    index,
+    targetChapterNumber,
+    generatedChapters,
+    userBackground,
+  } = requestBody;
+  const targetChapterInfo = index.find(
+    (item) => item.chapter === targetChapterNumber,
+  );
 
+  if (!targetChapterInfo) {
+    throw new Error(`Chapter ${targetChapterNumber} not found in index`);
+  }
   const indexJsonString = JSON.stringify(index, null, 2);
 
   let previousChaptersContext = "No preceding chapters generated yet.";
   const chapterNumbers = Object.keys(generatedChapters)
-    .map(numStr => parseInt(numStr, 10))
-    .filter(num => !isNaN(num) && num < targetChapterNumber)
+    .map((numStr) => Number.parseInt(numStr, 10))
+    .filter((num) => !Number.isNaN(num) && num < targetChapterNumber)
     .sort((a, b) => a - b);
 
   if (chapterNumbers.length > 0) {
     const relevantTitles: Record<number, string> = {};
-    index.forEach(item => { relevantTitles[item.chapter] = item.title; });
+    for (const item of index) {
+      relevantTitles[item.chapter] = item.title;
+    }
 
-    const previousContentParts = chapterNumbers.map(num => {
+    const previousContentParts = chapterNumbers.map((num) => {
       const title = relevantTitles[num] || `Chapter ${num}`;
-      const content = generatedChapters[num] || generatedChapters[String(num)] || "[Content not found]";
-      const truncatedContent = content.length > 1000 ? content.substring(0, 1000) + "..." : content;
+      const content =
+        generatedChapters[num] ||
+        generatedChapters[String(num)] ||
+        "[Content not found]";
+      const truncatedContent =
+        content.length > 1000 ? `${content.substring(0, 1000)}...` : content;
       return `--- START Chapter ${num} ("${title}") ---\n${truncatedContent}\n--- END Chapter ${num} ---`;
     });
     previousChaptersContext = `For context, here is the summarized content of the preceding chapters you have already generated:\n${previousContentParts.join("\n\n")}`;
@@ -114,10 +166,16 @@ Your Explanation for Chapter ${targetChapterNumber} ("${targetChapterInfo.title}
     const responseBody: GenerateChapterResponse = { chapterContent };
     return NextResponse.json(responseBody);
   } catch (error) {
-    console.error(`Error generating content for chapter ${targetChapterNumber}:`, error);
-    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    console.error(
+      `Error generating content for chapter ${targetChapterNumber}:`,
+      error,
+    );
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred.";
     return NextResponse.json(
-      { error: `Failed to generate content for chapter ${targetChapterNumber}: ${errorMessage}` },
+      {
+        error: `Failed to generate content for chapter ${targetChapterNumber}: ${errorMessage}`,
+      },
       { status: 500 },
     );
   }
