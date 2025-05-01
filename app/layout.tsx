@@ -3,7 +3,7 @@ import type { JSX, ReactNode } from "react";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
-
+import './globals.css'
 export const metadata: Metadata = {
   title: "Chapter",
   description: "Making learning better",

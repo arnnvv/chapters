@@ -1,0 +1,3102 @@
+Directory structure:
+└── chapters/
+    ├── biome.json
+    ├── components.json
+    ├── next.config.ts
+    ├── package.json
+    ├── pnpm-lock.yaml
+    ├── postcss.config.mjs
+    ├── tsconfig.json
+    ├── app/
+    │   ├── actions.ts
+    │   ├── globals.css
+    │   ├── layout.tsx
+    │   ├── page.tsx
+    │   └── login/
+    │       ├── page.tsx
+    │       └── google/
+    │           ├── route.ts
+    │           └── callback/
+    │               └── route.ts
+    ├── components/
+    │   ├── Logout.tsx
+    │   └── ui/
+    │       └── sonner.tsx
+    └── lib/
+        ├── auth.ts
+        ├── encoding.ts
+        ├── google.ts
+        ├── oauth-client.ts
+        ├── oauth-req.ts
+        ├── oauth-token.ts
+        ├── oauth.ts
+        ├── parser.ts
+        ├── rate-limit.ts
+        ├── requests.ts
+        ├── session.ts
+        ├── sha.ts
+        ├── user.ts
+        ├── utils.ts
+        └── db/
+            ├── index.ts
+            ├── schema.sql
+            └── types.ts
+
+================================================
+File: biome.json
+================================================
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.3/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "ignore": []
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "bracketSpacing": true
+  },
+  "organizeImports": {
+    "enabled": true
+  },
+  "linter": {
+    "rules": {
+      "recommended": true
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double"
+    }
+  }
+}
+
+
+
+================================================
+File: components.json
+================================================
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "app/globals.css",
+    "baseColor": "zinc",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "iconLibrary": "lucide"
+}
+
+
+
+================================================
+File: next.config.ts
+================================================
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  experimental: {
+    reactCompiler: true,
+    ppr: "incremental",
+    useCache: true,
+  },
+};
+
+export default nextConfig;
+
+
+
+================================================
+File: package.json
+================================================
+{
+  "name": "chapters",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "d": "next dev --turbopack",
+    "b": "next build",
+    "st": "next start",
+    "l": "pnpm biome lint --write .",
+    "f": "pnpm biome format --write .",
+    "ua": "pnpm dlx shadcn@latest add"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.503.0",
+    "next": "15.4.0-canary.17",
+    "next-themes": "^0.4.6",
+    "pg": "^8.15.6",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "sonner": "^2.0.3",
+    "tailwind-merge": "^3.2.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/pg": "^8.11.14",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "babel-plugin-react-compiler": "19.0.0-beta-af1b7da-20250417",
+    "tailwindcss": "^4",
+    "tw-animate-css": "^1.2.8",
+    "typescript": "^5"
+  }
+}
+
+
+
+================================================
+File: pnpm-lock.yaml
+================================================
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@radix-ui/react-slot':
+        specifier: ^1.2.0
+        version: 1.2.0(@types/react@19.1.2)(react@19.1.0)
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      lucide-react:
+        specifier: ^0.503.0
+        version: 0.503.0(react@19.1.0)
+      next:
+        specifier: 15.4.0-canary.17
+        version: 15.4.0-canary.17(babel-plugin-react-compiler@19.0.0-beta-af1b7da-20250417)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      next-themes:
+        specifier: ^0.4.6
+        version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      pg:
+        specifier: ^8.15.6
+        version: 8.15.6
+      react:
+        specifier: 19.1.0
+        version: 19.1.0
+      react-dom:
+        specifier: 19.1.0
+        version: 19.1.0(react@19.1.0)
+      sonner:
+        specifier: ^2.0.3
+        version: 2.0.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      tailwind-merge:
+        specifier: ^3.2.0
+        version: 3.2.0
+    devDependencies:
+      '@biomejs/biome':
+        specifier: 1.9.4
+        version: 1.9.4
+      '@tailwindcss/postcss':
+        specifier: ^4
+        version: 4.1.5
+      '@types/node':
+        specifier: ^20
+        version: 20.17.32
+      '@types/pg':
+        specifier: ^8.11.14
+        version: 8.11.14
+      '@types/react':
+        specifier: ^19
+        version: 19.1.2
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.1.3(@types/react@19.1.2)
+      babel-plugin-react-compiler:
+        specifier: 19.0.0-beta-af1b7da-20250417
+        version: 19.0.0-beta-af1b7da-20250417
+      tailwindcss:
+        specifier: ^4
+        version: 4.1.5
+      tw-animate-css:
+        specifier: ^1.2.8
+        version: 1.2.8
+      typescript:
+        specifier: ^5
+        version: 5.8.3
+
+packages:
+
+  '@alloc/quick-lru@5.2.0':
+    resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
+    engines: {node: '>=10'}
+
+  '@babel/helper-string-parser@7.27.1':
+    resolution: {integrity: sha512-qMlSxKbpRlAridDExk92nSobyDdpPijUq2DW6oDnUqd0iOGxmQjyqhMIihI9+zv4LPyZdRje2cavWPbCbWm3eA==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/helper-validator-identifier@7.27.1':
+    resolution: {integrity: sha512-D2hP9eA+Sqx1kBZgzxZh0y1trbuU+JoDkiEwqhQ36nodYqJwyEIhPSdMNd7lOm/4io72luTPWH20Yda0xOuUow==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/types@7.27.1':
+    resolution: {integrity: sha512-+EzkxvLNfiUeKMgy/3luqfsCWFRXLb7U6wNQTk60tovuckwB15B191tJWvpp4HjiQWdJkCxO3Wbvc6jlk3Xb2Q==}
+    engines: {node: '>=6.9.0'}
+
+  '@biomejs/biome@1.9.4':
+    resolution: {integrity: sha512-1rkd7G70+o9KkTn5KLmDYXihGoTaIGO9PIIN2ZB7UJxFrWw04CZHPYiMRjYsaDvVV7hP1dYNRLxSANLaBFGpog==}
+    engines: {node: '>=14.21.3'}
+    hasBin: true
+
+  '@biomejs/cli-darwin-arm64@1.9.4':
+    resolution: {integrity: sha512-bFBsPWrNvkdKrNCYeAp+xo2HecOGPAy9WyNyB/jKnnedgzl4W4Hb9ZMzYNbf8dMCGmUdSavlYHiR01QaYR58cw==}
+    engines: {node: '>=14.21.3'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@biomejs/cli-darwin-x64@1.9.4':
+    resolution: {integrity: sha512-ngYBh/+bEedqkSevPVhLP4QfVPCpb+4BBe2p7Xs32dBgs7rh9nY2AIYUL6BgLw1JVXV8GlpKmb/hNiuIxfPfZg==}
+    engines: {node: '>=14.21.3'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@biomejs/cli-linux-arm64-musl@1.9.4':
+    resolution: {integrity: sha512-v665Ct9WCRjGa8+kTr0CzApU0+XXtRgwmzIf1SeKSGAv+2scAlW6JR5PMFo6FzqqZ64Po79cKODKf3/AAmECqA==}
+    engines: {node: '>=14.21.3'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@biomejs/cli-linux-arm64@1.9.4':
+    resolution: {integrity: sha512-fJIW0+LYujdjUgJJuwesP4EjIBl/N/TcOX3IvIHJQNsAqvV2CHIogsmA94BPG6jZATS4Hi+xv4SkBBQSt1N4/g==}
+    engines: {node: '>=14.21.3'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@biomejs/cli-linux-x64-musl@1.9.4':
+    resolution: {integrity: sha512-gEhi/jSBhZ2m6wjV530Yy8+fNqG8PAinM3oV7CyO+6c3CEh16Eizm21uHVsyVBEB6RIM8JHIl6AGYCv6Q6Q9Tg==}
+    engines: {node: '>=14.21.3'}
+    cpu: [x64]
+    os: [linux]
+
+  '@biomejs/cli-linux-x64@1.9.4':
+    resolution: {integrity: sha512-lRCJv/Vi3Vlwmbd6K+oQ0KhLHMAysN8lXoCI7XeHlxaajk06u7G+UsFSO01NAs5iYuWKmVZjmiOzJ0OJmGsMwg==}
+    engines: {node: '>=14.21.3'}
+    cpu: [x64]
+    os: [linux]
+
+  '@biomejs/cli-win32-arm64@1.9.4':
+    resolution: {integrity: sha512-tlbhLk+WXZmgwoIKwHIHEBZUwxml7bRJgk0X2sPyNR3S93cdRq6XulAZRQJ17FYGGzWne0fgrXBKpl7l4M87Hg==}
+    engines: {node: '>=14.21.3'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@biomejs/cli-win32-x64@1.9.4':
+    resolution: {integrity: sha512-8Y5wMhVIPaWe6jw2H+KlEm4wP/f7EW3810ZLmDlrEEy5KvBsb9ECEfu/kMWD484ijfQ8+nIi0giMgu9g1UAuuA==}
+    engines: {node: '>=14.21.3'}
+    cpu: [x64]
+    os: [win32]
+
+  '@emnapi/runtime@1.4.3':
+    resolution: {integrity: sha512-pBPWdu6MLKROBX05wSNKcNb++m5Er+KQ9QkB+WVM+pW2Kx9hoSrVTnu3BdkI5eBLZoKu/J6mW/B6i6bJB2ytXQ==}
+
+  '@img/sharp-darwin-arm64@0.34.1':
+    resolution: {integrity: sha512-pn44xgBtgpEbZsu+lWf2KNb6OAf70X68k+yk69Ic2Xz11zHR/w24/U49XT7AeRwJ0Px+mhALhU5LPci1Aymk7A==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@img/sharp-darwin-x64@0.34.1':
+    resolution: {integrity: sha512-VfuYgG2r8BpYiOUN+BfYeFo69nP/MIwAtSJ7/Zpxc5QF3KS22z8Pvg3FkrSFJBPNQ7mmcUcYQFBmEQp7eu1F8Q==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [x64]
+    os: [darwin]
+
+  '@img/sharp-libvips-darwin-arm64@1.1.0':
+    resolution: {integrity: sha512-HZ/JUmPwrJSoM4DIQPv/BfNh9yrOA8tlBbqbLz4JZ5uew2+o22Ik+tHQJcih7QJuSa0zo5coHTfD5J8inqj9DA==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@img/sharp-libvips-darwin-x64@1.1.0':
+    resolution: {integrity: sha512-Xzc2ToEmHN+hfvsl9wja0RlnXEgpKNmftriQp6XzY/RaSfwD9th+MSh0WQKzUreLKKINb3afirxW7A0fz2YWuQ==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@img/sharp-libvips-linux-arm64@1.1.0':
+    resolution: {integrity: sha512-IVfGJa7gjChDET1dK9SekxFFdflarnUB8PwW8aGwEoF3oAsSDuNUTYS+SKDOyOJxQyDC1aPFMuRYLoDInyV9Ew==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@img/sharp-libvips-linux-arm@1.1.0':
+    resolution: {integrity: sha512-s8BAd0lwUIvYCJyRdFqvsj+BJIpDBSxs6ivrOPm/R7piTs5UIwY5OjXrP2bqXC9/moGsyRa37eYWYCOGVXxVrA==}
+    cpu: [arm]
+    os: [linux]
+
+  '@img/sharp-libvips-linux-ppc64@1.1.0':
+    resolution: {integrity: sha512-tiXxFZFbhnkWE2LA8oQj7KYR+bWBkiV2nilRldT7bqoEZ4HiDOcePr9wVDAZPi/Id5fT1oY9iGnDq20cwUz8lQ==}
+    cpu: [ppc64]
+    os: [linux]
+
+  '@img/sharp-libvips-linux-s390x@1.1.0':
+    resolution: {integrity: sha512-xukSwvhguw7COyzvmjydRb3x/09+21HykyapcZchiCUkTThEQEOMtBj9UhkaBRLuBrgLFzQ2wbxdeCCJW/jgJA==}
+    cpu: [s390x]
+    os: [linux]
+
+  '@img/sharp-libvips-linux-x64@1.1.0':
+    resolution: {integrity: sha512-yRj2+reB8iMg9W5sULM3S74jVS7zqSzHG3Ol/twnAAkAhnGQnpjj6e4ayUz7V+FpKypwgs82xbRdYtchTTUB+Q==}
+    cpu: [x64]
+    os: [linux]
+
+  '@img/sharp-libvips-linuxmusl-arm64@1.1.0':
+    resolution: {integrity: sha512-jYZdG+whg0MDK+q2COKbYidaqW/WTz0cc1E+tMAusiDygrM4ypmSCjOJPmFTvHHJ8j/6cAGyeDWZOsK06tP33w==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@img/sharp-libvips-linuxmusl-x64@1.1.0':
+    resolution: {integrity: sha512-wK7SBdwrAiycjXdkPnGCPLjYb9lD4l6Ze2gSdAGVZrEL05AOUJESWU2lhlC+Ffn5/G+VKuSm6zzbQSzFX/P65A==}
+    cpu: [x64]
+    os: [linux]
+
+  '@img/sharp-linux-arm64@0.34.1':
+    resolution: {integrity: sha512-kX2c+vbvaXC6vly1RDf/IWNXxrlxLNpBVWkdpRq5Ka7OOKj6nr66etKy2IENf6FtOgklkg9ZdGpEu9kwdlcwOQ==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [arm64]
+    os: [linux]
+
+  '@img/sharp-linux-arm@0.34.1':
+    resolution: {integrity: sha512-anKiszvACti2sGy9CirTlNyk7BjjZPiML1jt2ZkTdcvpLU1YH6CXwRAZCA2UmRXnhiIftXQ7+Oh62Ji25W72jA==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [arm]
+    os: [linux]
+
+  '@img/sharp-linux-s390x@0.34.1':
+    resolution: {integrity: sha512-7s0KX2tI9mZI2buRipKIw2X1ufdTeaRgwmRabt5bi9chYfhur+/C1OXg3TKg/eag1W+6CCWLVmSauV1owmRPxA==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [s390x]
+    os: [linux]
+
+  '@img/sharp-linux-x64@0.34.1':
+    resolution: {integrity: sha512-wExv7SH9nmoBW3Wr2gvQopX1k8q2g5V5Iag8Zk6AVENsjwd+3adjwxtp3Dcu2QhOXr8W9NusBU6XcQUohBZ5MA==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [x64]
+    os: [linux]
+
+  '@img/sharp-linuxmusl-arm64@0.34.1':
+    resolution: {integrity: sha512-DfvyxzHxw4WGdPiTF0SOHnm11Xv4aQexvqhRDAoD00MzHekAj9a/jADXeXYCDFH/DzYruwHbXU7uz+H+nWmSOQ==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [arm64]
+    os: [linux]
+
+  '@img/sharp-linuxmusl-x64@0.34.1':
+    resolution: {integrity: sha512-pax/kTR407vNb9qaSIiWVnQplPcGU8LRIJpDT5o8PdAx5aAA7AS3X9PS8Isw1/WfqgQorPotjrZL3Pqh6C5EBg==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [x64]
+    os: [linux]
+
+  '@img/sharp-wasm32@0.34.1':
+    resolution: {integrity: sha512-YDybQnYrLQfEpzGOQe7OKcyLUCML4YOXl428gOOzBgN6Gw0rv8dpsJ7PqTHxBnXnwXr8S1mYFSLSa727tpz0xg==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [wasm32]
+
+  '@img/sharp-win32-ia32@0.34.1':
+    resolution: {integrity: sha512-WKf/NAZITnonBf3U1LfdjoMgNO5JYRSlhovhRhMxXVdvWYveM4kM3L8m35onYIdh75cOMCo1BexgVQcCDzyoWw==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [ia32]
+    os: [win32]
+
+  '@img/sharp-win32-x64@0.34.1':
+    resolution: {integrity: sha512-hw1iIAHpNE8q3uMIRCgGOeDoz9KtFNarFLQclLxr/LK1VBkj8nby18RjFvr6aP7USRYAjTZW6yisnBWMX571Tw==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [x64]
+    os: [win32]
+
+  '@next/env@15.4.0-canary.17':
+    resolution: {integrity: sha512-k0dqCJhBYqPyRr/i+M9OYEtn9nJuZjJf9y6jVOkwl+xaEr4K6UmIBu6vVfoWitDwPLRj4NgKmHgkH75dPRxAQg==}
+
+  '@next/swc-darwin-arm64@15.4.0-canary.17':
+    resolution: {integrity: sha512-CX2ZV8DsLjbX6eYf0OhLMfjZnFykwzAcG6gnz9fJdU+l20YvYj5BlWAefSTLncQ6KWq/FLb8XU00PL8ThaGHPg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@next/swc-darwin-x64@15.4.0-canary.17':
+    resolution: {integrity: sha512-J2cdOuAAxpVbjk6QRHPtq1hbDXuNIgCGB/G4HvKot71VIKXg/Fb1IaxwFiBYNl0zsRgH5CPO+AO9pUUGwpVPyQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@next/swc-linux-arm64-gnu@15.4.0-canary.17':
+    resolution: {integrity: sha512-DKUs71Gi/leUH9RrMRamVfxXfOKdNGov7CH1KufeCyKIl9PNQQhP5GMgUk/19nvNmyFV7PjxIXRxElgBzRPtyQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@next/swc-linux-arm64-musl@15.4.0-canary.17':
+    resolution: {integrity: sha512-k4tjv818/f2DLmCZOkqTEsnqDpIUeKFb1gH9WnexjfAJLD2RXmb+hde8PDB64/Syf2RdytREdPZBnDs2okxrbQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@next/swc-linux-x64-gnu@15.4.0-canary.17':
+    resolution: {integrity: sha512-5vLVdcMKG2iMPTUu0E9aAvVBbEwKJeCA9CGb1hsQuEuTA3N3XntRHvZKj32POTE4jYJeb0DnxEZHli7SiyOBYw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@next/swc-linux-x64-musl@15.4.0-canary.17':
+    resolution: {integrity: sha512-N5YAd9chWQdLJayfkgZP+d/daTAWKa2jm0SPNhjZiez88fkoZlBU+GPLsozA7L3RdaqLGqDPrvavylt1Iw0L9Q==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@next/swc-win32-arm64-msvc@15.4.0-canary.17':
+    resolution: {integrity: sha512-URAe7qnVC8tarSBx/V/WDRP3xzkb8tr3m9gEjIYbBBVF64xlzrPshcPe5HIssGjL/5u3NRs9VxgsE9xZ7CcxKA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@next/swc-win32-x64-msvc@15.4.0-canary.17':
+    resolution: {integrity: sha512-kEFB4sX2/LM/OpFl08TrV7SIntFJKOh4RfvdUFQ++OTSHDLZz+G24FtRPHx6b6ULWWdNndkY2WfBMH9qy9RfBQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@radix-ui/react-compose-refs@1.1.2':
+    resolution: {integrity: sha512-z4eqJvfiNnFMHIIvXP3CY57y2WJs5g2v3X0zm9mEJkrkNv4rDxu+sg9Jh8EkXyeqBkB7SOcboo9dMVqhyrACIg==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  '@radix-ui/react-slot@1.2.0':
+    resolution: {integrity: sha512-ujc+V6r0HNDviYqIK3rW4ffgYiZ8g5DEHrGJVk4x7kTlLXRDILnKX9vAUYeIsLOoDpDJ0ujpqMkjH4w2ofuo6w==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  '@swc/helpers@0.5.15':
+    resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
+
+  '@tailwindcss/node@4.1.5':
+    resolution: {integrity: sha512-CBhSWo0vLnWhXIvpD0qsPephiaUYfHUX3U9anwDaHZAeuGpTiB3XmsxPAN6qX7bFhipyGBqOa1QYQVVhkOUGxg==}
+
+  '@tailwindcss/oxide-android-arm64@4.1.5':
+    resolution: {integrity: sha512-LVvM0GirXHED02j7hSECm8l9GGJ1RfgpWCW+DRn5TvSaxVsv28gRtoL4aWKGnXqwvI3zu1GABeDNDVZeDPOQrw==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [android]
+
+  '@tailwindcss/oxide-darwin-arm64@4.1.5':
+    resolution: {integrity: sha512-//TfCA3pNrgnw4rRJOqavW7XUk8gsg9ddi8cwcsWXp99tzdBAZW0WXrD8wDyNbqjW316Pk2hiN/NJx/KWHl8oA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@tailwindcss/oxide-darwin-x64@4.1.5':
+    resolution: {integrity: sha512-XQorp3Q6/WzRd9OalgHgaqgEbjP3qjHrlSUb5k1EuS1Z9NE9+BbzSORraO+ecW432cbCN7RVGGL/lSnHxcd+7Q==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@tailwindcss/oxide-freebsd-x64@4.1.5':
+    resolution: {integrity: sha512-bPrLWbxo8gAo97ZmrCbOdtlz/Dkuy8NK97aFbVpkJ2nJ2Jo/rsCbu0TlGx8joCuA3q6vMWTSn01JY46iwG+clg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [freebsd]
+
+  '@tailwindcss/oxide-linux-arm-gnueabihf@4.1.5':
+    resolution: {integrity: sha512-1gtQJY9JzMAhgAfvd/ZaVOjh/Ju/nCoAsvOVJenWZfs05wb8zq+GOTnZALWGqKIYEtyNpCzvMk+ocGpxwdvaVg==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [linux]
+
+  '@tailwindcss/oxide-linux-arm64-gnu@4.1.5':
+    resolution: {integrity: sha512-dtlaHU2v7MtdxBXoqhxwsWjav7oim7Whc6S9wq/i/uUMTWAzq/gijq1InSgn2yTnh43kR+SFvcSyEF0GCNu1PQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@tailwindcss/oxide-linux-arm64-musl@4.1.5':
+    resolution: {integrity: sha512-fg0F6nAeYcJ3CriqDT1iVrqALMwD37+sLzXs8Rjy8Z1ZHshJoYceodfyUwGJEsQoTyWbliFNRs2wMQNXtT7MVA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@tailwindcss/oxide-linux-x64-gnu@4.1.5':
+    resolution: {integrity: sha512-SO+F2YEIAHa1AITwc8oPwMOWhgorPzzcbhWEb+4oLi953h45FklDmM8dPSZ7hNHpIk9p/SCZKUYn35t5fjGtHA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@tailwindcss/oxide-linux-x64-musl@4.1.5':
+    resolution: {integrity: sha512-6UbBBplywkk/R+PqqioskUeXfKcBht3KU7juTi1UszJLx0KPXUo10v2Ok04iBJIaDPkIFkUOVboXms5Yxvaz+g==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@tailwindcss/oxide-wasm32-wasi@4.1.5':
+    resolution: {integrity: sha512-hwALf2K9FHuiXTPqmo1KeOb83fTRNbe9r/Ixv9ZNQ/R24yw8Ge1HOWDDgTdtzntIaIUJG5dfXCf4g9AD4RiyhQ==}
+    engines: {node: '>=14.0.0'}
+    cpu: [wasm32]
+    bundledDependencies:
+      - '@napi-rs/wasm-runtime'
+      - '@emnapi/core'
+      - '@emnapi/runtime'
+      - '@tybys/wasm-util'
+      - '@emnapi/wasi-threads'
+      - tslib
+
+  '@tailwindcss/oxide-win32-arm64-msvc@4.1.5':
+    resolution: {integrity: sha512-oDKncffWzaovJbkuR7/OTNFRJQVdiw/n8HnzaCItrNQUeQgjy7oUiYpsm9HUBgpmvmDpSSbGaCa2Evzvk3eFmA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@tailwindcss/oxide-win32-x64-msvc@4.1.5':
+    resolution: {integrity: sha512-WiR4dtyrFdbb+ov0LK+7XsFOsG+0xs0PKZKkt41KDn9jYpO7baE3bXiudPVkTqUEwNfiglCygQHl2jklvSBi7Q==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@tailwindcss/oxide@4.1.5':
+    resolution: {integrity: sha512-1n4br1znquEvyW/QuqMKQZlBen+jxAbvyduU87RS8R3tUSvByAkcaMTkJepNIrTlYhD+U25K4iiCIxE6BGdRYA==}
+    engines: {node: '>= 10'}
+
+  '@tailwindcss/postcss@4.1.5':
+    resolution: {integrity: sha512-5lAC2/pzuyfhsFgk6I58HcNy6vPK3dV/PoPxSDuOTVbDvCddYHzHiJZZInGIY0venvzzfrTEUAXJFULAfFmObg==}
+
+  '@types/node@20.17.32':
+    resolution: {integrity: sha512-zeMXFn8zQ+UkjK4ws0RiOC9EWByyW1CcVmLe+2rQocXRsGEDxUCwPEIVgpsGcLHS/P8JkT0oa3839BRABS0oPw==}
+
+  '@types/pg@8.11.14':
+    resolution: {integrity: sha512-qyD11E5R3u0eJmd1lB0WnWKXJGA7s015nyARWljfz5DcX83TKAIlY+QrmvzQTsbIe+hkiFtkyL2gHC6qwF6Fbg==}
+
+  '@types/react-dom@19.1.3':
+    resolution: {integrity: sha512-rJXC08OG0h3W6wDMFxQrZF00Kq6qQvw0djHRdzl3U5DnIERz0MRce3WVc7IS6JYBwtaP/DwYtRRjVlvivNveKg==}
+    peerDependencies:
+      '@types/react': ^19.0.0
+
+  '@types/react@19.1.2':
+    resolution: {integrity: sha512-oxLPMytKchWGbnQM9O7D67uPa9paTNxO7jVoNMXgkkErULBPhPARCfkKL9ytcIJJRGjbsVwW4ugJzyFFvm/Tiw==}
+
+  babel-plugin-react-compiler@19.0.0-beta-af1b7da-20250417:
+    resolution: {integrity: sha512-UyTCRmzpxa4H1EqJk8fWeUOzHdEA12NQZ5DrF5hyhCs+Y6f7B4pg1fkul49sRn9GPPGFgkrH4IxOtnQJ7tNXIA==}
+
+  caniuse-lite@1.0.30001716:
+    resolution: {integrity: sha512-49/c1+x3Kwz7ZIWt+4DvK3aMJy9oYXXG6/97JKsnjdCk/6n9vVyWL8NAwVt95Lwt9eigI10Hl782kDfZUUlRXw==}
+
+  class-variance-authority@0.7.1:
+    resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
+
+  client-only@0.0.1:
+    resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
+
+  clsx@2.1.1:
+    resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
+    engines: {node: '>=6'}
+
+  color-convert@2.0.1:
+    resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
+    engines: {node: '>=7.0.0'}
+
+  color-name@1.1.4:
+    resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+
+  color-string@1.9.1:
+    resolution: {integrity: sha512-shrVawQFojnZv6xM40anx4CkoDP+fZsw/ZerEMsW/pyzsRbElpsL/DBVW7q3ExxwusdNXI3lXpuhEZkzs8p5Eg==}
+
+  color@4.2.3:
+    resolution: {integrity: sha512-1rXeuUUiGGrykh+CeBdu5Ie7OJwinCgQY0bc7GCRxy5xVHy+moaqkpL/jqQq0MtQOeYcrqEz4abc5f0KtU7W4A==}
+    engines: {node: '>=12.5.0'}
+
+  csstype@3.1.3:
+    resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
+
+  detect-libc@2.0.4:
+    resolution: {integrity: sha512-3UDv+G9CsCKO1WKMGw9fwq/SWJYbI0c5Y7LU1AXYoDdbhE2AHQ6N6Nb34sG8Fj7T5APy8qXDCKuuIHd1BR0tVA==}
+    engines: {node: '>=8'}
+
+  enhanced-resolve@5.18.1:
+    resolution: {integrity: sha512-ZSW3ma5GkcQBIpwZTSRAI8N71Uuwgs93IezB7mf7R60tC8ZbJideoDNKjHn2O9KIlx6rkGTTEk1xUCK2E1Y2Yg==}
+    engines: {node: '>=10.13.0'}
+
+  graceful-fs@4.2.11:
+    resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
+
+  is-arrayish@0.3.2:
+    resolution: {integrity: sha512-eVRqCvVlZbuw3GrM63ovNSNAeA1K16kaR/LRY/92w0zxQ5/1YzwblUX652i4Xs9RwAGjW9d9y6X88t8OaAJfWQ==}
+
+  jiti@2.4.2:
+    resolution: {integrity: sha512-rg9zJN+G4n2nfJl5MW3BMygZX56zKPNVEYYqq7adpmMh4Jn2QNEwhvQlFy6jPVdcod7txZtKHWnyZiA3a0zP7A==}
+    hasBin: true
+
+  lightningcss-darwin-arm64@1.29.2:
+    resolution: {integrity: sha512-cK/eMabSViKn/PG8U/a7aCorpeKLMlK0bQeNHmdb7qUnBkNPnL+oV5DjJUo0kqWsJUapZsM4jCfYItbqBDvlcA==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm64]
+    os: [darwin]
+
+  lightningcss-darwin-x64@1.29.2:
+    resolution: {integrity: sha512-j5qYxamyQw4kDXX5hnnCKMf3mLlHvG44f24Qyi2965/Ycz829MYqjrVg2H8BidybHBp9kom4D7DR5VqCKDXS0w==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  lightningcss-freebsd-x64@1.29.2:
+    resolution: {integrity: sha512-wDk7M2tM78Ii8ek9YjnY8MjV5f5JN2qNVO+/0BAGZRvXKtQrBC4/cn4ssQIpKIPP44YXw6gFdpUF+Ps+RGsCwg==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [freebsd]
+
+  lightningcss-linux-arm-gnueabihf@1.29.2:
+    resolution: {integrity: sha512-IRUrOrAF2Z+KExdExe3Rz7NSTuuJ2HvCGlMKoquK5pjvo2JY4Rybr+NrKnq0U0hZnx5AnGsuFHjGnNT14w26sg==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm]
+    os: [linux]
+
+  lightningcss-linux-arm64-gnu@1.29.2:
+    resolution: {integrity: sha512-KKCpOlmhdjvUTX/mBuaKemp0oeDIBBLFiU5Fnqxh1/DZ4JPZi4evEH7TKoSBFOSOV3J7iEmmBaw/8dpiUvRKlQ==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  lightningcss-linux-arm64-musl@1.29.2:
+    resolution: {integrity: sha512-Q64eM1bPlOOUgxFmoPUefqzY1yV3ctFPE6d/Vt7WzLW4rKTv7MyYNky+FWxRpLkNASTnKQUaiMJ87zNODIrrKQ==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  lightningcss-linux-x64-gnu@1.29.2:
+    resolution: {integrity: sha512-0v6idDCPG6epLXtBH/RPkHvYx74CVziHo6TMYga8O2EiQApnUPZsbR9nFNrg2cgBzk1AYqEd95TlrsL7nYABQg==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [linux]
+
+  lightningcss-linux-x64-musl@1.29.2:
+    resolution: {integrity: sha512-rMpz2yawkgGT8RULc5S4WiZopVMOFWjiItBT7aSfDX4NQav6M44rhn5hjtkKzB+wMTRlLLqxkeYEtQ3dd9696w==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [linux]
+
+  lightningcss-win32-arm64-msvc@1.29.2:
+    resolution: {integrity: sha512-nL7zRW6evGQqYVu/bKGK+zShyz8OVzsCotFgc7judbt6wnB2KbiKKJwBE4SGoDBQ1O94RjW4asrCjQL4i8Fhbw==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm64]
+    os: [win32]
+
+  lightningcss-win32-x64-msvc@1.29.2:
+    resolution: {integrity: sha512-EdIUW3B2vLuHmv7urfzMI/h2fmlnOQBk1xlsDxkN1tCWKjNFjfLhGxYk8C8mzpSfr+A6jFFIi8fU6LbQGsRWjA==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [win32]
+
+  lightningcss@1.29.2:
+    resolution: {integrity: sha512-6b6gd/RUXKaw5keVdSEtqFVdzWnU5jMxTUjA2bVcMNPLwSQ08Sv/UodBVtETLCn7k4S1Ibxwh7k68IwLZPgKaA==}
+    engines: {node: '>= 12.0.0'}
+
+  lucide-react@0.503.0:
+    resolution: {integrity: sha512-HGGkdlPWQ0vTF8jJ5TdIqhQXZi6uh3LnNgfZ8MHiuxFfX3RZeA79r2MW2tHAZKlAVfoNE8esm3p+O6VkIvpj6w==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  nanoid@3.3.11:
+    resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
+    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
+  next-themes@0.4.6:
+    resolution: {integrity: sha512-pZvgD5L0IEvX5/9GWyHMf3m8BKiVQwsCMHfoFosXtXBMnaS0ZnIJ9ST4b4NqLVKDEm8QBxoNNGNaBv2JNF6XNA==}
+    peerDependencies:
+      react: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+
+  next@15.4.0-canary.17:
+    resolution: {integrity: sha512-AH14xNNvz+6S33AB3TR+VHkS+cnhrzkNeh8TnYpSbtouQqhJtm0lTYjnQTGqa3cHGKMgLI1h13MU724HiJGbcg==}
+    engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
+    hasBin: true
+    peerDependencies:
+      '@opentelemetry/api': ^1.1.0
+      '@playwright/test': ^1.41.2
+      babel-plugin-react-compiler: '*'
+      react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
+      react-dom: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
+      sass: ^1.3.0
+    peerDependenciesMeta:
+      '@opentelemetry/api':
+        optional: true
+      '@playwright/test':
+        optional: true
+      babel-plugin-react-compiler:
+        optional: true
+      sass:
+        optional: true
+
+  obuf@1.1.2:
+    resolution: {integrity: sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==}
+
+  pg-cloudflare@1.2.5:
+    resolution: {integrity: sha512-OOX22Vt0vOSRrdoUPKJ8Wi2OpE/o/h9T8X1s4qSkCedbNah9ei2W2765be8iMVxQUsvgT7zIAT2eIa9fs5+vtg==}
+
+  pg-connection-string@2.8.5:
+    resolution: {integrity: sha512-Ni8FuZ8yAF+sWZzojvtLE2b03cqjO5jNULcHFfM9ZZ0/JXrgom5pBREbtnAw7oxsxJqHw9Nz/XWORUEL3/IFow==}
+
+  pg-int8@1.0.1:
+    resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
+    engines: {node: '>=4.0.0'}
+
+  pg-numeric@1.0.2:
+    resolution: {integrity: sha512-BM/Thnrw5jm2kKLE5uJkXqqExRUY/toLHda65XgFTBTFYZyopbKjBe29Ii3RbkvlsMoFwD+tHeGaCjjv0gHlyw==}
+    engines: {node: '>=4'}
+
+  pg-pool@3.9.6:
+    resolution: {integrity: sha512-rFen0G7adh1YmgvrmE5IPIqbb+IgEzENUm+tzm6MLLDSlPRoZVhzU1WdML9PV2W5GOdRA9qBKURlbt1OsXOsPw==}
+    peerDependencies:
+      pg: '>=8.0'
+
+  pg-protocol@1.9.5:
+    resolution: {integrity: sha512-DYTWtWpfd5FOro3UnAfwvhD8jh59r2ig8bPtc9H8Ds7MscE/9NYruUQWFAOuraRl29jwcT2kyMFQ3MxeaVjUhg==}
+
+  pg-types@2.2.0:
+    resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
+    engines: {node: '>=4'}
+
+  pg-types@4.0.2:
+    resolution: {integrity: sha512-cRL3JpS3lKMGsKaWndugWQoLOCoP+Cic8oseVcbr0qhPzYD5DWXK+RZ9LY9wxRf7RQia4SCwQlXk0q6FCPrVng==}
+    engines: {node: '>=10'}
+
+  pg@8.15.6:
+    resolution: {integrity: sha512-yvao7YI3GdmmrslNVsZgx9PfntfWrnXwtR+K/DjI0I/sTKif4Z623um+sjVZ1hk5670B+ODjvHDAckKdjmPTsg==}
+    engines: {node: '>= 8.0.0'}
+    peerDependencies:
+      pg-native: '>=3.0.1'
+    peerDependenciesMeta:
+      pg-native:
+        optional: true
+
+  pgpass@1.0.5:
+    resolution: {integrity: sha512-FdW9r/jQZhSeohs1Z3sI1yxFQNFvMcnmfuj4WBMUTxOrAyLMaTcE1aAMBiTlbMNaXvBCQuVi0R7hd8udDSP7ug==}
+
+  picocolors@1.1.1:
+    resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
+
+  postcss@8.4.31:
+    resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
+    engines: {node: ^10 || ^12 || >=14}
+
+  postcss@8.5.3:
+    resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
+    engines: {node: ^10 || ^12 || >=14}
+
+  postgres-array@2.0.0:
+    resolution: {integrity: sha512-VpZrUqU5A69eQyW2c5CA1jtLecCsN2U/bD6VilrFDWq5+5UIEVO7nazS3TEcHf1zuPYO/sqGvUvW62g86RXZuA==}
+    engines: {node: '>=4'}
+
+  postgres-array@3.0.4:
+    resolution: {integrity: sha512-nAUSGfSDGOaOAEGwqsRY27GPOea7CNipJPOA7lPbdEpx5Kg3qzdP0AaWC5MlhTWV9s4hFX39nomVZ+C4tnGOJQ==}
+    engines: {node: '>=12'}
+
+  postgres-bytea@1.0.0:
+    resolution: {integrity: sha512-xy3pmLuQqRBZBXDULy7KbaitYqLcmxigw14Q5sj8QBVLqEwXfeybIKVWiqAXTlcvdvb0+xkOtDbfQMOf4lST1w==}
+    engines: {node: '>=0.10.0'}
+
+  postgres-bytea@3.0.0:
+    resolution: {integrity: sha512-CNd4jim9RFPkObHSjVHlVrxoVQXz7quwNFpz7RY1okNNme49+sVyiTvTRobiLV548Hx/hb1BG+iE7h9493WzFw==}
+    engines: {node: '>= 6'}
+
+  postgres-date@1.0.7:
+    resolution: {integrity: sha512-suDmjLVQg78nMK2UZ454hAG+OAW+HQPZ6n++TNDUX+L0+uUlLywnoxJKDou51Zm+zTCjrCl0Nq6J9C5hP9vK/Q==}
+    engines: {node: '>=0.10.0'}
+
+  postgres-date@2.1.0:
+    resolution: {integrity: sha512-K7Juri8gtgXVcDfZttFKVmhglp7epKb1K4pgrkLxehjqkrgPhfG6OO8LHLkfaqkbpjNRnra018XwAr1yQFWGcA==}
+    engines: {node: '>=12'}
+
+  postgres-interval@1.2.0:
+    resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
+    engines: {node: '>=0.10.0'}
+
+  postgres-interval@3.0.0:
+    resolution: {integrity: sha512-BSNDnbyZCXSxgA+1f5UU2GmwhoI0aU5yMxRGO8CdFEcY2BQF9xm/7MqKnYoM1nJDk8nONNWDk9WeSmePFhQdlw==}
+    engines: {node: '>=12'}
+
+  postgres-range@1.1.4:
+    resolution: {integrity: sha512-i/hbxIE9803Alj/6ytL7UHQxRvZkI9O4Sy+J3HGc4F4oo/2eQAjTSNJ0bfxyse3bH0nuVesCk+3IRLaMtG3H6w==}
+
+  react-dom@19.1.0:
+    resolution: {integrity: sha512-Xs1hdnE+DyKgeHJeJznQmYMIBG3TKIHJJT95Q58nHLSrElKlGQqDTR2HQ9fx5CN/Gk6Vh/kupBTDLU11/nDk/g==}
+    peerDependencies:
+      react: ^19.1.0
+
+  react@19.1.0:
+    resolution: {integrity: sha512-FS+XFBNvn3GTAWq26joslQgWNoFu08F4kl0J4CgdNKADkdSGXQyTCnKteIAJy96Br6YbpEU1LSzV5dYtjMkMDg==}
+    engines: {node: '>=0.10.0'}
+
+  scheduler@0.26.0:
+    resolution: {integrity: sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA==}
+
+  semver@7.7.1:
+    resolution: {integrity: sha512-hlq8tAfn0m/61p4BVRcPzIGr6LKiMwo4VM6dGi6pt4qcRkmNzTcWq6eCEjEh+qXjkMDvPlOFFSGwQjoEa6gyMA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
+  sharp@0.34.1:
+    resolution: {integrity: sha512-1j0w61+eVxu7DawFJtnfYcvSv6qPFvfTaqzTQ2BLknVhHTwGS8sc63ZBF4rzkWMBVKybo4S5OBtDdZahh2A1xg==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+
+  simple-swizzle@0.2.2:
+    resolution: {integrity: sha512-JA//kQgZtbuY83m+xT+tXJkmJncGMTFT+C+g2h2R9uxkYIrE2yy9sgmcLhCnw57/WSD+Eh3J97FPEDFnbXnDUg==}
+
+  sonner@2.0.3:
+    resolution: {integrity: sha512-njQ4Hht92m0sMqqHVDL32V2Oun9W1+PHO9NDv9FHfJjT3JT22IG4Jpo3FPQy+mouRKCXFWO+r67v6MrHX2zeIA==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+
+  source-map-js@1.2.1:
+    resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
+    engines: {node: '>=0.10.0'}
+
+  split2@4.2.0:
+    resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
+    engines: {node: '>= 10.x'}
+
+  styled-jsx@5.1.6:
+    resolution: {integrity: sha512-qSVyDTeMotdvQYoHWLNGwRFJHC+i+ZvdBRYosOFgC+Wg1vx4frN2/RG/NA7SYqqvKNLf39P2LSRA2pu6n0XYZA==}
+    engines: {node: '>= 12.0.0'}
+    peerDependencies:
+      '@babel/core': '*'
+      babel-plugin-macros: '*'
+      react: '>= 16.8.0 || 17.x.x || ^18.0.0-0 || ^19.0.0-0'
+    peerDependenciesMeta:
+      '@babel/core':
+        optional: true
+      babel-plugin-macros:
+        optional: true
+
+  tailwind-merge@3.2.0:
+    resolution: {integrity: sha512-FQT/OVqCD+7edmmJpsgCsY820RTD5AkBryuG5IUqR5YQZSdj5xlH5nLgH7YPths7WsLPSpSBNneJdM8aS8aeFA==}
+
+  tailwindcss@4.1.5:
+    resolution: {integrity: sha512-nYtSPfWGDiWgCkwQG/m+aX83XCwf62sBgg3bIlNiiOcggnS1x3uVRDAuyelBFL+vJdOPPCGElxv9DjHJjRHiVA==}
+
+  tapable@2.2.1:
+    resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
+    engines: {node: '>=6'}
+
+  tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
+  tw-animate-css@1.2.8:
+    resolution: {integrity: sha512-AxSnYRvyFnAiZCUndS3zQZhNfV/B77ZhJ+O7d3K6wfg/jKJY+yv6ahuyXwnyaYA9UdLqnpCwhTRv9pPTBnPR2g==}
+
+  typescript@5.8.3:
+    resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
+  undici-types@6.19.8:
+    resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
+
+  xtend@4.0.2:
+    resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
+    engines: {node: '>=0.4'}
+
+snapshots:
+
+  '@alloc/quick-lru@5.2.0': {}
+
+  '@babel/helper-string-parser@7.27.1': {}
+
+  '@babel/helper-validator-identifier@7.27.1': {}
+
+  '@babel/types@7.27.1':
+    dependencies:
+      '@babel/helper-string-parser': 7.27.1
+      '@babel/helper-validator-identifier': 7.27.1
+
+  '@biomejs/biome@1.9.4':
+    optionalDependencies:
+      '@biomejs/cli-darwin-arm64': 1.9.4
+      '@biomejs/cli-darwin-x64': 1.9.4
+      '@biomejs/cli-linux-arm64': 1.9.4
+      '@biomejs/cli-linux-arm64-musl': 1.9.4
+      '@biomejs/cli-linux-x64': 1.9.4
+      '@biomejs/cli-linux-x64-musl': 1.9.4
+      '@biomejs/cli-win32-arm64': 1.9.4
+      '@biomejs/cli-win32-x64': 1.9.4
+
+  '@biomejs/cli-darwin-arm64@1.9.4':
+    optional: true
+
+  '@biomejs/cli-darwin-x64@1.9.4':
+    optional: true
+
+  '@biomejs/cli-linux-arm64-musl@1.9.4':
+    optional: true
+
+  '@biomejs/cli-linux-arm64@1.9.4':
+    optional: true
+
+  '@biomejs/cli-linux-x64-musl@1.9.4':
+    optional: true
+
+  '@biomejs/cli-linux-x64@1.9.4':
+    optional: true
+
+  '@biomejs/cli-win32-arm64@1.9.4':
+    optional: true
+
+  '@biomejs/cli-win32-x64@1.9.4':
+    optional: true
+
+  '@emnapi/runtime@1.4.3':
+    dependencies:
+      tslib: 2.8.1
+    optional: true
+
+  '@img/sharp-darwin-arm64@0.34.1':
+    optionalDependencies:
+      '@img/sharp-libvips-darwin-arm64': 1.1.0
+    optional: true
+
+  '@img/sharp-darwin-x64@0.34.1':
+    optionalDependencies:
+      '@img/sharp-libvips-darwin-x64': 1.1.0
+    optional: true
+
+  '@img/sharp-libvips-darwin-arm64@1.1.0':
+    optional: true
+
+  '@img/sharp-libvips-darwin-x64@1.1.0':
+    optional: true
+
+  '@img/sharp-libvips-linux-arm64@1.1.0':
+    optional: true
+
+  '@img/sharp-libvips-linux-arm@1.1.0':
+    optional: true
+
+  '@img/sharp-libvips-linux-ppc64@1.1.0':
+    optional: true
+
+  '@img/sharp-libvips-linux-s390x@1.1.0':
+    optional: true
+
+  '@img/sharp-libvips-linux-x64@1.1.0':
+    optional: true
+
+  '@img/sharp-libvips-linuxmusl-arm64@1.1.0':
+    optional: true
+
+  '@img/sharp-libvips-linuxmusl-x64@1.1.0':
+    optional: true
+
+  '@img/sharp-linux-arm64@0.34.1':
+    optionalDependencies:
+      '@img/sharp-libvips-linux-arm64': 1.1.0
+    optional: true
+
+  '@img/sharp-linux-arm@0.34.1':
+    optionalDependencies:
+      '@img/sharp-libvips-linux-arm': 1.1.0
+    optional: true
+
+  '@img/sharp-linux-s390x@0.34.1':
+    optionalDependencies:
+      '@img/sharp-libvips-linux-s390x': 1.1.0
+    optional: true
+
+  '@img/sharp-linux-x64@0.34.1':
+    optionalDependencies:
+      '@img/sharp-libvips-linux-x64': 1.1.0
+    optional: true
+
+  '@img/sharp-linuxmusl-arm64@0.34.1':
+    optionalDependencies:
+      '@img/sharp-libvips-linuxmusl-arm64': 1.1.0
+    optional: true
+
+  '@img/sharp-linuxmusl-x64@0.34.1':
+    optionalDependencies:
+      '@img/sharp-libvips-linuxmusl-x64': 1.1.0
+    optional: true
+
+  '@img/sharp-wasm32@0.34.1':
+    dependencies:
+      '@emnapi/runtime': 1.4.3
+    optional: true
+
+  '@img/sharp-win32-ia32@0.34.1':
+    optional: true
+
+  '@img/sharp-win32-x64@0.34.1':
+    optional: true
+
+  '@next/env@15.4.0-canary.17': {}
+
+  '@next/swc-darwin-arm64@15.4.0-canary.17':
+    optional: true
+
+  '@next/swc-darwin-x64@15.4.0-canary.17':
+    optional: true
+
+  '@next/swc-linux-arm64-gnu@15.4.0-canary.17':
+    optional: true
+
+  '@next/swc-linux-arm64-musl@15.4.0-canary.17':
+    optional: true
+
+  '@next/swc-linux-x64-gnu@15.4.0-canary.17':
+    optional: true
+
+  '@next/swc-linux-x64-musl@15.4.0-canary.17':
+    optional: true
+
+  '@next/swc-win32-arm64-msvc@15.4.0-canary.17':
+    optional: true
+
+  '@next/swc-win32-x64-msvc@15.4.0-canary.17':
+    optional: true
+
+  '@radix-ui/react-compose-refs@1.1.2(@types/react@19.1.2)(react@19.1.0)':
+    dependencies:
+      react: 19.1.0
+    optionalDependencies:
+      '@types/react': 19.1.2
+
+  '@radix-ui/react-slot@1.2.0(@types/react@19.1.2)(react@19.1.0)':
+    dependencies:
+      '@radix-ui/react-compose-refs': 1.1.2(@types/react@19.1.2)(react@19.1.0)
+      react: 19.1.0
+    optionalDependencies:
+      '@types/react': 19.1.2
+
+  '@swc/helpers@0.5.15':
+    dependencies:
+      tslib: 2.8.1
+
+  '@tailwindcss/node@4.1.5':
+    dependencies:
+      enhanced-resolve: 5.18.1
+      jiti: 2.4.2
+      lightningcss: 1.29.2
+      tailwindcss: 4.1.5
+
+  '@tailwindcss/oxide-android-arm64@4.1.5':
+    optional: true
+
+  '@tailwindcss/oxide-darwin-arm64@4.1.5':
+    optional: true
+
+  '@tailwindcss/oxide-darwin-x64@4.1.5':
+    optional: true
+
+  '@tailwindcss/oxide-freebsd-x64@4.1.5':
+    optional: true
+
+  '@tailwindcss/oxide-linux-arm-gnueabihf@4.1.5':
+    optional: true
+
+  '@tailwindcss/oxide-linux-arm64-gnu@4.1.5':
+    optional: true
+
+  '@tailwindcss/oxide-linux-arm64-musl@4.1.5':
+    optional: true
+
+  '@tailwindcss/oxide-linux-x64-gnu@4.1.5':
+    optional: true
+
+  '@tailwindcss/oxide-linux-x64-musl@4.1.5':
+    optional: true
+
+  '@tailwindcss/oxide-wasm32-wasi@4.1.5':
+    optional: true
+
+  '@tailwindcss/oxide-win32-arm64-msvc@4.1.5':
+    optional: true
+
+  '@tailwindcss/oxide-win32-x64-msvc@4.1.5':
+    optional: true
+
+  '@tailwindcss/oxide@4.1.5':
+    optionalDependencies:
+      '@tailwindcss/oxide-android-arm64': 4.1.5
+      '@tailwindcss/oxide-darwin-arm64': 4.1.5
+      '@tailwindcss/oxide-darwin-x64': 4.1.5
+      '@tailwindcss/oxide-freebsd-x64': 4.1.5
+      '@tailwindcss/oxide-linux-arm-gnueabihf': 4.1.5
+      '@tailwindcss/oxide-linux-arm64-gnu': 4.1.5
+      '@tailwindcss/oxide-linux-arm64-musl': 4.1.5
+      '@tailwindcss/oxide-linux-x64-gnu': 4.1.5
+      '@tailwindcss/oxide-linux-x64-musl': 4.1.5
+      '@tailwindcss/oxide-wasm32-wasi': 4.1.5
+      '@tailwindcss/oxide-win32-arm64-msvc': 4.1.5
+      '@tailwindcss/oxide-win32-x64-msvc': 4.1.5
+
+  '@tailwindcss/postcss@4.1.5':
+    dependencies:
+      '@alloc/quick-lru': 5.2.0
+      '@tailwindcss/node': 4.1.5
+      '@tailwindcss/oxide': 4.1.5
+      postcss: 8.5.3
+      tailwindcss: 4.1.5
+
+  '@types/node@20.17.32':
+    dependencies:
+      undici-types: 6.19.8
+
+  '@types/pg@8.11.14':
+    dependencies:
+      '@types/node': 20.17.32
+      pg-protocol: 1.9.5
+      pg-types: 4.0.2
+
+  '@types/react-dom@19.1.3(@types/react@19.1.2)':
+    dependencies:
+      '@types/react': 19.1.2
+
+  '@types/react@19.1.2':
+    dependencies:
+      csstype: 3.1.3
+
+  babel-plugin-react-compiler@19.0.0-beta-af1b7da-20250417:
+    dependencies:
+      '@babel/types': 7.27.1
+
+  caniuse-lite@1.0.30001716: {}
+
+  class-variance-authority@0.7.1:
+    dependencies:
+      clsx: 2.1.1
+
+  client-only@0.0.1: {}
+
+  clsx@2.1.1: {}
+
+  color-convert@2.0.1:
+    dependencies:
+      color-name: 1.1.4
+    optional: true
+
+  color-name@1.1.4:
+    optional: true
+
+  color-string@1.9.1:
+    dependencies:
+      color-name: 1.1.4
+      simple-swizzle: 0.2.2
+    optional: true
+
+  color@4.2.3:
+    dependencies:
+      color-convert: 2.0.1
+      color-string: 1.9.1
+    optional: true
+
+  csstype@3.1.3: {}
+
+  detect-libc@2.0.4: {}
+
+  enhanced-resolve@5.18.1:
+    dependencies:
+      graceful-fs: 4.2.11
+      tapable: 2.2.1
+
+  graceful-fs@4.2.11: {}
+
+  is-arrayish@0.3.2:
+    optional: true
+
+  jiti@2.4.2: {}
+
+  lightningcss-darwin-arm64@1.29.2:
+    optional: true
+
+  lightningcss-darwin-x64@1.29.2:
+    optional: true
+
+  lightningcss-freebsd-x64@1.29.2:
+    optional: true
+
+  lightningcss-linux-arm-gnueabihf@1.29.2:
+    optional: true
+
+  lightningcss-linux-arm64-gnu@1.29.2:
+    optional: true
+
+  lightningcss-linux-arm64-musl@1.29.2:
+    optional: true
+
+  lightningcss-linux-x64-gnu@1.29.2:
+    optional: true
+
+  lightningcss-linux-x64-musl@1.29.2:
+    optional: true
+
+  lightningcss-win32-arm64-msvc@1.29.2:
+    optional: true
+
+  lightningcss-win32-x64-msvc@1.29.2:
+    optional: true
+
+  lightningcss@1.29.2:
+    dependencies:
+      detect-libc: 2.0.4
+    optionalDependencies:
+      lightningcss-darwin-arm64: 1.29.2
+      lightningcss-darwin-x64: 1.29.2
+      lightningcss-freebsd-x64: 1.29.2
+      lightningcss-linux-arm-gnueabihf: 1.29.2
+      lightningcss-linux-arm64-gnu: 1.29.2
+      lightningcss-linux-arm64-musl: 1.29.2
+      lightningcss-linux-x64-gnu: 1.29.2
+      lightningcss-linux-x64-musl: 1.29.2
+      lightningcss-win32-arm64-msvc: 1.29.2
+      lightningcss-win32-x64-msvc: 1.29.2
+
+  lucide-react@0.503.0(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+
+  nanoid@3.3.11: {}
+
+  next-themes@0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  next@15.4.0-canary.17(babel-plugin-react-compiler@19.0.0-beta-af1b7da-20250417)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      '@next/env': 15.4.0-canary.17
+      '@swc/helpers': 0.5.15
+      caniuse-lite: 1.0.30001716
+      postcss: 8.4.31
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+      styled-jsx: 5.1.6(react@19.1.0)
+    optionalDependencies:
+      '@next/swc-darwin-arm64': 15.4.0-canary.17
+      '@next/swc-darwin-x64': 15.4.0-canary.17
+      '@next/swc-linux-arm64-gnu': 15.4.0-canary.17
+      '@next/swc-linux-arm64-musl': 15.4.0-canary.17
+      '@next/swc-linux-x64-gnu': 15.4.0-canary.17
+      '@next/swc-linux-x64-musl': 15.4.0-canary.17
+      '@next/swc-win32-arm64-msvc': 15.4.0-canary.17
+      '@next/swc-win32-x64-msvc': 15.4.0-canary.17
+      babel-plugin-react-compiler: 19.0.0-beta-af1b7da-20250417
+      sharp: 0.34.1
+    transitivePeerDependencies:
+      - '@babel/core'
+      - babel-plugin-macros
+
+  obuf@1.1.2: {}
+
+  pg-cloudflare@1.2.5:
+    optional: true
+
+  pg-connection-string@2.8.5: {}
+
+  pg-int8@1.0.1: {}
+
+  pg-numeric@1.0.2: {}
+
+  pg-pool@3.9.6(pg@8.15.6):
+    dependencies:
+      pg: 8.15.6
+
+  pg-protocol@1.9.5: {}
+
+  pg-types@2.2.0:
+    dependencies:
+      pg-int8: 1.0.1
+      postgres-array: 2.0.0
+      postgres-bytea: 1.0.0
+      postgres-date: 1.0.7
+      postgres-interval: 1.2.0
+
+  pg-types@4.0.2:
+    dependencies:
+      pg-int8: 1.0.1
+      pg-numeric: 1.0.2
+      postgres-array: 3.0.4
+      postgres-bytea: 3.0.0
+      postgres-date: 2.1.0
+      postgres-interval: 3.0.0
+      postgres-range: 1.1.4
+
+  pg@8.15.6:
+    dependencies:
+      pg-connection-string: 2.8.5
+      pg-pool: 3.9.6(pg@8.15.6)
+      pg-protocol: 1.9.5
+      pg-types: 2.2.0
+      pgpass: 1.0.5
+    optionalDependencies:
+      pg-cloudflare: 1.2.5
+
+  pgpass@1.0.5:
+    dependencies:
+      split2: 4.2.0
+
+  picocolors@1.1.1: {}
+
+  postcss@8.4.31:
+    dependencies:
+      nanoid: 3.3.11
+      picocolors: 1.1.1
+      source-map-js: 1.2.1
+
+  postcss@8.5.3:
+    dependencies:
+      nanoid: 3.3.11
+      picocolors: 1.1.1
+      source-map-js: 1.2.1
+
+  postgres-array@2.0.0: {}
+
+  postgres-array@3.0.4: {}
+
+  postgres-bytea@1.0.0: {}
+
+  postgres-bytea@3.0.0:
+    dependencies:
+      obuf: 1.1.2
+
+  postgres-date@1.0.7: {}
+
+  postgres-date@2.1.0: {}
+
+  postgres-interval@1.2.0:
+    dependencies:
+      xtend: 4.0.2
+
+  postgres-interval@3.0.0: {}
+
+  postgres-range@1.1.4: {}
+
+  react-dom@19.1.0(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+      scheduler: 0.26.0
+
+  react@19.1.0: {}
+
+  scheduler@0.26.0: {}
+
+  semver@7.7.1:
+    optional: true
+
+  sharp@0.34.1:
+    dependencies:
+      color: 4.2.3
+      detect-libc: 2.0.4
+      semver: 7.7.1
+    optionalDependencies:
+      '@img/sharp-darwin-arm64': 0.34.1
+      '@img/sharp-darwin-x64': 0.34.1
+      '@img/sharp-libvips-darwin-arm64': 1.1.0
+      '@img/sharp-libvips-darwin-x64': 1.1.0
+      '@img/sharp-libvips-linux-arm': 1.1.0
+      '@img/sharp-libvips-linux-arm64': 1.1.0
+      '@img/sharp-libvips-linux-ppc64': 1.1.0
+      '@img/sharp-libvips-linux-s390x': 1.1.0
+      '@img/sharp-libvips-linux-x64': 1.1.0
+      '@img/sharp-libvips-linuxmusl-arm64': 1.1.0
+      '@img/sharp-libvips-linuxmusl-x64': 1.1.0
+      '@img/sharp-linux-arm': 0.34.1
+      '@img/sharp-linux-arm64': 0.34.1
+      '@img/sharp-linux-s390x': 0.34.1
+      '@img/sharp-linux-x64': 0.34.1
+      '@img/sharp-linuxmusl-arm64': 0.34.1
+      '@img/sharp-linuxmusl-x64': 0.34.1
+      '@img/sharp-wasm32': 0.34.1
+      '@img/sharp-win32-ia32': 0.34.1
+      '@img/sharp-win32-x64': 0.34.1
+    optional: true
+
+  simple-swizzle@0.2.2:
+    dependencies:
+      is-arrayish: 0.3.2
+    optional: true
+
+  sonner@2.0.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  source-map-js@1.2.1: {}
+
+  split2@4.2.0: {}
+
+  styled-jsx@5.1.6(react@19.1.0):
+    dependencies:
+      client-only: 0.0.1
+      react: 19.1.0
+
+  tailwind-merge@3.2.0: {}
+
+  tailwindcss@4.1.5: {}
+
+  tapable@2.2.1: {}
+
+  tslib@2.8.1: {}
+
+  tw-animate-css@1.2.8: {}
+
+  typescript@5.8.3: {}
+
+  undici-types@6.19.8: {}
+
+  xtend@4.0.2: {}
+
+
+
+================================================
+File: postcss.config.mjs
+================================================
+const config = {
+  plugins: ["@tailwindcss/postcss"],
+};
+
+export default config;
+
+
+
+================================================
+File: tsconfig.json
+================================================
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+
+
+
+================================================
+File: app/actions.ts
+================================================
+"use server";
+
+import { cache } from "react";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import {
+  invalidateSession,
+  type SessionValidationResult,
+  validateSessionToken,
+} from "@/lib/auth";
+import { globalPOSTRateLimit } from "@/lib/requests";
+import { deleteSessionTokenCookie } from "@/lib/session";
+
+export const getCurrentSession = cache(
+  async (): Promise<SessionValidationResult> => {
+    const token = (await cookies()).get("session")?.value ?? null;
+    if (token === null) {
+      return {
+        session: null,
+        user: null,
+      };
+    }
+    const result = await validateSessionToken(token);
+    return result;
+  },
+);
+
+export const signOutAction = async (): Promise<{
+  message: string;
+}> => {
+  const { session } = await getCurrentSession();
+  if (session === null)
+    return {
+      message: "Not authenticated",
+    };
+
+  if (!(await globalPOSTRateLimit())) {
+    return {
+      message: "Too many requests",
+    };
+  }
+  try {
+    await invalidateSession(session.id);
+    await deleteSessionTokenCookie();
+    return redirect("/login");
+  } catch (e) {
+    return {
+      message: `Error LoggingOut ${e}`,
+    };
+  }
+};
+
+
+
+================================================
+File: app/globals.css
+================================================
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: oklch(0.21 0.006 285.885);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.004 286.32);
+  --input: oklch(0.92 0.004 286.32);
+  --ring: oklch(0.705 0.015 286.067);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-primary: oklch(0.21 0.006 285.885);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-ring: oklch(0.705 0.015 286.067);
+}
+
+.dark {
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.21 0.006 285.885);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.92 0.004 286.32);
+  --primary-foreground: oklch(0.21 0.006 285.885);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.274 0.006 286.033);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.274 0.006 286.033);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.552 0.016 285.938);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.552 0.016 285.938);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
+
+================================================
+File: app/layout.tsx
+================================================
+import type { Metadata, Viewport } from "next";
+import type { JSX, ReactNode } from "react";
+import { Inter } from "next/font/google";
+import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/sonner";
+
+export const metadata: Metadata = {
+  title: "Chapter",
+  description: "Making learning better",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1.0,
+};
+
+const fontSans = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: ReactNode;
+}>): JSX.Element {
+  return (
+    <html lang="en">
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable,
+        )}
+      >
+        {children}
+        <Toaster richColors={true} />
+      </body>
+    </html>
+  );
+}
+
+
+
+================================================
+File: app/page.tsx
+================================================
+import type { JSX } from "react";
+import { getCurrentSession } from "./actions";
+import { redirect } from "next/navigation";
+import Image from "next/image";
+import { globalGETRateLimit } from "@/lib/requests";
+import { LogoutButton } from "@/components/Logout";
+
+export default async function Home(): Promise<JSX.Element> {
+  const { user, session } = await getCurrentSession();
+
+  if (session === null) return redirect("/login");
+
+  if (!(await globalGETRateLimit())) {
+    return <div>Too many requests</div>;
+  }
+
+  return (
+    <>
+      <h1>{user.name}</h1>
+      <Image src={user.picture} alt="profile" height={100} width={100} />
+      <p>{user.email}</p>
+      <LogoutButton />
+    </>
+  );
+}
+
+
+
+================================================
+File: app/login/page.tsx
+================================================
+import type { JSX } from "react";
+
+export default function LoginPage(): JSX.Element {
+  return <a href="/login/google">Sign in with Google</a>;
+}
+
+
+
+================================================
+File: app/login/google/route.ts
+================================================
+import { cookies } from "next/headers";
+import { generateState, google } from "@/lib/oauth";
+import { globalGETRateLimit } from "@/lib/requests";
+import { getCurrentSession } from "@/app/actions";
+
+export async function GET(): Promise<Response> {
+  const { session } = await getCurrentSession();
+  if (session !== null)
+    return new Response("Logged In", {
+      status: 302,
+      headers: {
+        Location: "/",
+      },
+    });
+  if (!(await globalGETRateLimit())) {
+    return new Response("Too many requests", {
+      status: 429,
+    });
+  }
+
+  const state = generateState();
+  const codeVerifier = generateState();
+  const url = await google.createAuthorizationURL(state, codeVerifier, [
+    "openid",
+    "profile",
+    "email",
+  ]);
+
+  (await cookies()).set("google_oauth_state", state, {
+    path: "/",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 60 * 10,
+    sameSite: "lax",
+  });
+  (await cookies()).set("google_code_verifier", codeVerifier, {
+    path: "/",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 60 * 10,
+    sameSite: "lax",
+  });
+
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: url.toString(),
+    },
+  });
+}
+
+
+
+================================================
+File: app/login/google/callback/route.ts
+================================================
+import { cookies } from "next/headers";
+import { decodeIdToken, google } from "@/lib/oauth";
+import { createUser, getUserFromGoogleId } from "@/lib/user";
+import { createSession, generateSessionToken } from "@/lib/auth";
+import { setSessionTokenCookie } from "@/lib/session";
+import { ObjectParser } from "@/lib/parser";
+import type { OAuth2Tokens } from "@/lib/oauth-token";
+import { globalGETRateLimit } from "@/lib/requests";
+import { getCurrentSession } from "@/app/actions";
+
+export async function GET(request: Request): Promise<Response> {
+  const { session } = await getCurrentSession();
+  if (session !== null)
+    return new Response("Logged In", {
+      status: 302,
+      headers: {
+        Location: "/",
+      },
+    });
+
+  if (!(await globalGETRateLimit())) {
+    return new Response("Too many requests", {
+      status: 429,
+    });
+  }
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code");
+  const state = url.searchParams.get("state");
+  const storedState =
+    (await cookies()).get("google_oauth_state")?.value ?? null;
+  const codeVerifier =
+    (await cookies()).get("google_code_verifier")?.value ?? null;
+  if (
+    code === null ||
+    state === null ||
+    storedState === null ||
+    codeVerifier === null
+  ) {
+    return new Response("Please restart the process.", {
+      status: 400,
+    });
+  }
+  if (state !== storedState) {
+    return new Response("Please restart the process.", {
+      status: 400,
+    });
+  }
+
+  let tokens: OAuth2Tokens;
+  try {
+    tokens = await google.validateAuthorizationCode(code, codeVerifier);
+  } catch {
+    return new Response("Please restart the process.", {
+      status: 400,
+    });
+  }
+
+  const claims = decodeIdToken(tokens.idToken());
+  const claimsParser = new ObjectParser(claims);
+
+  const googleId = claimsParser.getString("sub");
+  const name = claimsParser.getString("name");
+  const picture = claimsParser.getString("picture");
+  const email = claimsParser.getString("email");
+
+  const existingUser = await getUserFromGoogleId(googleId);
+  if (existingUser !== null) {
+    const sessionToken = generateSessionToken();
+    const session2 = await createSession(sessionToken, existingUser.id);
+    setSessionTokenCookie(sessionToken, session2.expires_at);
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: "/",
+      },
+    });
+  }
+
+  const user = await createUser(googleId, email, name, picture);
+  const sessionToken = generateSessionToken();
+  const session2 = await createSession(sessionToken, user.id);
+  setSessionTokenCookie(sessionToken, session2.expires_at);
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: "/",
+    },
+  });
+}
+
+
+
+================================================
+File: components/Logout.tsx
+================================================
+"use client";
+
+import { signOutAction } from "@/app/actions";
+import type { JSX } from "react";
+import { useActionState } from "react";
+
+export function LogoutButton(): JSX.Element {
+  const [, action] = useActionState(signOutAction, {
+    message: "",
+  });
+  return (
+    <form action={action}>
+      <button type="submit">Sign out</button>
+    </form>
+  );
+}
+
+
+
+================================================
+File: components/ui/sonner.tsx
+================================================
+"use client";
+
+import { useTheme } from "next-themes";
+import type { CSSProperties } from "react";
+import { Toaster as Sonner, type ToasterProps } from "sonner";
+
+export const Toaster = ({ ...props }: ToasterProps) => {
+  const { theme = "system" } = useTheme();
+
+  return (
+    <Sonner
+      theme={theme as ToasterProps["theme"]}
+      className="toaster group"
+      style={
+        {
+          "--normal-bg": "var(--popover)",
+          "--normal-text": "var(--popover-foreground)",
+          "--normal-border": "var(--border)",
+        } as CSSProperties
+      }
+      {...props}
+    />
+  );
+};
+
+
+
+================================================
+File: lib/auth.ts
+================================================
+import { db } from "./db";
+import type { User, Session } from "./db/types";
+import { sha256 } from "./sha";
+import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "./encoding";
+
+export type SessionValidationResult =
+  | { session: Session; user: User }
+  | { session: null; user: null };
+
+export function generateSessionToken(): string {
+  const bytes = new Uint8Array(20);
+  crypto.getRandomValues(bytes);
+  const token = encodeBase32LowerCaseNoPadding(bytes);
+  return token;
+}
+
+export async function createSession(
+  token: string,
+  userId: number,
+): Promise<Session> {
+  const sessionId = encodeHexLowerCase(
+    await sha256(new TextEncoder().encode(token)),
+  );
+  const session: Session = {
+    id: sessionId,
+    user_id: userId,
+    expires_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+  };
+  await db.query(
+    "INSERT INTO sessions (id, user_id, expires_at) VALUES ($1, $2, $3)",
+    [session.id, session.user_id, session.expires_at],
+  );
+  return session;
+}
+
+export async function validateSessionToken(
+  token: string,
+): Promise<SessionValidationResult> {
+  "use cache";
+  const sessionId = encodeHexLowerCase(
+    await sha256(new TextEncoder().encode(token)),
+  );
+
+  const res = await db.query(
+    `SELECT
+       u.id as u_id, u.google_id, u.email, u.name, u.picture,
+       s.id as s_id, s.user_id, s.expires_at
+     FROM sessions s
+     INNER JOIN users u ON s.user_id = u.id
+     WHERE s.id = $1
+     LIMIT 1`,
+    [sessionId],
+  );
+
+  if (res.rowCount === 0) {
+    return { session: null, user: null };
+  }
+  const row = res.rows[0];
+
+  const session: Session = {
+    id: row.s_id,
+    user_id: row.user_id,
+    expires_at: row.expires_at,
+  };
+
+  const user: User = {
+    id: row.u_id,
+    google_id: row.google_id,
+    email: row.email,
+    name: row.name,
+    picture: row.picture,
+  };
+
+  const now = Date.now();
+  const expiresAtMs = session.expires_at.getTime();
+
+  if (now >= expiresAtMs) {
+    await db.query("DELETE FROM sessions WHERE id = $1", [session.id]);
+    return { session: null, user: null };
+  }
+
+  // Refresh if expiring in less than 15 days
+  const fifteenDays = 1000 * 60 * 60 * 24 * 15;
+  if (now >= expiresAtMs - fifteenDays) {
+    const newExpiresAt = new Date(now + 1000 * 60 * 60 * 24 * 30);
+    await db.query("UPDATE sessions SET expires_at = $1 WHERE id = $2", [
+      newExpiresAt,
+      session.id,
+    ]);
+    session.expires_at = newExpiresAt;
+  }
+
+  return { session, user };
+}
+
+export async function invalidateSession(sessionId: string): Promise<void> {
+  await db.query("DELETE FROM sessions WHERE id = $1", [sessionId]);
+}
+
+
+
+================================================
+File: lib/encoding.ts
+================================================
+const base32LowerCaseAlphabet = "abcdefghijklmnopqrstuvwxyz234567";
+
+enum EncodingPadding {
+  Include = 0,
+  None = 1,
+}
+
+function encodeBase32_internal(
+  bytes: Uint8Array,
+  alphabet: string,
+  padding: EncodingPadding,
+): string {
+  const estimatedLength = Math.ceil((bytes.length * 8) / 5);
+  const resultChars = new Array<string>(estimatedLength + 7); // +7 in case we pad
+  let charIndex = 0;
+
+  let buffer = 0;
+  let bufferBitSize = 0;
+
+  for (let i = 0; i < bytes.byteLength; i++) {
+    buffer = (buffer << 8) | bytes[i]; // Standard bitwise ops
+    bufferBitSize += 8;
+
+    while (bufferBitSize >= 5) {
+      const shift = bufferBitSize - 5;
+      const index = (buffer >> shift) & 0x1f; // 0x1f is mask for 5 bits
+      resultChars[charIndex++] = alphabet[index];
+      bufferBitSize -= 5;
+      // Mask out the bits we've used
+      buffer &= (1 << bufferBitSize) - 1;
+    }
+  }
+
+  if (bufferBitSize > 0) {
+    const index = (buffer << (5 - bufferBitSize)) & 0x1f;
+    resultChars[charIndex++] = alphabet[index];
+  }
+
+  if (padding === EncodingPadding.Include) {
+    const padLength = (8 - (charIndex % 8)) % 8;
+    for (let i = 0; i < padLength; i++) {
+      resultChars[charIndex++] = "=";
+    }
+  }
+
+  return resultChars.slice(0, charIndex).join("");
+}
+
+export function encodeBase64urlNoPadding(bytes: Uint8Array): string {
+  return Buffer.from(bytes).toString("base64url");
+}
+
+export function encodeBase32LowerCaseNoPadding(bytes: Uint8Array): string {
+  return encodeBase32_internal(
+    bytes,
+    base32LowerCaseAlphabet,
+    EncodingPadding.None,
+  );
+}
+
+export function encodeHexLowerCase(data: Uint8Array): string {
+  return Buffer.from(data).toString("hex");
+}
+
+export function encodeBase64(bytes: Uint8Array): string {
+  return Buffer.from(bytes).toString("base64");
+}
+
+export function decodeBase64urlIgnorePadding(encoded: string): Uint8Array {
+  return Buffer.from(encoded, "base64url");
+}
+
+
+
+================================================
+File: lib/google.ts
+================================================
+import { CodeChallengeMethod, OAuth2Client } from "./oauth-client";
+import type { OAuth2Tokens } from "./oauth-token";
+
+const tokenEndpoint = "https://oauth2.googleapis.com/token";
+
+export class Google {
+  private client: OAuth2Client;
+
+  constructor(clientId: string, clientSecret: string, redirectURI: string) {
+    this.client = new OAuth2Client(clientId, clientSecret, redirectURI);
+  }
+
+  public async createAuthorizationURL(
+    state: string,
+    codeVerifier: string,
+    scopes: string[],
+  ): Promise<URL> {
+    const url = await this.client.createAuthorizationURLWithPKCE(
+      "https://accounts.google.com/o/oauth2/v2/auth",
+      state,
+      CodeChallengeMethod.S256,
+      codeVerifier,
+      scopes,
+    );
+    return url;
+  }
+
+  public async validateAuthorizationCode(
+    code: string,
+    codeVerifier: string,
+  ): Promise<OAuth2Tokens> {
+    const tokens = await this.client.validateAuthorizationCode(
+      tokenEndpoint,
+      code,
+      codeVerifier,
+    );
+    return tokens;
+  }
+
+  public async refreshAccessToken(refreshToken: string): Promise<OAuth2Tokens> {
+    const tokens = await this.client.refreshAccessToken(
+      tokenEndpoint,
+      refreshToken,
+      [],
+    );
+    return tokens;
+  }
+
+  public async revokeToken(token: string): Promise<void> {
+    await this.client.revokeToken(
+      "https://oauth2.googleapis.com/revoke",
+      token,
+    );
+  }
+}
+
+
+
+================================================
+File: lib/oauth-client.ts
+================================================
+import { encodeBase64urlNoPadding } from "./encoding";
+import {
+  createOAuth2Request,
+  encodeBasicCredentials,
+  sendTokenRequest,
+  sendTokenRevocationRequest,
+} from "./oauth-req";
+import type { OAuth2Tokens } from "./oauth-token";
+import { sha256 } from "./sha";
+
+export enum CodeChallengeMethod {
+  S256 = 0,
+  Plain = 1,
+}
+
+export async function createS256CodeChallenge(
+  codeVerifier: string,
+): Promise<string> {
+  const codeChallengeBytes = await sha256(
+    new TextEncoder().encode(codeVerifier),
+  );
+  return encodeBase64urlNoPadding(codeChallengeBytes);
+}
+
+export class OAuth2Client {
+  public clientId: string;
+
+  private clientPassword: string | null;
+  private redirectURI: string | null;
+
+  constructor(
+    clientId: string,
+    clientPassword: string | null,
+    redirectURI: string | null,
+  ) {
+    this.clientId = clientId;
+    this.clientPassword = clientPassword;
+    this.redirectURI = redirectURI;
+  }
+
+  public createAuthorizationURL(
+    authorizationEndpoint: string,
+    state: string,
+    scopes: string[],
+  ): URL {
+    const url = new URL(authorizationEndpoint);
+    url.searchParams.set("response_type", "code");
+    url.searchParams.set("client_id", this.clientId);
+    if (this.redirectURI !== null) {
+      url.searchParams.set("redirect_uri", this.redirectURI);
+    }
+    url.searchParams.set("state", state);
+    if (scopes.length > 0) {
+      url.searchParams.set("scope", scopes.join(" "));
+    }
+    return url;
+  }
+
+  public async createAuthorizationURLWithPKCE(
+    authorizationEndpoint: string,
+    state: string,
+    codeChallengeMethod: CodeChallengeMethod,
+    codeVerifier: string,
+    scopes: string[],
+  ): Promise<URL> {
+    const url = new URL(authorizationEndpoint);
+    url.searchParams.set("response_type", "code");
+    url.searchParams.set("client_id", this.clientId);
+    if (this.redirectURI !== null) {
+      url.searchParams.set("redirect_uri", this.redirectURI);
+    }
+    url.searchParams.set("state", state);
+    if (codeChallengeMethod === CodeChallengeMethod.S256) {
+      const codeChallenge = await createS256CodeChallenge(codeVerifier);
+      url.searchParams.set("code_challenge_method", "S256");
+      url.searchParams.set("code_challenge", codeChallenge);
+    } else if (codeChallengeMethod === CodeChallengeMethod.Plain) {
+      url.searchParams.set("code_challenge_method", "plain");
+      url.searchParams.set("code_challenge", codeVerifier);
+    }
+    if (scopes.length > 0) {
+      url.searchParams.set("scope", scopes.join(" "));
+    }
+    return url;
+  }
+
+  public async validateAuthorizationCode(
+    tokenEndpoint: string,
+    code: string,
+    codeVerifier: string | null,
+  ): Promise<OAuth2Tokens> {
+    const body = new URLSearchParams();
+    body.set("grant_type", "authorization_code");
+    body.set("code", code);
+    if (this.redirectURI !== null) {
+      body.set("redirect_uri", this.redirectURI);
+    }
+    if (codeVerifier !== null) {
+      body.set("code_verifier", codeVerifier);
+    }
+    if (this.clientPassword === null) {
+      body.set("client_id", this.clientId);
+    }
+    const request = createOAuth2Request(tokenEndpoint, body);
+    if (this.clientPassword !== null) {
+      const encodedCredentials = encodeBasicCredentials(
+        this.clientId,
+        this.clientPassword,
+      );
+      request.headers.set("Authorization", `Basic ${encodedCredentials}`);
+    }
+    const tokens = await sendTokenRequest(request);
+    return tokens;
+  }
+
+  public async refreshAccessToken(
+    tokenEndpoint: string,
+    refreshToken: string,
+    scopes: string[],
+  ): Promise<OAuth2Tokens> {
+    const body = new URLSearchParams();
+    body.set("grant_type", "refresh_token");
+    body.set("refresh_token", refreshToken);
+    if (this.clientPassword === null) {
+      body.set("client_id", this.clientId);
+    }
+    if (scopes.length > 0) {
+      body.set("scope", scopes.join(" "));
+    }
+    const request = createOAuth2Request(tokenEndpoint, body);
+    if (this.clientPassword !== null) {
+      const encodedCredentials = encodeBasicCredentials(
+        this.clientId,
+        this.clientPassword,
+      );
+      request.headers.set("Authorization", `Basic ${encodedCredentials}`);
+    }
+    const tokens = await sendTokenRequest(request);
+    return tokens;
+  }
+
+  public async revokeToken(
+    tokenRevocationEndpoint: string,
+    token: string,
+  ): Promise<void> {
+    const body = new URLSearchParams();
+    body.set("token", token);
+    if (this.clientPassword === null) {
+      body.set("client_id", this.clientId);
+    }
+    const request = createOAuth2Request(tokenRevocationEndpoint, body);
+    if (this.clientPassword !== null) {
+      const encodedCredentials = encodeBasicCredentials(
+        this.clientId,
+        this.clientPassword,
+      );
+      request.headers.set("Authorization", `Basic ${encodedCredentials}`);
+    }
+    await sendTokenRevocationRequest(request);
+  }
+}
+
+
+
+================================================
+File: lib/oauth-req.ts
+================================================
+import { encodeBase64 } from "./encoding";
+import { OAuth2Tokens } from "./oauth-token";
+
+export class OAuth2RequestError extends Error {
+  public code: string;
+  public description: string | null;
+  public uri: string | null;
+  public state: string | null;
+
+  constructor(
+    code: string,
+    description: string | null,
+    uri: string | null,
+    state: string | null,
+  ) {
+    super(`OAuth request error: ${code}`);
+    this.code = code;
+    this.description = description;
+    this.uri = uri;
+    this.state = state;
+  }
+}
+
+export class OAuthFetchError extends Error {
+  constructor(cause: unknown) {
+    super("Failed to send request", {
+      cause,
+    });
+  }
+}
+
+export function createOAuth2Request(
+  endpoint: string,
+  body: URLSearchParams,
+): Request {
+  const bodyBytes = new TextEncoder().encode(body.toString());
+  const request = new Request(endpoint, {
+    method: "POST",
+    body: bodyBytes,
+  });
+  request.headers.set("Content-Type", "application/x-www-form-urlencoded");
+  request.headers.set("Accept", "application/json");
+  request.headers.set("User-Agent", "arnnvv");
+  request.headers.set("Content-Length", bodyBytes.byteLength.toString());
+  return request;
+}
+
+export function encodeBasicCredentials(
+  username: string,
+  password: string,
+): string {
+  const bytes = new TextEncoder().encode(`${username}:${password}`);
+  return encodeBase64(bytes);
+}
+
+export async function sendTokenRequest(
+  request: Request,
+): Promise<OAuth2Tokens> {
+  let response: Response;
+  try {
+    response = await fetch(request);
+  } catch (e) {
+    throw new OAuthFetchError(e);
+  }
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error("Failed to parse response body");
+  }
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Unexpected response body data");
+  }
+  if ("error" in data && typeof data.error === "string") {
+    const error = createOAuth2RequestError(data);
+    throw error;
+  }
+  return new OAuth2Tokens(data);
+}
+
+function createOAuth2RequestError(result: object): OAuth2RequestError {
+  let code: string;
+  if ("error" in result && typeof result.error === "string") {
+    code = result.error;
+  } else {
+    throw new Error("Invalid error response");
+  }
+  let description: string | null = null;
+  let uri: string | null = null;
+  let state: string | null = null;
+  if (
+    "error_description" in result &&
+    typeof result.error_description === "string"
+  ) {
+    description = result.error_description;
+  }
+  if ("error_uri" in result && typeof result.error_uri === "string") {
+    uri = result.error_uri;
+  }
+  if ("state" in result && typeof result.state === "string") {
+    state = result.state;
+  }
+  return new OAuth2RequestError(code, description, uri, state);
+}
+
+export async function sendTokenRevocationRequest(
+  request: Request,
+): Promise<void> {
+  let response: Response;
+  try {
+    response = await fetch(request);
+  } catch (e) {
+    throw new OAuthFetchError(e);
+  }
+  if (response.ok) {
+    if (response.body !== null) {
+      await response.body.cancel();
+    }
+    return;
+  }
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error("Failed to parse response body");
+  }
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Unexpected response body data");
+  }
+  if ("error" in data && typeof data.error === "string") {
+    const error = createOAuth2RequestError(data);
+    throw error;
+  }
+}
+
+
+
+================================================
+File: lib/oauth-token.ts
+================================================
+export class OAuth2Tokens {
+  public data: object;
+
+  constructor(data: object) {
+    this.data = data;
+  }
+
+  public tokenType(): string {
+    if ("token_type" in this.data && typeof this.data.token_type === "string") {
+      return this.data.token_type;
+    }
+    throw new Error("Missing or invalid 'token_type' field");
+  }
+
+  public accessToken(): string {
+    if (
+      "access_token" in this.data &&
+      typeof this.data.access_token === "string"
+    ) {
+      return this.data.access_token;
+    }
+    throw new Error("Missing or invalid 'access_token' field");
+  }
+
+  public accessTokenExpiresInSeconds(): number {
+    if ("expires_in" in this.data && typeof this.data.expires_in === "number") {
+      return this.data.expires_in;
+    }
+    throw new Error("Missing or invalid 'expires_in' field");
+  }
+
+  public accessTokenExpiresAt(): Date {
+    return new Date(Date.now() + this.accessTokenExpiresInSeconds() * 1000);
+  }
+
+  public hasRefreshToken(): boolean {
+    return (
+      "refresh_token" in this.data &&
+      typeof this.data.refresh_token === "string"
+    );
+  }
+
+  public refreshToken(): string {
+    if (
+      "refresh_token" in this.data &&
+      typeof this.data.refresh_token === "string"
+    ) {
+      return this.data.refresh_token;
+    }
+    throw new Error("Missing or invalid 'refresh_token' field");
+  }
+
+  public hasScopes(): boolean {
+    return "scope" in this.data && typeof this.data.scope === "string";
+  }
+
+  public scopes(): string[] {
+    if ("scope" in this.data && typeof this.data.scope === "string") {
+      return this.data.scope.split(" ");
+    }
+    throw new Error("Missing or invalid 'scope' field");
+  }
+
+  public idToken(): string {
+    if ("id_token" in this.data && typeof this.data.id_token === "string") {
+      return this.data.id_token;
+    }
+    throw new Error("Missing or invalid field 'id_token'");
+  }
+}
+
+
+
+================================================
+File: lib/oauth.ts
+================================================
+import {
+  decodeBase64urlIgnorePadding,
+  encodeBase64urlNoPadding,
+} from "./encoding";
+import { Google } from "./google";
+
+export function generateState(): string {
+  const randomValues = new Uint8Array(32);
+  crypto.getRandomValues(randomValues);
+  return encodeBase64urlNoPadding(randomValues);
+}
+
+export function decodeIdToken(idToken: string): object {
+  try {
+    const parts = idToken.split(".");
+    if (parts.length !== 3) {
+      throw new Error("Invalid Token");
+    }
+    let jsonPayload: string;
+    try {
+      jsonPayload = new TextDecoder().decode(
+        decodeBase64urlIgnorePadding(parts[1]),
+      );
+    } catch {
+      throw new Error("Invalid Token: Invalid base64url encoding");
+    }
+    let payload: unknown;
+    try {
+      payload = JSON.parse(jsonPayload);
+    } catch {
+      throw new Error("Invalid Token: Invalid JSON encoding");
+    }
+    if (typeof payload !== "object" || payload === null) {
+      throw new Error("Invalid Token: Invalid payload");
+    }
+    return payload as object;
+  } catch (e) {
+    throw new Error("Invalid ID token", {
+      cause: e,
+    });
+  }
+}
+
+const getOAuthCredentials = (): {
+  clientId: string;
+  clientSecret: string;
+  redirectURL: string;
+} => {
+  const clientIdEnv = process.env.GOOGLE_CLIENT_ID;
+  const clientSecretEnv = process.env.GOOGLE_CLIENT_SECRET;
+  const redirectUrlEnv = process.env.GOOGLE_REDIRECT_URL;
+
+  if (!clientIdEnv || clientIdEnv.length === 0)
+    throw new Error("GOOGLE_CLIENT_ID missing");
+
+  if (!clientSecretEnv || clientSecretEnv.length === 0)
+    throw new Error("GOOGLE_CLIENT_SECRET missing");
+
+  if (!redirectUrlEnv || redirectUrlEnv.length === 0)
+    throw new Error("GOOGLE_REDIRECT_URL missing");
+
+  return {
+    clientId: clientIdEnv,
+    clientSecret: clientSecretEnv,
+    redirectURL: redirectUrlEnv,
+  };
+};
+
+export const google = new Google(
+  getOAuthCredentials().clientId,
+  getOAuthCredentials().clientSecret,
+  getOAuthCredentials().redirectURL,
+);
+
+
+
+================================================
+File: lib/parser.ts
+================================================
+export class ObjectParser {
+  private value: unknown;
+
+  constructor(value: unknown) {
+    this.value = value;
+  }
+
+  public has(...path: string[]): boolean {
+    if (path.length < 1) {
+      throw new TypeError("Invalid path");
+    }
+    let value = this.value;
+    for (let i = 0; i < path.length; i++) {
+      if (typeof value !== "object" || value === null) {
+        return false;
+      }
+      if (!(path[i] in value)) {
+        return false;
+      }
+      value = value[path[i] as keyof typeof value];
+    }
+    return true;
+  }
+
+  public get(...path: string[]): unknown {
+    if (path.length < 1) {
+      throw new TypeError("Invalid path");
+    }
+    let value = this.value;
+    for (let i = 0; i < path.length; i++) {
+      if (typeof value !== "object" || value === null) {
+        throw new Error(
+          `Value in path ${path.slice(0, i + 1).join(".")} is not an object`,
+        );
+      }
+      if (!(path[i] in value)) {
+        throw new Error(
+          `Path ${path.slice(0, i + 1).join(".")} does not exist`,
+        );
+      }
+      value = value[path[i] as keyof typeof value];
+    }
+    return value;
+  }
+
+  public isString(...path: string[]): boolean {
+    return typeof this.get(...path) === "string";
+  }
+
+  public getString(...path: string[]): string {
+    const value = this.get(...path);
+    if (typeof value !== "string") {
+      throw new Error(`Value in path ${path.join(".")} is not a string`);
+    }
+    return value;
+  }
+
+  public isNumber(...path: string[]): boolean {
+    return typeof this.get(...path) === "number";
+  }
+
+  public getNumber(...path: string[]): number {
+    const value = this.get(...path);
+    if (typeof value !== "number") {
+      throw new Error(`Value in path ${path.join(".")} is not a string`);
+    }
+    return value;
+  }
+
+  public isBoolean(...path: string[]): boolean {
+    return typeof this.get(...path) === "boolean";
+  }
+
+  public getBoolean(...path: string[]): boolean {
+    const value = this.get(...path);
+    if (typeof value !== "boolean") {
+      throw new Error(`Value in path ${path.join(".")} is not a boolean`);
+    }
+    return value;
+  }
+
+  public isBigInt(...path: string[]): boolean {
+    return typeof this.get(...path) === "bigint";
+  }
+
+  public getBigInt(...path: string[]): bigint {
+    const value = this.get(...path);
+    if (typeof value !== "bigint") {
+      throw new Error(`Value in path ${path.join(".")} is not a bigint`);
+    }
+    return value;
+  }
+
+  public isObject(...path: string[]): boolean {
+    const value = this.get(...path);
+    return typeof value === "object" && value !== null;
+  }
+
+  public getObject(...path: string[]): object {
+    const value = this.get(...path);
+    if (typeof value !== "object" || value === null) {
+      throw new Error(`Value in path ${path.join(".")} is not a object`);
+    }
+    return value;
+  }
+
+  public isArray(...path: string[]): boolean {
+    return Array.isArray(this.get(...path));
+  }
+
+  public getArray(...path: string[]): unknown[] {
+    const value = this.get(...path);
+    if (!Array.isArray(value)) {
+      throw new Error(`Value in path ${path.join(".")} is not a object`);
+    }
+    return value;
+  }
+
+  public isNull(...path: string[]): boolean {
+    const value = this.get(...path);
+    return value === null;
+  }
+
+  public isUndefined(...path: string[]): boolean {
+    const value = this.get(...path);
+    return value === undefined;
+  }
+
+  public createParser(...path: string[]): ObjectParser {
+    return new ObjectParser(this.getObject(...path));
+  }
+}
+
+
+
+================================================
+File: lib/rate-limit.ts
+================================================
+export class TokenBucket<_Key> {
+  public max: number;
+  public refillIntervalSeconds: number;
+
+  constructor(max: number, refillIntervalSeconds: number) {
+    this.max = max;
+    this.refillIntervalSeconds = refillIntervalSeconds;
+  }
+
+  private storage = new Map<_Key, Bucket>();
+
+  public check(key: _Key, cost: number): boolean {
+    const bucket = this.storage.get(key) ?? null;
+    if (bucket === null) {
+      return true;
+    }
+    const now = Date.now();
+    const refill = Math.floor(
+      (now - bucket.refilledAt) / (this.refillIntervalSeconds * 1000),
+    );
+    if (refill > 0) {
+      return Math.min(bucket.count + refill, this.max) >= cost;
+    }
+    return bucket.count >= cost;
+  }
+
+  public consume(key: _Key, cost: number): boolean {
+    let bucket = this.storage.get(key) ?? null;
+    const now = Date.now();
+    if (bucket === null) {
+      bucket = {
+        count: this.max - cost,
+        refilledAt: now,
+      };
+      this.storage.set(key, bucket);
+      return true;
+    }
+    const refill = Math.floor(
+      (now - bucket.refilledAt) / (this.refillIntervalSeconds * 1000),
+    );
+    if (refill > 0) {
+      bucket.count = Math.min(bucket.count + refill, this.max);
+      bucket.refilledAt = now;
+    }
+    if (bucket.count < cost) {
+      this.storage.set(key, bucket);
+      return false;
+    }
+    bucket.count -= cost;
+    this.storage.set(key, bucket);
+    return true;
+  }
+}
+
+interface Bucket {
+  count: number;
+  refilledAt: number;
+}
+
+
+
+================================================
+File: lib/requests.ts
+================================================
+import { headers } from "next/headers";
+import { TokenBucket } from "./rate-limit";
+
+export const globalBucket = new TokenBucket<string>(100, 1);
+
+export async function globalGETRateLimit(): Promise<boolean> {
+  const clientIP = (await headers()).get("X-Forwarded-For");
+  if (clientIP === null) return true;
+
+  return globalBucket.consume(clientIP, 1);
+}
+
+export async function globalPOSTRateLimit(): Promise<boolean> {
+  const clientIP = (await headers()).get("X-Forwarded-For");
+  if (clientIP === null) return true;
+
+  return globalBucket.consume(clientIP, 3);
+}
+
+
+
+================================================
+File: lib/session.ts
+================================================
+import { cookies } from "next/headers";
+
+export async function setSessionTokenCookie(
+  token: string,
+  expiresAt: Date,
+): Promise<void> {
+  (await cookies()).set("session", token, {
+    httpOnly: true,
+    path: "/",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    expires: expiresAt,
+  });
+}
+
+export async function deleteSessionTokenCookie(): Promise<void> {
+  (await cookies()).set("session", "", {
+    httpOnly: true,
+    path: "/",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 0,
+  });
+}
+
+
+
+================================================
+File: lib/sha.ts
+================================================
+export async function sha256(data: Uint8Array): Promise<Uint8Array> {
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return new Uint8Array(hashBuffer);
+}
+
+
+
+================================================
+File: lib/user.ts
+================================================
+import { DatabaseError } from "pg";
+import { db } from "./db";
+import type { User } from "./db/types";
+
+export async function createUser(
+  googleId: string,
+  email: string,
+  name: string,
+  picture: string,
+): Promise<User> {
+  try {
+    const res = await db.query<User>(
+      `INSERT INTO users (google_id, email, name, picture)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, google_id, email, name, picture`,
+      [googleId, email, name, picture],
+    );
+
+    return res.rows[0];
+  } catch (error) {
+    // 23505 = unique_violation
+    if (error instanceof DatabaseError && error.code === "23505") {
+      console.error("Unique constraint violation:", error.detail);
+      throw new Error("A user with this Google ID or email already exists");
+    }
+    throw error;
+  }
+}
+
+export async function getUserFromGoogleId(
+  googleId: string,
+): Promise<User | null> {
+  try {
+    const res = await db.query<User>(
+      `SELECT id, google_id, email, name, picture
+       FROM users
+       WHERE google_id = $1
+       LIMIT 1`,
+      [googleId],
+    );
+
+    const user = res.rows[0];
+
+    return user ?? null;
+  } catch (error) {
+    console.error("Error fetching user by Google ID:", error);
+    throw error;
+  }
+}
+
+
+
+================================================
+File: lib/utils.ts
+================================================
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs));
+}
+
+
+
+================================================
+File: lib/db/index.ts
+================================================
+import { Pool } from "pg";
+
+const getDB = (): string =>
+  process.env.DATABASE_URL ??
+  ((): never => {
+    throw new Error("Missing DATABASE_URL");
+  })();
+
+export const db = new Pool({
+  connectionString: getDB(),
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: true }
+      : false,
+});
+
+
+
+================================================
+File: lib/db/schema.sql
+================================================
+CREATE TABLE "sessions" (
+    "id" text PRIMARY KEY NOT NULL,
+    "user_id" integer NOT NULL,
+    "expires_at" timestamp with time zone NOT NULL
+);
+
+CREATE TABLE "users" (
+    "id" serial PRIMARY KEY NOT NULL,
+    "google_id" text NOT NULL,
+    "email" varchar NOT NULL,
+    "name" text NOT NULL,
+    "picture" text NOT NULL,
+    CONSTRAINT "users_google_id_unique" UNIQUE("google_id"),
+    CONSTRAINT "users_email_unique" UNIQUE("email")
+);
+
+ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_users_id_fk" 
+    FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") 
+    ON DELETE no action ON UPDATE no action;
+
+CREATE INDEX "session_user_id_idx" ON "sessions" USING btree ("user_id");
+CREATE INDEX "google_id_idx" ON "users" USING btree ("google_id");
+CREATE INDEX "email_idx" ON "users" USING btree ("email");
+
+
+
+================================================
+File: lib/db/types.ts
+================================================
+export type User = {
+  id: number;
+  google_id: string;
+  email: string;
+  name: string;
+  picture: string;
+};
+
+export type Session = {
+  id: string;
+  user_id: number;
+  expires_at: Date;
+};
+
+
