@@ -27,7 +27,7 @@ export async function createSession(
     expires_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
   };
   await db.query(
-    "INSERT INTO oauthtry_sessions (id, user_id, expires_at) VALUES ($1, $2, $3)",
+    "INSERT INTO sessions (id, user_id, expires_at) VALUES ($1, $2, $3)",
     [session.id, session.user_id, session.expires_at],
   );
   return session;
@@ -45,8 +45,8 @@ export async function validateSessionToken(
     `SELECT
        u.id as u_id, u.google_id, u.email, u.name, u.picture,
        s.id as s_id, s.user_id, s.expires_at
-     FROM oauthtry_sessions s
-     INNER JOIN oauthtry_users u ON s.user_id = u.id
+     FROM sessions s
+     INNER JOIN users u ON s.user_id = u.id
      WHERE s.id = $1
      LIMIT 1`,
     [sessionId],
@@ -75,7 +75,7 @@ export async function validateSessionToken(
   const expiresAtMs = session.expires_at.getTime();
 
   if (now >= expiresAtMs) {
-    await db.query("DELETE FROM oauthtry_sessions WHERE id = $1", [session.id]);
+    await db.query("DELETE FROM sessions WHERE id = $1", [session.id]);
     return { session: null, user: null };
   }
 
@@ -83,10 +83,10 @@ export async function validateSessionToken(
   const fifteenDays = 1000 * 60 * 60 * 24 * 15;
   if (now >= expiresAtMs - fifteenDays) {
     const newExpiresAt = new Date(now + 1000 * 60 * 60 * 24 * 30);
-    await db.query(
-      "UPDATE oauthtry_sessions SET expires_at = $1 WHERE id = $2",
-      [newExpiresAt, session.id],
-    );
+    await db.query("UPDATE sessions SET expires_at = $1 WHERE id = $2", [
+      newExpiresAt,
+      session.id,
+    ]);
     session.expires_at = newExpiresAt;
   }
 
@@ -94,5 +94,5 @@ export async function validateSessionToken(
 }
 
 export async function invalidateSession(sessionId: string): Promise<void> {
-  await db.query("DELETE FROM oauthtry_sessions WHERE id = $1", [sessionId]);
+  await db.query("DELETE FROM sessions WHERE id = $1", [sessionId]);
 }

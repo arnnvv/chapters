@@ -10,7 +10,7 @@ export async function createUser(
 ): Promise<User> {
   try {
     const res = await db.query<User>(
-      `INSERT INTO oauthtry_users (google_id, email, name, picture)
+      `INSERT INTO users (google_id, email, name, picture)
        VALUES ($1, $2, $3, $4)
        RETURNING id, google_id, email, name, picture`,
       [googleId, email, name, picture],
@@ -33,7 +33,7 @@ export async function getUserFromGoogleId(
   try {
     const res = await db.query<User>(
       `SELECT id, google_id, email, name, picture
-       FROM oauthtry_users
+       FROM users
        WHERE google_id = $1
        LIMIT 1`,
       [googleId],
