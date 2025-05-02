@@ -1,18 +1,20 @@
 "use client";
+
 import type { FormEvent } from "react";
 
-interface ContentInputProps {
-  onSubmit: (text: string, background: string) => void; // Modified onSubmit
+export function ContentSubmissionForm({
+  onSubmit,
+  isLoading,
+}: {
+  onSubmit: (text: string, background: string) => void;
   isLoading: boolean;
-}
-
-export function ContentInput({ onSubmit, isLoading }: ContentInputProps) {
+}) {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const text = formData.get("textContent") as string;
-    const background = formData.get("userBackground") as string; // Get background
-    onSubmit(text, background); // Pass both
+    const background = formData.get("userBackground") as string;
+    onSubmit(text, background);
   };
 
   return (
