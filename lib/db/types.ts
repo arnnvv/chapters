@@ -30,6 +30,7 @@ export type ChapterIndexItemDB = {
   conversation_id: number;
   chapter_number: number;
   title: string;
+  generated_content: string | null;
 };
 
 export type Message = {

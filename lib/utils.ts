@@ -1,6 +1,6 @@
 import type { QAItem } from "@/app/api/ask-question/route";
 import { clsx, type ClassValue } from "clsx";
-import { createHash } from "node:crypto";
+import { createHash } from "crypto";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]): string {

@@ -12,7 +12,7 @@ import { globalGETRateLimit, globalPOSTRateLimit } from "@/lib/requests";
 import { deleteSessionTokenCookie } from "@/lib/session";
 import type {
   Conversation,
-  ChapterIndexItem,
+  ChapterIndexItem, // Keep simple type for UI list if needed
   ChapterIndexItemDB,
   Message,
 } from "@/lib/db/types";
@@ -106,7 +106,7 @@ export const getUserConversations = async (): Promise<
 
 export interface ConversationDetails {
   conversation: Omit<Conversation, "chapter_index">;
-  index: ChapterIndexItem[];
+  index: Array<ChapterIndexItem & { generated_content: string | null }>; // Updated index type
   messages: QAItem[];
 }
 
@@ -132,10 +132,8 @@ export const getConversationDetails = async (
 
   const client = await db.connect();
   try {
-    // Fetch conversation, index, and messages within a transaction for consistency
     await client.query("BEGIN");
 
-    // Fetch conversation basics and verify ownership
     const convResult = await client.query<Conversation>(
       `SELECT id, user_id, original_content, user_background, created_at
        FROM conversations
@@ -149,20 +147,21 @@ export const getConversationDetails = async (
     }
     const conversationData = convResult.rows[0];
 
-    // Fetch index items
     const indexResult = await client.query<ChapterIndexItemDB>(
-      `SELECT chapter_number, title
+      `SELECT chapter_number, title, generated_content
        FROM chapter_index_items
        WHERE conversation_id = $1
        ORDER BY chapter_number ASC`,
       [conversationId],
     );
-    const indexItems: ChapterIndexItem[] = indexResult.rows.map((row) => ({
+    const indexItems: Array<
+      ChapterIndexItem & { generated_content: string | null }
+    > = indexResult.rows.map((row) => ({
       chapter: row.chapter_number,
       title: row.title,
+      generated_content: row.generated_content,
     }));
 
-    // Fetch messages (QA history)
     const messagesResult = await client.query<Message>(
       `SELECT sender, content
         FROM messages
@@ -170,7 +169,7 @@ export const getConversationDetails = async (
         ORDER BY created_at ASC`,
       [conversationId],
     );
-    // Map messages to QAItem structure expected by the client state
+
     const qaHistory: QAItem[] = [];
     let currentQuestion: string | null = null;
     for (const msg of messagesResult.rows) {
@@ -178,26 +177,26 @@ export const getConversationDetails = async (
         currentQuestion = msg.content;
       } else if (msg.sender === "ai" && currentQuestion !== null) {
         qaHistory.push({ question: currentQuestion, answer: msg.content });
-        currentQuestion = null; // Reset for the next pair
+        currentQuestion = null;
       }
     }
 
-    await client.query("COMMIT"); // Commit the transaction
+    await client.query("COMMIT");
 
     return {
       success: true,
       details: {
         conversation: conversationData,
         index: indexItems,
-        messages: qaHistory, // Return the processed QA history
+        messages: qaHistory,
       },
     };
   } catch (error) {
-    await client.query("ROLLBACK"); // Rollback on error
+    await client.query("ROLLBACK");
     console.error("Error fetching conversation details:", error);
     const message = error instanceof Error ? error.message : "Database error.";
     return { success: false, error: message };
   } finally {
-    client.release(); // Ensure client is released
+    client.release();
   }
 };

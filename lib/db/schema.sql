@@ -29,6 +29,7 @@ CREATE TABLE chapter_index_items (
     conversation_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
     chapter_number INTEGER NOT NULL,
     title TEXT NOT NULL,
+    generated_content TEXT NULL,
     CONSTRAINT uq_chapter_index_items_conversation_chapter UNIQUE (conversation_id, chapter_number)
 );
 CREATE INDEX idx_chapter_index_items_conversation_id ON chapter_index_items (conversation_id);

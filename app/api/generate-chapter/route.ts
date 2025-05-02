@@ -86,8 +86,6 @@ export async function POST(request: Request) {
 
   const client = await db.connect();
   try {
-    await client.query("BEGIN");
-
     const convCheckResult = await client.query<{ user_id: number }>(
       "SELECT user_id FROM conversations WHERE id = $1 LIMIT 1",
       [conversationId],
@@ -99,35 +97,41 @@ export async function POST(request: Request) {
       throw new Error("Conversation not found or access denied");
     }
 
-    const indexResult = await client.query<ChapterIndexItemDB>(
-      `SELECT chapter_number, title
+    const chapterInfoResult = await client.query<ChapterIndexItemDB>(
+      `SELECT chapter_number, title, generated_content
        FROM chapter_index_items
-       WHERE conversation_id = $1
-       ORDER BY chapter_number ASC`,
-      [conversationId],
+       WHERE conversation_id = $1 AND chapter_number = $2
+       LIMIT 1`,
+      [conversationId, targetChapterNumber],
     );
 
-    if (indexResult.rowCount === 0) {
+    if (chapterInfoResult.rowCount === 0) {
       throw new Error(
-        `No index items found for conversation ${conversationId}`,
+        `Chapter number ${targetChapterNumber} not found for conversation ${conversationId}.`,
       );
     }
+
+    const chapterInfo = chapterInfoResult.rows[0];
+
+    if (chapterInfo.generated_content !== null) {
+      client.release();
+      return NextResponse.json({
+        chapterContent: chapterInfo.generated_content,
+      });
+    }
+
+    const indexResult = await client.query<ChapterIndexItemDB>(
+      `SELECT chapter_number, title
+         FROM chapter_index_items
+         WHERE conversation_id = $1
+         ORDER BY chapter_number ASC`,
+      [conversationId],
+    );
 
     const index: ChapterIndexItem[] = indexResult.rows.map((row) => ({
       chapter: row.chapter_number,
       title: row.title,
     }));
-
-    const targetChapterInfo = index.find(
-      (item) => item.chapter === targetChapterNumber,
-    );
-    if (!targetChapterInfo) {
-      throw new Error(
-        `Chapter number ${targetChapterNumber} not found in the fetched index for conversation ${conversationId}.`,
-      );
-    }
-
-    await client.query("COMMIT");
 
     const indexJsonString = JSON.stringify(index, null, 2);
     let previousChaptersContext = "No preceding chapters generated yet.";
@@ -135,6 +139,7 @@ export async function POST(request: Request) {
       .map((numStr) => Number.parseInt(numStr, 10))
       .filter((num) => !Number.isNaN(num) && num < targetChapterNumber)
       .sort((a, b) => a - b);
+
     if (chapterNumbers.length > 0) {
       const relevantTitles: Record<number, string> = {};
       for (const item of index) {
@@ -156,7 +161,7 @@ export async function POST(request: Request) {
     const prompt = `
 Act as an expert professor and clear teacher.
 Learner Background: - "${userBackground}"
-Your Task: - Teach only **Chapter ${targetChapterNumber}**: "${targetChapterInfo.title}"
+Your Task: - Teach only **Chapter ${targetChapterNumber}**: "${chapterInfo.title}"
 - Use the **Full Document** (see below) to explain the chapter's content.
 - Use these references: - **Index**: ${indexJsonString} - **Summaries of earlier chapters**: ${previousChaptersContext}
 Instructions: - Do not copy text — explain and teach.
@@ -171,14 +176,23 @@ Full Document:
 ---
 ${fullContent}
 ---
-Your Explanation for Chapter ${targetChapterNumber} ("${targetChapterInfo.title}"):
+Your Explanation for Chapter ${targetChapterNumber} ("${chapterInfo.title}"):
 `;
 
-    const chapterContent: string = await callGemini(prompt);
-    const responseBody: GenerateChapterResponse = { chapterContent };
+    const newlyGeneratedContent: string = await callGemini(prompt);
+
+    await client.query(
+      `UPDATE chapter_index_items
+         SET generated_content = $1
+         WHERE conversation_id = $2 AND chapter_number = $3`,
+      [newlyGeneratedContent, conversationId, targetChapterNumber],
+    );
+
+    const responseBody: GenerateChapterResponse = {
+      chapterContent: newlyGeneratedContent,
+    };
     return NextResponse.json(responseBody);
   } catch (error) {
-    await client.query("ROLLBACK");
     console.error(
       `Error generating content for chapter ${targetChapterNumber}:`,
       error,

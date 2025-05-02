@@ -156,6 +156,7 @@ export function Chat({
       userBackground,
       currentChapter,
       conversationId,
+      chapterIndex, // Added dependency
     ],
   );
 
@@ -192,13 +193,17 @@ export function Chat({
 
       const data = (await response.json()) as GenerateIndexApiResponse;
       if (data.index && data.index.length > 0 && data.conversationId) {
-        setChapterIndex(data.index);
+        const simpleIndex = data.index.map((item) => ({
+          chapter: item.chapter,
+          title: item.title,
+        }));
+        setChapterIndex(simpleIndex);
         setConversationId(data.conversationId);
         const newListResult = await getUserConversations();
         if (newListResult.success)
           setConversationList(newListResult.conversations);
 
-        await fetchChapterContent(1, data.index);
+        await fetchChapterContent(1, simpleIndex); // Pass simple index
       } else {
         setError("Could not generate index or conversation record.");
         toast.error("Could not generate chapter index.");
@@ -232,16 +237,31 @@ export function Chat({
       setConversationId(conversation.id);
       setOriginalContent(conversation.original_content);
       setUserBackground(conversation.user_background);
-      setChapterIndex(index);
+
+      const simpleIndex = index.map((item) => ({
+        chapter: item.chapter,
+        title: item.title,
+      }));
+      setChapterIndex(simpleIndex);
       setQaHistory(messages);
 
-      setGeneratedChapters({});
+      const initialChapters = index.reduce(
+        (acc, item) => {
+          if (item.generated_content) {
+            acc[item.chapter] = item.generated_content;
+          }
+          return acc;
+        },
+        {} as Record<number, string>,
+      );
+      setGeneratedChapters(initialChapters);
+
       setCurrentChapter(0);
       setDisplayedChapterContent("");
       setIsContentSubmitted(true);
 
       if (index.length > 0) {
-        await fetchChapterContent(1, index);
+        await fetchChapterContent(1, simpleIndex); // Pass simple index
       } else {
         setDisplayedChapterContent("No chapters found for this conversation.");
         setCurrentChapter(0);
@@ -314,18 +334,18 @@ export function Chat({
 
   const handleNext = () => {
     if (currentChapter < chapterIndex.length) {
-      fetchChapterContent(currentChapter + 1, chapterIndex);
+      fetchChapterContent(currentChapter + 1, chapterIndex); // Pass simple index
     }
   };
 
   const handlePrev = () => {
     if (currentChapter > 1) {
-      fetchChapterContent(currentChapter - 1, chapterIndex);
+      fetchChapterContent(currentChapter - 1, chapterIndex); // Pass simple index
     }
   };
 
   const handleChapterSelect = (chapterNumber: number) => {
-    fetchChapterContent(chapterNumber, chapterIndex);
+    fetchChapterContent(chapterNumber, chapterIndex); // Pass simple index
   };
 
   const currentChapterTitle =
@@ -334,7 +354,6 @@ export function Chat({
 
   const isAnythingLoading =
     isIndexing || isGeneratingChapter || isAnswering || isLoadingDetails;
-  const isOverallDisabled = isAnythingLoading || isLoadingConversations;
 
   return (
     <div className="flex h-screen bg-background text-foreground relative">
