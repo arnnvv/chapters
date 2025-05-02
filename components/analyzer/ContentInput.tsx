@@ -1,5 +1,5 @@
 "use client";
-import type { ChangeEvent, FormEvent } from "react";
+import type { FormEvent } from "react";
 
 interface ContentInputProps {
   onSubmit: (text: string, background: string) => void; // Modified onSubmit

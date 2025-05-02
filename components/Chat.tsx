@@ -156,7 +156,7 @@ export function Chat({
       userBackground,
       currentChapter,
       conversationId,
-      chapterIndex, // Added dependency
+      chapterIndex,
     ],
   );
 
@@ -203,7 +203,7 @@ export function Chat({
         if (newListResult.success)
           setConversationList(newListResult.conversations);
 
-        await fetchChapterContent(1, simpleIndex); // Pass simple index
+        await fetchChapterContent(1, simpleIndex);
       } else {
         setError("Could not generate index or conversation record.");
         toast.error("Could not generate chapter index.");
@@ -261,7 +261,7 @@ export function Chat({
       setIsContentSubmitted(true);
 
       if (index.length > 0) {
-        await fetchChapterContent(1, simpleIndex); // Pass simple index
+        await fetchChapterContent(1, simpleIndex);
       } else {
         setDisplayedChapterContent("No chapters found for this conversation.");
         setCurrentChapter(0);
@@ -334,18 +334,18 @@ export function Chat({
 
   const handleNext = () => {
     if (currentChapter < chapterIndex.length) {
-      fetchChapterContent(currentChapter + 1, chapterIndex); // Pass simple index
+      fetchChapterContent(currentChapter + 1, chapterIndex);
     }
   };
 
   const handlePrev = () => {
     if (currentChapter > 1) {
-      fetchChapterContent(currentChapter - 1, chapterIndex); // Pass simple index
+      fetchChapterContent(currentChapter - 1, chapterIndex);
     }
   };
 
   const handleChapterSelect = (chapterNumber: number) => {
-    fetchChapterContent(chapterNumber, chapterIndex); // Pass simple index
+    fetchChapterContent(chapterNumber, chapterIndex);
   };
 
   const currentChapterTitle =
@@ -417,22 +417,28 @@ export function Chat({
         )}
 
         {isContentSubmitted && chapterIndex.length > 0 && (
-          <>
-            <ChapterDisplay
-              title={currentChapterTitle}
-              content={displayedChapterContent}
-              isLoading={isGeneratingChapter || isLoadingDetails}
-            />
-            {chapterIndex.length > 0 && (
-              <Navigation
-                currentChapter={currentChapter}
-                totalChapters={chapterIndex.length}
-                onNext={handleNext}
-                onPrev={handlePrev}
+          <div className="flex flex-col min-h-[calc(100vh-12rem)]">
+            <div className="flex-grow flex flex-col">
+              <ChapterDisplay
+                title={currentChapterTitle}
+                content={displayedChapterContent}
                 isLoading={isGeneratingChapter || isLoadingDetails}
               />
-            )}
-          </>
+            </div>
+
+            {/* Navigation now positioned at the absolute bottom of content */}
+            <div className="mt-auto pt-6">
+              {chapterIndex.length > 0 && (
+                <Navigation
+                  currentChapter={currentChapter}
+                  totalChapters={chapterIndex.length}
+                  onNext={handleNext}
+                  onPrev={handlePrev}
+                  isLoading={isGeneratingChapter || isLoadingDetails}
+                />
+              )}
+            </div>
+          </div>
         )}
 
         {(isIndexing || isLoadingDetails) && (
@@ -445,7 +451,7 @@ export function Chat({
       </div>
 
       {isContentSubmitted && (
-        <aside className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0 h-screen flex flex-col">
+        <aside className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0 h-screen flex flex-col border-l border-border">
           <QASidebar
             history={qaHistory}
             onAskQuestion={handleAskQuestion}

@@ -1,4 +1,3 @@
-// components/analyzer/IndexDrawer.tsx
 "use client";
 
 import {
@@ -14,19 +13,17 @@ import { Menu, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ChapterIndexItem } from "@/lib/db/types";
 
-interface IndexDrawerProps {
-  index: ChapterIndexItem[];
-  currentChapter: number;
-  onChapterSelect: (chapterNumber: number) => void;
-  isLoading: boolean; // To disable interaction while loading
-}
-
 export function IndexDrawer({
   index,
   currentChapter,
   onChapterSelect,
   isLoading,
-}: IndexDrawerProps) {
+}: {
+  index: ChapterIndexItem[];
+  currentChapter: number;
+  onChapterSelect: (chapterNumber: number) => void;
+  isLoading: boolean; // To disable interaction while loading
+}) {
   if (!index || index.length === 0) {
     return null; // Don't render anything if there's no index
   }
