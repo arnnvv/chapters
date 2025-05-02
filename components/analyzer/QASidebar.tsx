@@ -1,6 +1,7 @@
 "use client";
 
 import type { QAItem } from "@/app/api/ask-question/route";
+import { getQAKey } from "@/lib/utils";
 import type { FormEvent } from "react";
 
 export function QASidebar({
@@ -34,8 +35,8 @@ export function QASidebar({
             Ask a question about the content.
           </p>
         )}
-        {history.map((item, index) => (
-          <div key={index} className="text-sm space-y-1">
+        {history.map((item) => (
+          <div key={getQAKey(item)} className="text-sm space-y-1">
             <div>
               <p className="font-semibold text-primary mb-0.5">You:</p>
               <p className="pl-2">{item.question}</p>

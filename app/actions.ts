@@ -16,7 +16,7 @@ import type {
   ChapterIndexItemDB,
   Message,
 } from "@/lib/db/types";
-import { QAItem } from "./api/ask-question/route";
+import type { QAItem } from "./api/ask-question/route";
 
 export const getCurrentSession = cache(
   async (): Promise<SessionValidationResult> => {
