@@ -7,7 +7,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet"; // Adjust path if needed
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -22,17 +22,16 @@ export function IndexDrawer({
   index: ChapterIndexItem[];
   currentChapter: number;
   onChapterSelect: (chapterNumber: number) => void;
-  isLoading: boolean; // To disable interaction while loading
+  isLoading: boolean;
 }) {
   if (!index || index.length === 0) {
-    return null; // Don't render anything if there's no index
+    return null;
   }
 
   const handleSelect = (chapterNumber: number) => {
-    if (chapterNumber !== currentChapter && !isLoading) {
+    if (!isLoading) {
       onChapterSelect(chapterNumber);
     }
-    // SheetClose wrapping the button will handle closing
   };
 
   return (
@@ -55,10 +54,6 @@ export function IndexDrawer({
           <SheetTitle className="flex items-center gap-2">
             <BookOpen className="h-5 w-5" /> Chapters
           </SheetTitle>
-          {/* Optional description */}
-          {/* <SheetDescription>
-            Jump directly to a chapter.
-          </SheetDescription> */}
         </SheetHeader>
         <div className="flex-grow overflow-y-auto py-4">
           {index.map((item) => (
@@ -68,12 +63,12 @@ export function IndexDrawer({
                 className={cn(
                   "w-full justify-start rounded-none px-6 py-3 text-left h-auto",
                   item.chapter === currentChapter
-                    ? "bg-primary/10 text-primary font-semibold" // Highlight current chapter
+                    ? "bg-primary/10 text-primary font-semibold"
                     : "hover:bg-accent hover:text-accent-foreground",
-                  isLoading ? "opacity-50 cursor-not-allowed" : "", // Indicate loading state
+                  isLoading ? "opacity-50 cursor-not-allowed" : "",
                 )}
                 onClick={() => handleSelect(item.chapter)}
-                disabled={isLoading} // Disable button during loading
+                disabled={isLoading}
               >
                 <span className="font-mono text-xs w-8 text-muted-foreground mr-2">
                   {item.chapter}.

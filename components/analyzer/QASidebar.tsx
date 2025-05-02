@@ -51,14 +51,11 @@ export function QASidebar({
             </div>
           </div>
         ))}
-        {isLoading && history.length === 0 && (
+        {isLoading && (
           <p className="text-sm text-muted-foreground italic">
-            Assistant is preparing...
-          </p>
-        )}
-        {isLoading && history.length > 0 && (
-          <p className="text-sm text-muted-foreground italic">
-            Assistant is thinking...
+            {history.length > 0 && history[history.length - 1].answer === ""
+              ? "Assistant is thinking..."
+              : "Loading..."}
           </p>
         )}
       </div>
