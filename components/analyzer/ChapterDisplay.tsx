@@ -1,7 +1,7 @@
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeHighlight from 'rehype-highlight';
-import 'highlight.js/styles/github-dark.css';
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github-dark.css";
 
 export function ChapterDisplay({
   title,
@@ -24,19 +24,23 @@ export function ChapterDisplay({
             rehypePlugins={[rehypeHighlight]}
             components={{
               code({ node, className, children, ...props }) {
-                const match = /language-(\w+)/.exec(className || '');
-                const isInline = 'inline' in props && typeof props.inline !== 'undefined';
+                const match = /language-(\w+)/.exec(className || "");
+                const isInline =
+                  "inline" in props && typeof props.inline !== "undefined";
 
                 return !isInline && match ? (
                   <code className={className} {...props}>
                     {children}
                   </code>
                 ) : (
-                  <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded" {...props}>
+                  <code
+                    className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded"
+                    {...props}
+                  >
                     {children}
                   </code>
                 );
-              }
+              },
             }}
           >
             {content || "No content generated yet."}
