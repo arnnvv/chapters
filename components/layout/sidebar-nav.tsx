@@ -1,14 +1,13 @@
 "use client";
 
-import * as React from "react"; // Import React
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { BookOpen, History, Loader2, Plus, Trash2 } from "lucide-react"; // Added History, Loader2, Trash2
-// Use types from actions.ts directly
+import { BookOpen, History, Loader2, Plus, Trash2 } from "lucide-react";
 import type { ConversationListItem } from "@/app/actions";
 import type { ChapterIndexItem } from "@/lib/db/types";
-import { formatDistanceToNow } from "date-fns"; // Import date-fns if not already
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { formatDistanceToNow } from "date-fns";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { type MouseEvent, useEffect, useState } from "react";
 
 interface SidebarNavProps {
   conversations: ConversationListItem[];
@@ -18,11 +17,11 @@ interface SidebarNavProps {
   onSelectConversation: (id: number) => void;
   onSelectChapter: (chapter: number) => void;
   onNewConversation: () => void;
-  onDeleteConversation: (id: number) => void; // Added delete handler prop
-  isLoading: boolean; // Global loading state
+  onDeleteConversation: (id: number) => void;
+  isLoading: boolean;
   loadingChapter: number | null;
-  isLoadingConversations: boolean; // Loading state for the list itself
-  currentlyLoadingConversationId: number | null; // Specific conversation loading
+  isLoadingConversations: boolean;
+  currentlyLoadingConversationId: number | null;
 }
 
 export function SidebarNav({
@@ -33,23 +32,19 @@ export function SidebarNav({
   onSelectConversation,
   onSelectChapter,
   onNewConversation,
-  onDeleteConversation, // Destructure delete handler
-  isLoading, // Global busy state
+  onDeleteConversation,
+  isLoading,
   loadingChapter,
-  isLoadingConversations, // Conversation list loading
-  currentlyLoadingConversationId, // Specific conversation loading
+  isLoadingConversations,
+  currentlyLoadingConversationId,
 }: SidebarNavProps) {
-  const [activeTab, setActiveTab] = React.useState<"chapters" | "history">(
+  const [activeTab, setActiveTab] = useState<"chapters" | "history">(
     "chapters",
   );
 
-  const handleDeleteClick = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    id: number,
-  ) => {
-    e.stopPropagation(); // Prevent triggering conversation selection
+  const handleDeleteClick = (e: MouseEvent<HTMLButtonElement>, id: number) => {
+    e.stopPropagation();
     if (!isLoading && currentlyLoadingConversationId !== id) {
-      // Simple confirmation for now
       if (
         window.confirm(
           "Are you sure you want to delete this conversation? This cannot be undone.",
@@ -60,12 +55,14 @@ export function SidebarNav({
     }
   };
 
+  useEffect(() => {
+    setActiveTab(currentConversationId ? "chapters" : "history");
+  }, [currentConversationId]);
+
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
       <div className="p-4 flex items-center justify-between border-b">
         <div className="flex items-center space-x-2">
-          {/* Icon changes based on active tab */}
           {activeTab === "chapters" ? (
             <BookOpen className="h-5 w-5" />
           ) : (
@@ -76,36 +73,35 @@ export function SidebarNav({
           </h2>
         </div>
         <Button
-          variant="ghost" // Changed to ghost to match target screenshot better
+          variant="ghost"
           size="icon"
           onClick={onNewConversation}
-          disabled={isLoading} // Disable if globally busy
+          disabled={isLoading}
           title="New conversation"
-          className="h-8 w-8" // Smaller icon button
+          className="h-8 w-8"
         >
           <Plus className="h-4 w-4" />
         </Button>
       </div>
 
-      {/* Tabs */}
       <div className="flex border-b">
         <Button
           variant="ghost"
           className={cn(
-            "flex-1 justify-center rounded-none border-b-2 px-4 py-2 text-sm font-medium h-auto", // Adjusted styling
+            "flex-1 justify-center rounded-none border-b-2 px-4 py-2 text-sm font-medium h-auto",
             activeTab === "chapters"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground",
           )}
           onClick={() => setActiveTab("chapters")}
-          disabled={!currentConversationId} // Disable chapters tab if no conversation selected
+          disabled={!currentConversationId}
         >
           Chapters
         </Button>
         <Button
           variant="ghost"
           className={cn(
-            "flex-1 justify-center rounded-none border-b-2 px-4 py-2 text-sm font-medium h-auto", // Adjusted styling
+            "flex-1 justify-center rounded-none border-b-2 px-4 py-2 text-sm font-medium h-auto",
             activeTab === "history"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground",
@@ -116,7 +112,6 @@ export function SidebarNav({
         </Button>
       </div>
 
-      {/* Content */}
       <ScrollArea className="flex-1">
         {activeTab === "chapters" ? (
           <div className="p-2">
@@ -132,14 +127,14 @@ export function SidebarNav({
               chapters.map((chapter) => {
                 const isActive = chapter.chapter === currentChapter;
                 const isChapterLoading = chapter.chapter === loadingChapter;
-                const isDisabled = isChapterLoading || isLoading; // Disable if this specific chapter or globally busy
+                const isDisabled = isChapterLoading || isLoading;
 
                 return (
                   <Button
                     key={chapter.chapter}
                     variant={isActive ? "secondary" : "ghost"}
                     className={cn(
-                      "w-full justify-start text-left mb-1 h-auto py-2 px-3 group", // Added group class
+                      "w-full justify-start text-left mb-1 h-auto py-2 px-3 group",
                       isDisabled && "opacity-70 cursor-not-allowed",
                     )}
                     onClick={() =>
@@ -164,7 +159,6 @@ export function SidebarNav({
             )}
           </div>
         ) : (
-          /* History Tab */
           <div className="p-2">
             {isLoadingConversations ? (
               <div className="p-4 text-center text-sm text-muted-foreground">
@@ -179,12 +173,12 @@ export function SidebarNav({
                 const isCurrent = conversation.id === currentConversationId;
                 const isThisLoading =
                   currentlyLoadingConversationId === conversation.id;
-                const isButtonDisabled = isLoading || isThisLoading; // Disable if globally busy OR this specific one is loading
+                const isButtonDisabled = isLoading || isThisLoading;
 
                 return (
                   <div
                     key={conversation.id}
-                    className="flex items-center group mb-1" // Added group class for hover effect on delete
+                    className="flex items-center group mb-1"
                   >
                     <Button
                       variant={isCurrent ? "secondary" : "ghost"}
@@ -199,7 +193,7 @@ export function SidebarNav({
                       disabled={isButtonDisabled}
                     >
                       <div className="flex flex-col items-start w-full min-w-0">
-                        <span className="truncate w-full text-sm font-medium">
+                        <span className="w-full text-sm font-medium whitespace-normal break-words">
                           {conversation.preview || "Untitled Conversation"}
                         </span>
                         <span className="text-xs text-muted-foreground mt-0.5">
@@ -216,7 +210,7 @@ export function SidebarNav({
                       variant="ghost"
                       size="icon"
                       className={cn(
-                        "ml-1 h-7 w-7 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity", // Show on hover
+                        "ml-1 h-7 w-7 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity",
                         isButtonDisabled
                           ? "cursor-not-allowed !opacity-30"
                           : "hover:text-destructive hover:bg-destructive/10",
