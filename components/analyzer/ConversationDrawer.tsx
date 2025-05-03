@@ -1,7 +1,6 @@
-// components/analyzer/ConversationDrawer.tsx
 "use client";
 
-import type { ConversationListItem } from "@/app/actions"; // Use the list item type
+import type { ConversationListItem } from "@/app/actions";
 import {
   Sheet,
   SheetClose,
@@ -11,26 +10,23 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { History } from "lucide-react"; // Use History icon
+import { History } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatDistanceToNow } from "date-fns"; // For user-friendly dates
-
-interface ConversationDrawerProps {
-  conversations: ConversationListItem[];
-  onSelectConversation: (conversationId: number) => void;
-  isLoading: boolean; // For list loading state
-  isDisabled: boolean; // To disable selection while main content is loading
-}
+import { formatDistanceToNow } from "date-fns";
 
 export function ConversationDrawer({
   conversations,
   onSelectConversation,
   isLoading,
   isDisabled,
-}: ConversationDrawerProps) {
+}: {
+  conversations: ConversationListItem[];
+  onSelectConversation: (conversationId: number) => void;
+  isLoading: boolean;
+  isDisabled: boolean;
+}) {
   const handleSelect = (id: number) => {
     if (!isDisabled) {
-      // Only allow selection if main area isn't busy
       onSelectConversation(id);
     }
   };
@@ -41,7 +37,7 @@ export function ConversationDrawer({
         <Button
           variant="outline"
           size="icon"
-          className="absolute top-16 left-4 md:top-20 md:left-6 lg:top-24 lg:left-8 z-10" // Positioned below index drawer button
+          className="absolute top-16 left-4 md:top-20 md:left-6 lg:top-24 lg:left-8 z-10"
           aria-label="Open conversation history"
         >
           <History className="h-5 w-5" />
@@ -50,7 +46,7 @@ export function ConversationDrawer({
       <SheetContent
         side="left"
         className="w-[300px] sm:w-[350px] p-0 flex flex-col"
-        onOpenAutoFocus={(e) => e.preventDefault()} // Prevent focus stealing
+        onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <SheetHeader className="p-6 border-b">
           <SheetTitle className="flex items-center gap-2">
@@ -58,8 +54,6 @@ export function ConversationDrawer({
           </SheetTitle>
         </SheetHeader>
         <div className="flex-grow overflow-y-auto py-2">
-          {" "}
-          {/* Reduced padding */}
           {isLoading ? (
             <div className="p-6 text-center text-muted-foreground">
               Loading history...
@@ -74,7 +68,7 @@ export function ConversationDrawer({
                 <Button
                   variant="ghost"
                   className={cn(
-                    "w-full justify-start rounded-none px-6 py-3 text-left h-auto flex flex-col items-start", // Allow multi-line text
+                    "w-full justify-start rounded-none px-6 py-3 text-left h-auto flex flex-col items-start",
                     isDisabled
                       ? "opacity-50 cursor-not-allowed"
                       : "hover:bg-accent hover:text-accent-foreground",
@@ -86,8 +80,6 @@ export function ConversationDrawer({
                     className="text-sm font-medium mb-1 truncate w-full"
                     title={convo.preview}
                   >
-                    {" "}
-                    {/* Added title for full text */}
                     {convo.preview || "Untitled Conversation"}
                   </span>
                   <span className="text-xs text-muted-foreground">

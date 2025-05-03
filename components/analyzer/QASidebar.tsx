@@ -75,15 +75,13 @@ export function QASidebar({
             </div>
           </div>
         ))}
-
-        {/* Loading placeholders */}
-        {isLoading && history.length === 0 && (
+        {isLoading && (
           <p className="text-sm text-muted-foreground italic">
-            Assistant is preparing...
+            {history.length > 0 && history[history.length - 1].answer === ""
+              ? "Assistant is thinking..."
+              : "Loading..."}
           </p>
         )}
-        {/* Note: The "Thinking..." state is now handled inside the map */}
-
       </div>
 
       {/* Input form */}
