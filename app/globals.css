@@ -1,186 +1,218 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import 'katex/dist/katex.min.css';
+@import "katex/dist/katex.min.css"; /* Import KaTeX CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@custom-variant dark (&:is(.dark *));
+@layer base {
+  :root {
+    /* Default Theme (Light) - Based on ai-teaching-assistant globals.css */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%; /* neutral-950 */
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%; /* neutral-950 */
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%; /* neutral-950 */
+    --primary: 240 5.9% 10%; /* neutral-900 */
+    --primary-foreground: 0 0% 98%; /* neutral-50 */
+    --secondary: 240 4.8% 95.9%; /* neutral-100 */
+    --secondary-foreground: 240 5.9% 10%; /* neutral-900 */
+    --muted: 240 4.8% 95.9%; /* neutral-100 */
+    --muted-foreground: 240 3.8% 46.1%; /* neutral-500 */
+    --accent: 240 4.8% 95.9%; /* neutral-100 */
+    --accent-foreground: 240 5.9% 10%; /* neutral-900 */
+    --destructive: 0 84.2% 60.2%; /* red-500 */
+    --destructive-foreground: 0 0% 98%; /* neutral-50 */
+    --border: 240 5.9% 90%; /* neutral-200 */
+    --input: 240 5.9% 90%; /* neutral-200 */
+    --ring: 240 5.9% 10%; /* neutral-900 */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-}
+    /* Sidebar Colors (Light) */
+    --sidebar-background: 0 0% 98%; /* neutral-50 */
+    --sidebar-foreground: 240 5.3% 26.1%; /* neutral-700 */
+    --sidebar-primary: 240 5.9% 10%; /* neutral-900 */
+    --sidebar-primary-foreground: 0 0% 98%; /* neutral-50 */
+    --sidebar-accent: 240 4.8% 95.9%; /* neutral-100 */
+    --sidebar-accent-foreground: 240 5.9% 10%; /* neutral-900 */
+    --sidebar-border: 220 13% 91%; /* neutral-200ish */
+    --sidebar-ring: 217.2 91.2% 59.8%; /* blue-500 */
 
-:root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.705 0.015 286.067);
-}
+    /* Chart Colors (Light - Example, adjust if needed) */
+    --chart-1: 12 76% 61%; /* Example */
+    --chart-2: 173 58% 39%; /* Example */
+    --chart-3: 197 37% 24%; /* Example */
+    --chart-4: 43 74% 66%; /* Example */
+    --chart-5: 27 87% 67%; /* Example */
 
-.dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.92 0.004 286.32);
-  --primary-foreground: oklch(0.21 0.006 285.885);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.552 0.016 285.938);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.552 0.016 285.938);
+    --radius: 0.5rem; /* Based on target theme */
+  }
+
+  .dark {
+    /* Dark Theme - Based on ai-teaching-assistant globals.css */
+    --background: 240 10% 3.9%; /* neutral-950 */
+    --foreground: 0 0% 98%; /* neutral-50 */
+    --card: 240 10% 3.9%; /* neutral-950 */
+    --card-foreground: 0 0% 98%; /* neutral-50 */
+    --popover: 240 10% 3.9%; /* neutral-950 */
+    --popover-foreground: 0 0% 98%; /* neutral-50 */
+    --primary: 0 0% 98%; /* neutral-50 */
+    --primary-foreground: 240 5.9% 10%; /* neutral-900 */
+    --secondary: 240 3.7% 15.9%; /* neutral-800 */
+    --secondary-foreground: 0 0% 98%; /* neutral-50 */
+    --muted: 240 3.7% 15.9%; /* neutral-800 */
+    --muted-foreground: 240 5% 64.9%; /* neutral-400 */
+    --accent: 240 3.7% 15.9%; /* neutral-800 */
+    --accent-foreground: 0 0% 98%; /* neutral-50 */
+    --destructive: 0 62.8% 30.6%; /* red-900 */
+    --destructive-foreground: 0 0% 98%; /* neutral-50 */
+    --border: 240 3.7% 15.9%; /* neutral-800 */
+    --input: 240 3.7% 15.9%; /* neutral-800 */
+    --ring: 0 0% 83.1%; /* neutral-400 */
+
+    /* Sidebar Colors (Dark) */
+    --sidebar-background: 240 5.9% 10%; /* neutral-900 */
+    --sidebar-foreground: 240 4.8% 95.9%; /* neutral-100 */
+    --sidebar-primary: 224.3 76.3% 48%; /* blue-600 */
+    --sidebar-primary-foreground: 0 0% 100%; /* white */
+    --sidebar-accent: 240 3.7% 15.9%; /* neutral-800 */
+    --sidebar-accent-foreground: 240 4.8% 95.9%; /* neutral-100 */
+    --sidebar-border: 240 3.7% 15.9%; /* neutral-800 */
+    --sidebar-ring: 217.2 91.2% 59.8%; /* blue-500 */
+
+     /* Chart Colors (Dark - Example, adjust if needed) */
+    --chart-1: 220 70% 50%; /* Example */
+    --chart-2: 160 60% 45%; /* Example */
+    --chart-3: 30 80% 55%; /* Example */
+    --chart-4: 280 65% 60%; /* Example */
+    --chart-5: 340 75% 55%; /* Example */
+  }
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+    /* Apply font variable if needed */
+    /* font-family: var(--font-sans), sans-serif; */
+    font-feature-settings: "rlig" 1, "calt" 1; /* From target */
   }
 }
 
+/* Markdown content styling (Copied from target globals.css) */
 .markdown-content p {
-  margin-bottom: 1em; /* Adjust value as needed (e.g., 1.25em, 16px) */
+  @apply mb-4;
 }
 
-/* Optional: Add margin below other common block elements too for consistency */
 .markdown-content ul,
-.markdown-content ol,
-.markdown-content pre,
-.markdown-content blockquote,
+.markdown-content ol {
+  @apply mb-4 pl-6;
+}
+
+.markdown-content ul {
+  @apply list-disc;
+}
+
+.markdown-content ol {
+  @apply list-decimal;
+}
+
 .markdown-content h1,
 .markdown-content h2,
 .markdown-content h3,
 .markdown-content h4,
 .markdown-content h5,
 .markdown-content h6 {
-   margin-bottom: 1em; /* Or adjust individually */
+  @apply font-semibold mb-4 mt-6;
 }
 
-/* Optional: Prevent margin on the very last element within the container */
+.markdown-content h1 {
+  @apply text-2xl;
+}
+
+.markdown-content h2 {
+  @apply text-xl;
+}
+
+.markdown-content h3 {
+  @apply text-lg;
+}
+
+.markdown-content blockquote {
+  @apply border-l-4 border-muted pl-4 italic my-4;
+}
+
+.markdown-content pre {
+  @apply my-4; /* Let component handle styling */
+}
+
+/* Let ReactMarkdown component handle code styling */
+/* .markdown-content code {} */
+
+.markdown-content a {
+  @apply text-primary underline;
+}
+
+.markdown-content table {
+  @apply w-full border-collapse my-4;
+}
+
+.markdown-content th,
+.markdown-content td {
+  @apply border p-2;
+}
+
+.markdown-content img {
+  @apply max-w-full h-auto my-4;
+}
+
 .markdown-content > *:last-child {
-  margin-bottom: 0;
+  @apply mb-0;
 }
 
-/* Optional: Ensure lists have some indentation */
-.markdown-content ul,
-.markdown-content ol {
- padding-left: 1.6em; /* Adjust as needed */
-}
-
+/* KaTeX styling (Copied from target globals.css) */
 .prose .katex {
-  /* Adjust base KaTeX font size to better match prose */
-  /* Experiment with values like 0.9em, 0.95em, 1em, 1.05em */
-  /* 'em' is relative to the surrounding text size */
-  font-size: 1em; 
-  
-  /* Improve vertical alignment for inline math if needed */
-  /* vertical-align: baseline; */ /* or maybe -0.1em, etc. */
-  
-  /* Prevent line breaks inside simple inline formulas if desired */
-   white-space: nowrap; 
+  font-size: 1em;
 }
-
-.markdown-content li {
-   margin-bottom: 0.8em; /* Adjust the value (e.g., 1em, 0.5em, 10px) as needed */
-}
-
 
 .prose .katex-display {
-  /* Add vertical margins for block math */
-  /* Match prose paragraph margins or adjust as needed */
-  margin-top: 1.25em; 
-  margin-bottom: 1.25em; 
-  
-  /* Ensure block math is centered or left-aligned as desired */
-  /* display: block; */ /* KaTeX usually handles this */
-  /* text-align: center; */ /* If you want centered block math */
-  
-  /* Ensure block math can scroll horizontally if very wide */
+  margin: 1.25em 0;
   overflow-x: auto;
-  /* Add some padding if scrolling */
-  padding: 0.5em 0.2em; 
+  padding: 0.5em 0.2em;
 }
+
+/* Custom scrollbar (Copied from target globals.css) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-secondary/50;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/30 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
+}
+
+/* Keep animations if needed by Shadcn components */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.animate-spin { animation: spin 1s linear infinite; }
+
+/* Keep transitions if needed by Shadcn components */
+.transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+.transition-opacity { transition-property: opacity; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+.transition-transform { transition-property: transform; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+
+/* Keep focus styles if needed by Shadcn components */
+.focus-ring { @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background; }

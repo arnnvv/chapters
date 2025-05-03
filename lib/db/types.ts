@@ -1,3 +1,6 @@
+// NO CHANGES - Keep your existing file content:
+// chapters/lib/db/types.ts
+
 export type User = {
   id: number;
   google_id: string;
@@ -25,6 +28,7 @@ export type Conversation = {
   created_at: Date;
 };
 
+// This type includes the generated_content, useful for fetching details
 export type ChapterIndexItemDB = {
   id: number;
   conversation_id: number;
