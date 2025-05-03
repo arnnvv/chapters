@@ -37,10 +37,7 @@ export function ConversationDrawer({
     }
   };
 
-  const handleDeleteClick = (
-    e: MouseEvent<HTMLButtonElement>,
-    id: number,
-  ) => {
+  const handleDeleteClick = (e: MouseEvent<HTMLButtonElement>, id: number) => {
     e.stopPropagation();
     if (!isDisabled && currentlyLoadingConversationId !== id) {
       if (
@@ -87,7 +84,8 @@ export function ConversationDrawer({
             </div>
           ) : (
             conversations.map((convo) => {
-              const isThisOneLoading = currentlyLoadingConversationId === convo.id;
+              const isThisOneLoading =
+                currentlyLoadingConversationId === convo.id;
               const isButtonDisabled = isDisabled || isThisOneLoading;
 
               return (

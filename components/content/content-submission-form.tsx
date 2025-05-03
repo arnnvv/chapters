@@ -45,7 +45,9 @@ export function ContentSubmissionForm({
     setTextContent(e.target.value);
   };
 
-  const handleBackgroundChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleBackgroundChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
     setUserBackground(e.target.value);
   };
 
@@ -97,7 +99,9 @@ export function ContentSubmissionForm({
     } catch (error) {
       console.error("File processing error:", error);
       const message =
-        error instanceof Error ? error.message : "Unknown error processing file.";
+        error instanceof Error
+          ? error.message
+          : "Unknown error processing file.";
       toast.error(`Error: ${message}`);
       setTextContent(""); // Clear on error
       setFileName(null);
@@ -147,8 +151,9 @@ export function ContentSubmissionForm({
               <div className="flex items-center justify-center w-full">
                 <Label
                   htmlFor="fileUpload"
-                  className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted/50 transition-colors ${anyLoading ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
+                  className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted/50 transition-colors ${
+                    anyLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 >
                   <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
                     <Upload className="w-8 h-8 mb-3 text-muted-foreground" />
@@ -158,7 +163,8 @@ export function ContentSubmissionForm({
                       </p>
                     ) : (
                       <p className="mb-1 text-sm text-muted-foreground">
-                        <span className="font-semibold">Click to upload</span> or drag and drop
+                        <span className="font-semibold">Click to upload</span>{" "}
+                        or drag and drop
                       </p>
                     )}
                     <p className="text-xs text-muted-foreground">
@@ -178,7 +184,9 @@ export function ContentSubmissionForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="textContent">Content to Analyze (or Paste Here)</Label>
+              <Label htmlFor="textContent">
+                Content to Analyze (or Paste Here)
+              </Label>
               <Textarea
                 id="textContent"
                 placeholder={

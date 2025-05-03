@@ -4,6 +4,6 @@ const config = {
     tailwindcss: {},
     autoprefixer: {}, // Ensure autoprefixer is listed if added to devDependencies
   },
-}
+};
 
-export default config
+export default config;

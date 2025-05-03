@@ -142,7 +142,9 @@ export function SidebarNav({
                       "w-full justify-start text-left mb-1 h-auto py-2 px-3 group", // Added group class
                       isDisabled && "opacity-70 cursor-not-allowed",
                     )}
-                    onClick={() => !isDisabled && onSelectChapter(chapter.chapter)}
+                    onClick={() =>
+                      !isDisabled && onSelectChapter(chapter.chapter)
+                    }
                     disabled={isDisabled}
                   >
                     <div className="flex items-center w-full min-w-0">
@@ -190,7 +192,10 @@ export function SidebarNav({
                         "flex-1 justify-start text-left h-auto py-2 px-3",
                         isButtonDisabled && "opacity-70 cursor-not-allowed",
                       )}
-                      onClick={() => !isButtonDisabled && onSelectConversation(conversation.id)}
+                      onClick={() =>
+                        !isButtonDisabled &&
+                        onSelectConversation(conversation.id)
+                      }
                       disabled={isButtonDisabled}
                     >
                       <div className="flex flex-col items-start w-full min-w-0">
@@ -198,9 +203,12 @@ export function SidebarNav({
                           {conversation.preview || "Untitled Conversation"}
                         </span>
                         <span className="text-xs text-muted-foreground mt-0.5">
-                          {formatDistanceToNow(new Date(conversation.created_at), {
-                            addSuffix: true,
-                          })}
+                          {formatDistanceToNow(
+                            new Date(conversation.created_at),
+                            {
+                              addSuffix: true,
+                            },
+                          )}
                         </span>
                       </div>
                     </Button>

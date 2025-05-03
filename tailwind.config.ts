@@ -58,20 +58,20 @@ const config: Config = {
           DEFAULT: "hsl(var(--sidebar-background))", // Renamed from --sidebar
           foreground: "hsl(var(--sidebar-foreground))",
           primary: "hsl(var(--sidebar-primary))",
-          'primary-foreground': "hsl(var(--sidebar-primary-foreground))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
           accent: "hsl(var(--sidebar-accent))",
-          'accent-foreground': "hsl(var(--sidebar-accent-foreground))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
         // Added chart colors from target CSS variables
         chart: {
-          '1': "hsl(var(--chart-1))",
-          '2': "hsl(var(--chart-2))",
-          '3': "hsl(var(--chart-3))",
-          '4': "hsl(var(--chart-4))",
-          '5': "hsl(var(--chart-5))",
-        }
+          "1": "hsl(var(--chart-1))",
+          "2": "hsl(var(--chart-2))",
+          "3": "hsl(var(--chart-3))",
+          "4": "hsl(var(--chart-4))",
+          "5": "hsl(var(--chart-5))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -98,7 +98,8 @@ const config: Config = {
         "accordion-up": "accordion-up 0.2s ease-out",
         "caret-blink": "caret-blink 1.25s ease-out infinite", // Added caret-blink
       },
-      fontFamily: { // Assuming Inter is still desired
+      fontFamily: {
+        // Assuming Inter is still desired
         sans: ["var(--font-sans)", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"], // Keep if needed
       },

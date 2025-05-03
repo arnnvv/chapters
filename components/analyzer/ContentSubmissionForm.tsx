@@ -25,7 +25,7 @@ export function ContentSubmissionForm({
   // Effect to set worker source once on component mount
   useEffect(() => {
     // Check if window is defined (for SSR safety, though this is client-side)
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_SRC;
     }
   }, []);
@@ -37,7 +37,6 @@ export function ContentSubmissionForm({
   const handleBackgroundChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setUserBackground(e.target.value);
   };
-
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -68,7 +67,9 @@ export function ContentSubmissionForm({
           const page = await pdf.getPage(i);
           const textContentData = await page.getTextContent();
           //textContentData.items is an array of objects with 'str' property
-          const pageText = textContentData.items.map((item: any) => item.str).join(" ");
+          const pageText = textContentData.items
+            .map((item: any) => item.str)
+            .join(" ");
           fullText += pageText + "\n\n"; // Add space between pages
         }
         setTextContent(fullText.trim());
@@ -79,13 +80,16 @@ export function ContentSubmissionForm({
       }
     } catch (error) {
       console.error("File processing error:", error);
-      const message = error instanceof Error ? error.message : "Unknown error processing file.";
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unknown error processing file.";
       toast.error(`Error: ${message}`);
       setTextContent(""); // Clear on error
       setIsProcessingFile(false);
     } finally {
       // Reset the file input so the same file can be selected again if needed
-      e.target.value = '';
+      e.target.value = "";
     }
   };
 
@@ -93,7 +97,9 @@ export function ContentSubmissionForm({
     e.preventDefault();
     // Use state values instead of formData directly for text
     if (!textContent.trim()) {
-      toast.error("Content cannot be empty. Please type, paste, or upload content.");
+      toast.error(
+        "Content cannot be empty. Please type, paste, or upload content.",
+      );
       return;
     }
     if (!userBackground.trim()) {
@@ -121,7 +127,9 @@ export function ContentSubmissionForm({
           className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={anyLoading}
         />
-        <p className="text-xs text-muted-foreground mt-1">Accepts .txt and .pdf files. Uploading will replace the text below.</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Accepts .txt and .pdf files. Uploading will replace the text below.
+        </p>
       </div>
 
       {/* Text Area Input */}
@@ -133,7 +141,11 @@ export function ContentSubmissionForm({
           id="textContent"
           name="textContent"
           rows={10}
-          placeholder={isProcessingFile ? "Extracting text from file..." : "Paste your code or text here, or upload a file above..."}
+          placeholder={
+            isProcessingFile
+              ? "Extracting text from file..."
+              : "Paste your code or text here, or upload a file above..."
+          }
           className="w-full p-2 border rounded bg-input text-foreground border-border"
           required
           value={textContent} // Controlled component

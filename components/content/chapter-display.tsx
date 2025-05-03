@@ -101,7 +101,12 @@ export function ChapterDisplay({
                   if (isBlock) {
                     return (
                       <div className="my-4 rounded-md overflow-hidden bg-[#0d1117] dark:bg-muted/30 text-foreground">
-                        <pre className={cn("p-4 overflow-x-auto text-sm", className)}>
+                        <pre
+                          className={cn(
+                            "p-4 overflow-x-auto text-sm",
+                            className,
+                          )}
+                        >
                           <code>{children}</code>
                         </pre>
                       </div>
@@ -139,8 +144,12 @@ export function ChapterDisplay({
                 },
                 // Ensure blockquotes have styling
                 blockquote({ children }) {
-                  return <blockquote className="mt-6 border-l-2 pl-6 italic">{children}</blockquote>
-                }
+                  return (
+                    <blockquote className="mt-6 border-l-2 pl-6 italic">
+                      {children}
+                    </blockquote>
+                  );
+                },
               }}
             >
               {content}

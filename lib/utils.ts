@@ -13,5 +13,7 @@ export function getQAKey(item: QAItem): string {
   // Ensure both question and answer are defined before hashing
   const question = item.question ?? "";
   const answer = item.answer ?? "";
-  return createHash("sha256").update(question + answer).digest("hex");
+  return createHash("sha256")
+    .update(question + answer)
+    .digest("hex");
 }

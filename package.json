@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "format": "pnpm biome format --write .",
+    "d": "next dev",
+    "b": "next build",
+    "st": "next start",
+    "l": "pnpm biome lint --write .",
+    "f": "pnpm biome format --write .",
     "add": "pnpm dlx shadcn-ui@latest add"
   },
   "dependencies": {

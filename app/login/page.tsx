@@ -25,17 +25,25 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
-      <Card className="w-full max-w-md shadow-lg"> {/* Added shadow */}
-        <CardHeader className="space-y-1.5 text-center pb-4"> {/* Adjusted spacing */}
+      <Card className="w-full max-w-md shadow-lg">
+        {" "}
+        {/* Added shadow */}
+        <CardHeader className="space-y-1.5 text-center pb-4">
+          {" "}
+          {/* Adjusted spacing */}
           {/* Optional: Add an icon or logo here */}
-          <CardTitle className="text-2xl font-bold tracking-tight"> {/* Adjusted tracking */}
+          <CardTitle className="text-2xl font-bold tracking-tight">
+            {" "}
+            {/* Adjusted tracking */}
             Welcome to Chapters
           </CardTitle>
           <CardDescription>
             Your AI-powered document teaching assistant
           </CardDescription>
         </CardHeader>
-        <CardContent className="pt-4 pb-6"> {/* Adjusted padding */}
+        <CardContent className="pt-4 pb-6">
+          {" "}
+          {/* Adjusted padding */}
           <div className="flex flex-col gap-2 text-center text-sm text-muted-foreground">
             <p>Learn from any document with AI explanations.</p>
             <p>Ask questions and get instant, contextual answers.</p>
@@ -56,7 +64,8 @@ export default function LoginPage() {
               </>
             ) : (
               <>
-                <ChromeIcon className="mr-2 h-4 w-4" /> {/* Using Lucide Chrome icon */}
+                <ChromeIcon className="mr-2 h-4 w-4" />{" "}
+                {/* Using Lucide Chrome icon */}
                 Sign in with Google
               </>
             )}

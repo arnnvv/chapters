@@ -55,19 +55,19 @@ interface ChatState {
 type ChatAction =
   | { type: "START_INDEXING"; payload: { content: string; background: string } }
   | {
-    type: "INDEX_SUCCESS";
-    payload: { index: ChapterIndexItem[]; conversationId: number };
-  }
+      type: "INDEX_SUCCESS";
+      payload: { index: ChapterIndexItem[]; conversationId: number };
+    }
   | { type: "INDEX_FAIL"; payload: { error: string } }
   | { type: "START_CHAPTER_GENERATION"; payload: { chapterNumber: number } }
   | {
-    type: "CHAPTER_GENERATION_SUCCESS";
-    payload: { chapterNumber: number; content: string };
-  }
+      type: "CHAPTER_GENERATION_SUCCESS";
+      payload: { chapterNumber: number; content: string };
+    }
   | {
-    type: "CHAPTER_GENERATION_FAIL";
-    payload: { chapterNumber: number; error: string };
-  }
+      type: "CHAPTER_GENERATION_FAIL";
+      payload: { chapterNumber: number; error: string };
+    }
   | { type: "SET_DISPLAYED_CHAPTER"; payload: { chapterNumber: number } }
   | { type: "START_ANSWERING"; payload: { question: string } }
   | { type: "ANSWERING_SUCCESS"; payload: { answer: string } }
@@ -75,7 +75,10 @@ type ChatAction =
   | { type: "LOAD_CONVERSATION_START"; payload: { conversationId: number } }
   | { type: "LOAD_CONVERSATION_SUCCESS"; payload: ConversationDetails }
   | { type: "LOAD_CONVERSATION_FAIL"; payload: { error: string } }
-  | { type: "PREFETCH_CHAPTER_SUCCESS"; payload: { chapterNumber: number; content: string } }
+  | {
+      type: "PREFETCH_CHAPTER_SUCCESS";
+      payload: { chapterNumber: number; content: string };
+    }
   | { type: "RESET" };
 
 const initialState: ChatState = {
@@ -136,9 +139,10 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
           [action.payload.chapterNumber]: action.payload.content,
         },
         // Only update displayed chapter if it matches the one that just finished loading
-        currentChapterNumber: state.generatingChapterNumber === action.payload.chapterNumber
-          ? action.payload.chapterNumber
-          : state.currentChapterNumber,
+        currentChapterNumber:
+          state.generatingChapterNumber === action.payload.chapterNumber
+            ? action.payload.chapterNumber
+            : state.currentChapterNumber,
         generatingChapterNumber: null, // Finished loading
         error: null,
       };
@@ -165,7 +169,7 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
     case "SET_DISPLAYED_CHAPTER":
       // When user selects an *already generated* chapter
       // Ensure we are not currently generating another chapter
-      if (state.status === 'generatingChapter') return state; // Prevent changing display while generating
+      if (state.status === "generatingChapter") return state; // Prevent changing display while generating
       return {
         ...state,
         status: "idle",
@@ -227,11 +231,15 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
         {} as Record<number, string>,
       );
       const firstGeneratedChapter = Math.min(
-        ...Object.keys(initialChapters).map(Number).filter(num => !isNaN(num)),
-        Infinity
+        ...Object.keys(initialChapters)
+          .map(Number)
+          .filter((num) => !isNaN(num)),
+        Infinity,
       );
-      const initialChapterNum = firstGeneratedChapter === Infinity ? 0 : firstGeneratedChapter;
-      const shouldStartGenerating = initialChapterNum === 0 && simpleIndex.length > 0;
+      const initialChapterNum =
+        firstGeneratedChapter === Infinity ? 0 : firstGeneratedChapter;
+      const shouldStartGenerating =
+        initialChapterNum === 0 && simpleIndex.length > 0;
 
       return {
         ...state,
@@ -260,7 +268,6 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
       return state;
   }
 }
-
 
 export function ChatContainer({
   user,
@@ -293,9 +300,10 @@ export function ChatContainer({
   useEffect(() => {
     fetchConversations();
     isMountedRef.current = true;
-    return () => { isMountedRef.current = false; }
+    return () => {
+      isMountedRef.current = false;
+    };
   }, [fetchConversations]);
-
 
   // --- Function to fetch a specific chapter (user-initiated or prefetch) ---
   const fetchChapterContent = useCallback(
@@ -315,8 +323,12 @@ export function ChatContainer({
 
       // If already generated: display if user-initiated, or skip if prefetch
       if (state.generatedChapters[chapterNumber]) {
-        if (!isPrefetch && state.status !== 'generatingChapter') { // Only set display if not already generating another chapter
-          dispatch({ type: "SET_DISPLAYED_CHAPTER", payload: { chapterNumber } });
+        if (!isPrefetch && state.status !== "generatingChapter") {
+          // Only set display if not already generating another chapter
+          dispatch({
+            type: "SET_DISPLAYED_CHAPTER",
+            payload: { chapterNumber },
+          });
         }
         if (isPrefetch) {
           const nextPrefetchNum = chapterNumber + 1;
@@ -331,11 +343,16 @@ export function ChatContainer({
       }
 
       // If *another* chapter is already being generated by user action, don't start a new one
-      if (state.status === 'generatingChapter' && state.generatingChapterNumber !== chapterNumber && !isPrefetch) {
-        toast.info(`Please wait for Chapter ${state.generatingChapterNumber} to load.`);
+      if (
+        state.status === "generatingChapter" &&
+        state.generatingChapterNumber !== chapterNumber &&
+        !isPrefetch
+      ) {
+        toast.info(
+          `Please wait for Chapter ${state.generatingChapterNumber} to load.`,
+        );
         return;
       }
-
 
       // Dispatch start only for user-initiated fetches
       if (!isPrefetch) {
@@ -347,7 +364,8 @@ export function ChatContainer({
         });
       } else {
         // Don't dispatch START for prefetch, but mark as prefetching
-        if (state.status === 'generatingChapter') { // Don't prefetch if user is actively generating
+        if (state.status === "generatingChapter") {
+          // Don't prefetch if user is actively generating
           isPrefetchingRef.current = false;
           prefetchTargetRef.current = null;
           return;
@@ -397,7 +415,6 @@ export function ChatContainer({
             prefetchTargetRef.current = null;
           }
           isPrefetchingRef.current = false; // Mark prefetch cycle as done
-
         } else {
           // Success for user-initiated or initial chapter 1 load
           dispatch({
@@ -407,7 +424,6 @@ export function ChatContainer({
           isPrefetchingRef.current = false;
           prefetchTargetRef.current = null;
         }
-
       } catch (err) {
         const message =
           err instanceof Error
@@ -424,7 +440,9 @@ export function ChatContainer({
         if (!isPrefetch) {
           toast.error(`Failed to load chapter ${chapterNumber}: ${message}`);
         } else {
-          console.warn(`Prefetch failed for chapter ${chapterNumber}: ${message}`);
+          console.warn(
+            `Prefetch failed for chapter ${chapterNumber}: ${message}`,
+          );
         }
         isPrefetchingRef.current = false;
         prefetchTargetRef.current = null;
@@ -445,13 +463,17 @@ export function ChatContainer({
   // --- Function to start the pre-fetch sequence (remains similar) ---
   const startPrefetchSequence = useCallback(async () => {
     // Added check for generatingChapter status
-    if (!isMountedRef.current || isPrefetchingRef.current || !prefetchTargetRef.current || state.status !== 'idle') {
+    if (
+      !isMountedRef.current ||
+      isPrefetchingRef.current ||
+      !prefetchTargetRef.current ||
+      state.status !== "idle"
+    ) {
       return;
     }
 
     const target = prefetchTargetRef.current;
     await fetchChapterContent(target, true);
-
   }, [state.status, fetchChapterContent]);
 
   // --- Effect to initiate the first chapter fetch OR start pre-fetching ---
@@ -468,7 +490,7 @@ export function ChatContainer({
     }
     // 2. Start or continue pre-fetching when idle
     else if (
-      state.status === 'idle' && // MUST be idle
+      state.status === "idle" && // MUST be idle
       state.conversationId !== null &&
       !isPrefetchingRef.current // Only if not already prefetching
     ) {
@@ -477,7 +499,10 @@ export function ChatContainer({
 
       // If prefetch target is not set OR it's outdated (<= current chapter)
       // find the *first* unloaded chapter >= nextLogicalChapter
-      if (!prefetchTargetRef.current || prefetchTargetRef.current <= state.currentChapterNumber) {
+      if (
+        !prefetchTargetRef.current ||
+        prefetchTargetRef.current <= state.currentChapterNumber
+      ) {
         let foundTarget: number | null = null;
         for (let i = nextLogicalChapter; i <= state.chapterIndex.length; i++) {
           if (!state.generatedChapters[i]) {
@@ -488,17 +513,18 @@ export function ChatContainer({
         prefetchTargetRef.current = foundTarget;
       }
 
-
       // If there's a valid target, start the sequence
       if (prefetchTargetRef.current) {
         startPrefetchSequence();
       }
-    } else if (state.status !== 'idle' && state.status !== 'generatingChapter') {
+    } else if (
+      state.status !== "idle" &&
+      state.status !== "generatingChapter"
+    ) {
       // If status changes to something blocking (indexing, answering, loading), cancel prefetch intent
       prefetchTargetRef.current = null;
       isPrefetchingRef.current = false; // Ensure prefetch stops if active
     }
-
   }, [
     state.status,
     state.generatingChapterNumber, // Use this to trigger initial fetch
@@ -507,7 +533,7 @@ export function ChatContainer({
     state.conversationId,
     state.generatedChapters,
     fetchChapterContent,
-    startPrefetchSequence
+    startPrefetchSequence,
   ]);
 
   // --- Handler for Content Submission (reset prefetch state) ---
@@ -565,8 +591,9 @@ export function ChatContainer({
   const handleLoadConversation = useCallback(
     async (id: number) => {
       // Prevent loading if already loading this ID or during other major actions
-      if (state.status === "loadingConversation" && state.conversationId === id) return;
-      if (state.status === 'indexing' || state.status === 'answering') {
+      if (state.status === "loadingConversation" && state.conversationId === id)
+        return;
+      if (state.status === "indexing" || state.status === "answering") {
         toast.info("Please wait for the current action to complete.");
         return;
       }
@@ -611,8 +638,10 @@ export function ChatContainer({
         toast.warning("Cannot ask question without an active conversation.");
         return;
       }
-      if (state.status === 'generatingChapter') {
-        toast.info(`Please wait for Chapter ${state.generatingChapterNumber} to load before asking questions.`);
+      if (state.status === "generatingChapter") {
+        toast.info(
+          `Please wait for Chapter ${state.generatingChapterNumber} to load before asking questions.`,
+        );
         return;
       }
 
@@ -673,12 +702,21 @@ export function ChatContainer({
   const handleDeleteConversation = useCallback(
     async (idToDelete: number) => {
       // Prevent deleting if globally disabled or if this specific one is loading
-      if (state.status === 'loadingConversation' && state.conversationId === idToDelete) {
+      if (
+        state.status === "loadingConversation" &&
+        state.conversationId === idToDelete
+      ) {
         toast.warning("Cannot delete conversation while it's loading.");
         return;
       }
-      if (state.status === 'indexing' || state.status === 'answering' || state.status === 'generatingChapter') {
-        toast.info("Please wait for the current action to complete before deleting.");
+      if (
+        state.status === "indexing" ||
+        state.status === "answering" ||
+        state.status === "generatingChapter"
+      ) {
+        toast.info(
+          "Please wait for the current action to complete before deleting.",
+        );
         return;
       }
 
@@ -720,26 +758,34 @@ export function ChatContainer({
     (chapterNumber: number) => {
       // Allow selection even if another chapter is generating,
       // but fetchChapterContent will handle preventing simultaneous fetches.
-      if (chapterNumber !== state.currentChapterNumber || !state.generatedChapters[chapterNumber]) {
+      if (
+        chapterNumber !== state.currentChapterNumber ||
+        !state.generatedChapters[chapterNumber]
+      ) {
         fetchChapterContent(chapterNumber, false);
       } else if (state.generatedChapters[chapterNumber]) {
         // If already generated and selected, just ensure display (handled by fetchChapterContent)
         dispatch({ type: "SET_DISPLAYED_CHAPTER", payload: { chapterNumber } });
       }
     },
-    [state.currentChapterNumber, state.generatedChapters, fetchChapterContent, dispatch],
+    [
+      state.currentChapterNumber,
+      state.generatedChapters,
+      fetchChapterContent,
+      dispatch,
+    ],
   );
 
   // --- Handler for New Chat Button (reset prefetch state) ---
   const handleNewChat = useCallback(() => {
     // Prevent starting new if busy
-    if (state.status !== 'idle' && state.status !== 'error') {
+    if (state.status !== "idle" && state.status !== "error") {
       toast.warning("Please wait for the current action to finish.");
       return;
     }
     prefetchTargetRef.current = null;
     isPrefetchingRef.current = false;
-    dispatch({ type: 'RESET' });
+    dispatch({ type: "RESET" });
   }, [dispatch, state.status]);
 
   // --- Derived State ---
@@ -749,16 +795,21 @@ export function ChatContainer({
     )?.title ||
     (state.currentChapterNumber > 0
       ? `Chapter ${state.currentChapterNumber}`
-      : state.conversationId !== null ? "Select a chapter" : "");
+      : state.conversationId !== null
+        ? "Select a chapter"
+        : "");
 
   const displayedContent =
     state.generatedChapters[state.currentChapterNumber] || "";
 
   const isContentSubmitted = state.conversationId !== null;
   const isChapterCurrentlyLoading = state.status === "generatingChapter"; // Is *any* chapter loading?
-  const isNavigatingDisabled = isChapterCurrentlyLoading || state.status === "loadingConversation"; // Disable nav buttons during these specific loads
-  const isGloballyDisabled = state.status === 'indexing' || state.status === 'loadingConversation' || state.status === 'answering'; // When major actions block UI
-
+  const isNavigatingDisabled =
+    isChapterCurrentlyLoading || state.status === "loadingConversation"; // Disable nav buttons during these specific loads
+  const isGloballyDisabled =
+    state.status === "indexing" ||
+    state.status === "loadingConversation" ||
+    state.status === "answering"; // When major actions block UI
 
   return (
     <div className="flex h-screen bg-background text-foreground relative">
@@ -776,7 +827,9 @@ export function ChatContainer({
         onSelectConversation={handleLoadConversation}
         isLoading={isLoadingConversations} // For the list itself
         isDisabled={isGloballyDisabled || isChapterCurrentlyLoading} // Disable during any major load *or* chapter generation
-        currentlyLoadingConversationId={state.status === 'loadingConversation' ? state.conversationId : null} // Pass loading convo ID
+        currentlyLoadingConversationId={
+          state.status === "loadingConversation" ? state.conversationId : null
+        } // Pass loading convo ID
         onDeleteConversation={handleDeleteConversation}
       />
       {/* New Chat Button */}
@@ -848,7 +901,10 @@ export function ChatContainer({
             content={displayedContent}
             currentChapter={state.currentChapterNumber}
             totalChapters={state.chapterIndex.length}
-            isLoading={isChapterCurrentlyLoading && state.generatingChapterNumber === state.currentChapterNumber} // Show loading only if *this* chapter is generating
+            isLoading={
+              isChapterCurrentlyLoading &&
+              state.generatingChapterNumber === state.currentChapterNumber
+            } // Show loading only if *this* chapter is generating
             onNext={handleNextChapter}
             onPrev={handlePrevChapter}
             isNavDisabled={isNavigatingDisabled} // Disable nav buttons if *any* chapter load or convo load
@@ -867,11 +923,13 @@ export function ChatContainer({
           </p>
         )}
         {/* More specific loading message for chapter generation */}
-        {state.status === 'generatingChapter' && state.generatingChapterNumber !== state.currentChapterNumber && (
-          <p className="mt-4 text-muted-foreground italic">
-            Loading Chapter {state.generatingChapterNumber}... (You can browse other loaded chapters)
-          </p>
-        )}
+        {state.status === "generatingChapter" &&
+          state.generatingChapterNumber !== state.currentChapterNumber && (
+            <p className="mt-4 text-muted-foreground italic">
+              Loading Chapter {state.generatingChapterNumber}... (You can browse
+              other loaded chapters)
+            </p>
+          )}
         {state.status === "error" && (
           <p className="text-destructive mt-4">Error: {state.error}</p>
         )}
@@ -884,7 +942,9 @@ export function ChatContainer({
             history={state.qaHistory}
             onAskQuestion={handleAskQuestion}
             // Disable asking only when answering or indexing
-            isLoading={state.status === "answering" || state.status === 'indexing'}
+            isLoading={
+              state.status === "answering" || state.status === "indexing"
+            }
           />
         </aside>
       )}

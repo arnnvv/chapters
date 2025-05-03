@@ -232,14 +232,17 @@ export const deleteConversationAction = async (
 
     if (parseInt(checkResult.rows[0].count, 10) === 0) {
       await client.query("ROLLBACK");
-      return { success: false, message: "Conversation not found or access denied." };
+      return {
+        success: false,
+        message: "Conversation not found or access denied.",
+      };
     }
 
     // Delete the conversation (cascades should handle related items)
-    await client.query("DELETE FROM conversations WHERE id = $1 AND user_id = $2", [
-      conversationId,
-      userId,
-    ]);
+    await client.query(
+      "DELETE FROM conversations WHERE id = $1 AND user_id = $2",
+      [conversationId, userId],
+    );
 
     await client.query("COMMIT");
     return { success: true, message: "Conversation deleted successfully." };
@@ -247,7 +250,10 @@ export const deleteConversationAction = async (
     await client.query("ROLLBACK");
     console.error("Error deleting conversation:", error);
     const message = error instanceof Error ? error.message : "Database error.";
-    return { success: false, message: `Failed to delete conversation: ${message}` };
+    return {
+      success: false,
+      message: `Failed to delete conversation: ${message}`,
+    };
   } finally {
     client.release();
   }

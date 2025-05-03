@@ -5,8 +5,8 @@ import "highlight.js/styles/github-dark.css"; // Style for code highlighting
 import { cn } from "@/lib/utils";
 
 // +++ Add these imports for math rendering +++
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 // Ensure KaTeX CSS is imported globally (e.g., in app/globals.css)
 // @import 'katex/dist/katex.min.css';
 // ++++++++++++++++++++++++++++++++++++++++++++++
@@ -54,7 +54,9 @@ export function ChapterDisplay({
                   if (isBlock) {
                     return (
                       // Container for margin and styling
-                      <div className="my-4 rounded-md overflow-hidden bg-[#0d1117] text-[#c9d1d9]"> {/* Example GitHub dark background */}
+                      <div className="my-4 rounded-md overflow-hidden bg-[#0d1117] text-[#c9d1d9]">
+                        {" "}
+                        {/* Example GitHub dark background */}
                         {/* Use <pre> for the block structure */}
                         <pre className={cn("p-3 overflow-x-auto", className)}>
                           {/* Use <code> inside <pre> for semantic correctness */}
@@ -68,10 +70,10 @@ export function ChapterDisplay({
                     <code
                       className={cn(
                         "bg-muted px-[0.4em] py-[0.2em] rounded text-sm font-mono",
-                        className
+                        className,
                       )}
-                    // Pass other props ONLY if necessary and valid for <code>
-                    // {...props} // Generally avoid spreading unknown props
+                      // Pass other props ONLY if necessary and valid for <code>
+                      // {...props} // Generally avoid spreading unknown props
                     >
                       {children}
                     </code>

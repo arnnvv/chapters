@@ -43,7 +43,8 @@ export function QASidebar({
       // Use setTimeout to allow the DOM to update before scrolling
       setTimeout(() => {
         if (scrollAreaRef.current) {
-          const scrollableViewport = scrollAreaRef.current.children[0] as HTMLElement; // Access the viewport div
+          const scrollableViewport = scrollAreaRef.current
+            .children[0] as HTMLElement; // Access the viewport div
           if (scrollableViewport) {
             scrollableViewport.scrollTop = scrollableViewport.scrollHeight;
           }
@@ -81,10 +82,14 @@ export function QASidebar({
                 <div className="flex justify-start">
                   <div className="bg-muted p-3 rounded-lg max-w-[80%]">
                     {/* Conditional rendering for loading state */}
-                    {isLoading && index === history.length - 1 && !item.answer ? (
+                    {isLoading &&
+                    index === history.length - 1 &&
+                    !item.answer ? (
                       <div className="flex items-center space-x-2 py-1">
                         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Thinking...</span>
+                        <span className="text-sm text-muted-foreground">
+                          Thinking...
+                        </span>
                       </div>
                     ) : (
                       <div className="prose prose-sm dark:prose-invert max-w-none markdown-content text-foreground">
@@ -94,19 +99,31 @@ export function QASidebar({
                           components={{
                             // Consistent code styling
                             code({ node, className, children, ...props }) {
-                              const match = /language-(\w+)/.exec(className || "");
+                              const match = /language-(\w+)/.exec(
+                                className || "",
+                              );
                               const isBlock = !!match;
                               if (isBlock) {
                                 return (
                                   <div className="my-2 rounded-md overflow-hidden bg-muted/50 dark:bg-secondary text-foreground">
-                                    <pre className={cn("p-3 overflow-x-auto text-xs", className)}>
+                                    <pre
+                                      className={cn(
+                                        "p-3 overflow-x-auto text-xs",
+                                        className,
+                                      )}
+                                    >
                                       <code>{children}</code>
                                     </pre>
                                   </div>
                                 );
                               }
                               return (
-                                <code className={cn("bg-muted/50 px-1 py-0.5 rounded text-xs font-mono", className)}>
+                                <code
+                                  className={cn(
+                                    "bg-muted/50 px-1 py-0.5 rounded text-xs font-mono",
+                                    className,
+                                  )}
+                                >
                                   {children}
                                 </code>
                               );
@@ -137,7 +154,7 @@ export function QASidebar({
             className="flex-1 resize-none min-h-[40px] max-h-[150px] text-sm" // Adjusted height
             rows={1} // Start with 1 row, auto-expands
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+              if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
               }

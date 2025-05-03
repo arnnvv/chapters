@@ -32,7 +32,10 @@ export function IndexDrawer({
 
   const handleSelect = (chapterNumber: number) => {
     // Selection allowed unless globally disabled or this specific chapter is loading
-    if (!isGloballyDisabled && currentlyGeneratingChapterNumber !== chapterNumber) {
+    if (
+      !isGloballyDisabled &&
+      currentlyGeneratingChapterNumber !== chapterNumber
+    ) {
       onChapterSelect(chapterNumber);
     }
   };
@@ -62,7 +65,8 @@ export function IndexDrawer({
         </SheetHeader>
         <div className="flex-grow overflow-y-auto py-2">
           {index.map((item) => {
-            const isThisLoading = item.chapter === currentlyGeneratingChapterNumber;
+            const isThisLoading =
+              item.chapter === currentlyGeneratingChapterNumber;
             const isDisabled = isGloballyDisabled || isThisLoading;
             const isCurrent = item.chapter === currentChapter;
 
@@ -82,7 +86,9 @@ export function IndexDrawer({
                   <span className="font-mono text-xs w-8 text-muted-foreground mr-2 shrink-0 pt-0.5">
                     {item.chapter}.
                   </span>
-                  <span className="whitespace-normal break-words flex-grow mr-2">{item.title}</span>
+                  <span className="whitespace-normal break-words flex-grow mr-2">
+                    {item.title}
+                  </span>
                   {/* Add spinner */}
                   <Loader2 className="h-4 w-4 animate-spin shrink-0 text-muted-foreground" />
                 </Button>
@@ -103,7 +109,9 @@ export function IndexDrawer({
                     <span className="font-mono text-xs w-8 text-muted-foreground mr-2 shrink-0 pt-0.5">
                       {item.chapter}.
                     </span>
-                    <span className="whitespace-normal break-words">{item.title}</span>
+                    <span className="whitespace-normal break-words">
+                      {item.title}
+                    </span>
                   </Button>
                 </SheetClose>
               )
