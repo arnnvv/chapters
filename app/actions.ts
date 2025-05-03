@@ -230,7 +230,7 @@ export const deleteConversationAction = async (
       [conversationId, userId],
     );
 
-    if (parseInt(checkResult.rows[0].count, 10) === 0) {
+    if (Number.parseInt(checkResult.rows[0].count, 10) === 0) {
       await client.query("ROLLBACK");
       return {
         success: false,

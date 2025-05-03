@@ -166,13 +166,11 @@ File: next-env.d.ts
 ================================================
 File: next.config.ts
 ================================================
-// File: next.config.ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   experimental: {
     reactCompiler: true,
-    // ppr: "incremental", // Remove or comment out this line
     useCache: true,
   },
 };
@@ -189,11 +187,11 @@ File: package.json
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "format": "pnpm biome format --write .",
+    "d": "next dev",
+    "b": "next build",
+    "st": "next start",
+    "l": "pnpm biome lint --write .",
+    "f": "pnpm biome format --write .",
     "add": "pnpm dlx shadcn-ui@latest add"
   },
   "dependencies": {
@@ -262,6 +260,7 @@ File: package.json
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.20",
+    "babel-plugin-react-compiler": "19.0.0-beta-af1b7da-20250417",
     "postcss": "^8",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
@@ -393,7 +392,7 @@ importers:
         version: 0.454.0(react@19.1.0)
       next:
         specifier: 15.2.4
-        version: 15.2.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 15.2.4(babel-plugin-react-compiler@19.0.0-beta-af1b7da-20250417)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       next-themes:
         specifier: latest
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -473,6 +472,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.21(postcss@8.5.3)
+      babel-plugin-react-compiler:
+        specifier: 19.0.0-beta-af1b7da-20250417
+        version: 19.0.0-beta-af1b7da-20250417
       postcss:
         specifier: ^8
         version: 8.5.3
@@ -489,8 +491,20 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
 
+  '@babel/helper-string-parser@7.27.1':
+    resolution: {integrity: sha512-qMlSxKbpRlAridDExk92nSobyDdpPijUq2DW6oDnUqd0iOGxmQjyqhMIihI9+zv4LPyZdRje2cavWPbCbWm3eA==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/helper-validator-identifier@7.27.1':
+    resolution: {integrity: sha512-D2hP9eA+Sqx1kBZgzxZh0y1trbuU+JoDkiEwqhQ36nodYqJwyEIhPSdMNd7lOm/4io72luTPWH20Yda0xOuUow==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/runtime@7.27.1':
     resolution: {integrity: sha512-1x3D2xEk2fRo3PAhwQwu5UubzgiVWSXTBfWpVd2Mx2AzRqJuDJCsgaDVZ7HB5iGzDW1Hl1sWN2mFyKjmR9uAog==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/types@7.27.1':
+    resolution: {integrity: sha512-+EzkxvLNfiUeKMgy/3luqfsCWFRXLb7U6wNQTk60tovuckwB15B191tJWvpp4HjiQWdJkCxO3Wbvc6jlk3Xb2Q==}
     engines: {node: '>=6.9.0'}
 
   '@biomejs/biome@1.9.4':
@@ -1642,6 +1656,9 @@ packages:
     hasBin: true
     peerDependencies:
       postcss: ^8.1.0
+
+  babel-plugin-react-compiler@19.0.0-beta-af1b7da-20250417:
+    resolution: {integrity: sha512-UyTCRmzpxa4H1EqJk8fWeUOzHdEA12NQZ5DrF5hyhCs+Y6f7B4pg1fkul49sRn9GPPGFgkrH4IxOtnQJ7tNXIA==}
 
   bail@2.0.2:
     resolution: {integrity: sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==}
@@ -2835,7 +2852,16 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
+  '@babel/helper-string-parser@7.27.1': {}
+
+  '@babel/helper-validator-identifier@7.27.1': {}
+
   '@babel/runtime@7.27.1': {}
+
+  '@babel/types@7.27.1':
+    dependencies:
+      '@babel/helper-string-parser': 7.27.1
+      '@babel/helper-validator-identifier': 7.27.1
 
   '@biomejs/biome@1.9.4':
     optionalDependencies:
@@ -3917,6 +3943,10 @@ snapshots:
       postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
+  babel-plugin-react-compiler@19.0.0-beta-af1b7da-20250417:
+    dependencies:
+      '@babel/types': 7.27.1
+
   bail@2.0.2: {}
 
   balanced-match@1.0.2: {}
@@ -4740,7 +4770,7 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
-  next@15.2.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  next@15.2.4(babel-plugin-react-compiler@19.0.0-beta-af1b7da-20250417)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       '@next/env': 15.2.4
       '@swc/counter': 0.1.3
@@ -4760,6 +4790,7 @@ snapshots:
       '@next/swc-linux-x64-musl': 15.2.4
       '@next/swc-win32-arm64-msvc': 15.2.4
       '@next/swc-win32-x64-msvc': 15.2.4
+      babel-plugin-react-compiler: 19.0.0-beta-af1b7da-20250417
       sharp: 0.33.5
     transitivePeerDependencies:
       - '@babel/core'
@@ -5436,9 +5467,9 @@ const config = {
     tailwindcss: {},
     autoprefixer: {}, // Ensure autoprefixer is listed if added to devDependencies
   },
-}
+};
 
-export default config
+export default config;
 
 
 
@@ -5505,20 +5536,20 @@ const config: Config = {
           DEFAULT: "hsl(var(--sidebar-background))", // Renamed from --sidebar
           foreground: "hsl(var(--sidebar-foreground))",
           primary: "hsl(var(--sidebar-primary))",
-          'primary-foreground': "hsl(var(--sidebar-primary-foreground))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
           accent: "hsl(var(--sidebar-accent))",
-          'accent-foreground': "hsl(var(--sidebar-accent-foreground))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
         // Added chart colors from target CSS variables
         chart: {
-          '1': "hsl(var(--chart-1))",
-          '2': "hsl(var(--chart-2))",
-          '3': "hsl(var(--chart-3))",
-          '4': "hsl(var(--chart-4))",
-          '5': "hsl(var(--chart-5))",
-        }
+          "1": "hsl(var(--chart-1))",
+          "2": "hsl(var(--chart-2))",
+          "3": "hsl(var(--chart-3))",
+          "4": "hsl(var(--chart-4))",
+          "5": "hsl(var(--chart-5))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -5545,7 +5576,8 @@ const config: Config = {
         "accordion-up": "accordion-up 0.2s ease-out",
         "caret-blink": "caret-blink 1.25s ease-out infinite", // Added caret-blink
       },
-      fontFamily: { // Assuming Inter is still desired
+      fontFamily: {
+        // Assuming Inter is still desired
         sans: ["var(--font-sans)", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"], // Keep if needed
       },
@@ -5825,16 +5857,19 @@ export const deleteConversationAction = async (
       [conversationId, userId],
     );
 
-    if (parseInt(checkResult.rows[0].count, 10) === 0) {
+    if (Number.parseInt(checkResult.rows[0].count, 10) === 0) {
       await client.query("ROLLBACK");
-      return { success: false, message: "Conversation not found or access denied." };
+      return {
+        success: false,
+        message: "Conversation not found or access denied.",
+      };
     }
 
     // Delete the conversation (cascades should handle related items)
-    await client.query("DELETE FROM conversations WHERE id = $1 AND user_id = $2", [
-      conversationId,
-      userId,
-    ]);
+    await client.query(
+      "DELETE FROM conversations WHERE id = $1 AND user_id = $2",
+      [conversationId, userId],
+    );
 
     await client.query("COMMIT");
     return { success: true, message: "Conversation deleted successfully." };
@@ -5842,7 +5877,10 @@ export const deleteConversationAction = async (
     await client.query("ROLLBACK");
     console.error("Error deleting conversation:", error);
     const message = error instanceof Error ? error.message : "Database error.";
-    return { success: false, message: `Failed to delete conversation: ${message}` };
+    return {
+      success: false,
+      message: `Failed to delete conversation: ${message}`,
+    };
   } finally {
     client.release();
   }
@@ -5858,7 +5896,7 @@ File: app/globals.css
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@import "highlight.js/styles/github-dark.css";
 @layer base {
   :root {
     /* Default Theme (Light) - Based on ai-teaching-assistant globals.css */
@@ -5934,7 +5972,7 @@ File: app/globals.css
     --sidebar-border: 240 3.7% 15.9%; /* neutral-800 */
     --sidebar-ring: 217.2 91.2% 59.8%; /* blue-500 */
 
-     /* Chart Colors (Dark - Example, adjust if needed) */
+    /* Chart Colors (Dark - Example, adjust if needed) */
     --chart-1: 220 70% 50%; /* Example */
     --chart-2: 160 60% 45%; /* Example */
     --chart-3: 30 80% 55%; /* Example */
@@ -6057,21 +6095,48 @@ File: app/globals.css
 
 /* Keep animations if needed by Shadcn components */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
-.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
 
-@keyframes spin { to { transform: rotate(360deg); } }
-.animate-spin { animation: spin 1s linear infinite; }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
 
 /* Keep transitions if needed by Shadcn components */
-.transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
-.transition-opacity { transition-property: opacity; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
-.transition-transform { transition-property: transform; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.transition-opacity {
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
 
 /* Keep focus styles if needed by Shadcn components */
-.focus-ring { @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background; }
+.focus-ring {
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+}
 
 
 
@@ -6086,14 +6151,16 @@ import { Toaster } from "sonner"; // Use sonner directly
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const inter = Inter({ // Changed variable name to match target
+const inter = Inter({
+  // Changed variable name to match target
   subsets: ["latin"],
   variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
   title: "Chapters | AI Document Teaching Assistant", // Updated title
-  description: "Learn from any document with AI-powered chapter explanations and interactive Q&A", // Updated description
+  description:
+    "Learn from any document with AI-powered chapter explanations and interactive Q&A", // Updated description
   // Add favicon link if you have one in public/
   // icons: {
   //   icon: "/favicon.ico",
@@ -6103,7 +6170,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1.0,
-  themeColor: [ // Added themeColor from target
+  themeColor: [
+    // Added themeColor from target
     { media: "(prefers-color-scheme: light)", color: "white" },
     { media: "(prefers-color-scheme: dark)", color: "#0f172a" }, // Example dark color
   ],
@@ -6120,7 +6188,7 @@ export default function RootLayout({
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
-          inter.variable // Use the correct font variable
+          inter.variable, // Use the correct font variable
         )}
       >
         {/* Wrap with ThemeProvider */}
@@ -6202,19 +6270,19 @@ type ChatAction =
   | { type: "INITIALIZE"; payload: { user: UserData } } // Action to set initial user
   | { type: "START_INDEXING"; payload: { content: string; background: string } }
   | {
-    type: "INDEX_SUCCESS";
-    payload: { index: ChapterIndexItem[]; conversationId: number };
-  }
+      type: "INDEX_SUCCESS";
+      payload: { index: ChapterIndexItem[]; conversationId: number };
+    }
   | { type: "INDEX_FAIL"; payload: { error: string } }
   | { type: "START_CHAPTER_GENERATION"; payload: { chapterNumber: number } }
   | {
-    type: "CHAPTER_GENERATION_SUCCESS";
-    payload: { chapterNumber: number; content: string };
-  }
+      type: "CHAPTER_GENERATION_SUCCESS";
+      payload: { chapterNumber: number; content: string };
+    }
   | {
-    type: "CHAPTER_GENERATION_FAIL";
-    payload: { chapterNumber: number; error: string };
-  }
+      type: "CHAPTER_GENERATION_FAIL";
+      payload: { chapterNumber: number; error: string };
+    }
   | { type: "SET_DISPLAYED_CHAPTER"; payload: { chapterNumber: number } }
   | { type: "START_ANSWERING"; payload: { question: string } }
   | { type: "ANSWERING_SUCCESS"; payload: { answer: string } }
@@ -6223,9 +6291,9 @@ type ChatAction =
   | { type: "LOAD_CONVERSATION_SUCCESS"; payload: ConversationDetails }
   | { type: "LOAD_CONVERSATION_FAIL"; payload: { error: string } }
   | {
-    type: "PREFETCH_CHAPTER_SUCCESS";
-    payload: { chapterNumber: number; content: string };
-  }
+      type: "PREFETCH_CHAPTER_SUCCESS";
+      payload: { chapterNumber: number; content: string };
+    }
   | { type: "RESET" };
 
 const initialState: ChatState = {
@@ -6291,13 +6359,17 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
       return {
         ...state,
         // Keep status as generatingChapter if already generating, otherwise set it
-        status: state.status === "generatingChapter" ? state.status : "generatingChapter",
+        status:
+          state.status === "generatingChapter"
+            ? state.status
+            : "generatingChapter",
         // Update the target chapter number
         generatingChapterNumber: action.payload.chapterNumber,
         error: null,
       };
     case "CHAPTER_GENERATION_SUCCESS": {
-      const isGeneratingChapterTheCurrentTarget = state.generatingChapterNumber === action.payload.chapterNumber;
+      const isGeneratingChapterTheCurrentTarget =
+        state.generatingChapterNumber === action.payload.chapterNumber;
       return {
         ...state,
         // If this was the chapter we were actively waiting for, go back to idle
@@ -6330,17 +6402,24 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
     }
     case "CHAPTER_GENERATION_FAIL":
       // Only set error status if the failed chapter was the one actively being generated
-      const wasActivelyGenerating = state.generatingChapterNumber === action.payload.chapterNumber;
+      const wasActivelyGenerating =
+        state.generatingChapterNumber === action.payload.chapterNumber;
       return {
         ...state,
         status: wasActivelyGenerating ? "error" : state.status, // Revert to idle or previous error if prefetch failed
         error: action.payload.error,
         // Clear generating number only if it matches the one that failed
-        generatingChapterNumber: wasActivelyGenerating ? null : state.generatingChapterNumber,
+        generatingChapterNumber: wasActivelyGenerating
+          ? null
+          : state.generatingChapterNumber,
       };
     case "SET_DISPLAYED_CHAPTER":
       // Allow changing display even if prefetching, but not if *actively* generating
-      if (state.status === 'generatingChapter' && state.generatingChapterNumber === action.payload.chapterNumber) return state;
+      if (
+        state.status === "generatingChapter" &&
+        state.generatingChapterNumber === action.payload.chapterNumber
+      )
+        return state;
       if (!state.generatedChapters[action.payload.chapterNumber]) {
         // If chapter not generated yet, trigger generation
         // Need to dispatch START_CHAPTER_GENERATION from the handler instead
@@ -6410,12 +6489,21 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
         },
         {} as Record<number, string>,
       );
-      const chapterNumbers = Object.keys(initialChapters).map(Number).filter(num => !isNaN(num));
-      const firstGeneratedChapter = chapterNumbers.length > 0 ? Math.min(...chapterNumbers) : Infinity;
+      const chapterNumbers = Object.keys(initialChapters)
+        .map(Number)
+        .filter((num) => !isNaN(num));
+      const firstGeneratedChapter =
+        chapterNumbers.length > 0
+          ? Math.min(...chapterNumbers)
+          : Number.POSITIVE_INFINITY;
 
-      const initialChapterNum = firstGeneratedChapter === Infinity ? 0 : firstGeneratedChapter;
+      const initialChapterNum =
+        firstGeneratedChapter === Number.POSITIVE_INFINITY
+          ? 0
+          : firstGeneratedChapter;
       // Determine if we need to generate the *first* chapter of the index
-      const needsFirstChapterGeneration = simpleIndex.length > 0 && !initialChapters[1];
+      const needsFirstChapterGeneration =
+        simpleIndex.length > 0 && !initialChapters[1];
 
       return {
         ...initialState, // Reset state but keep user
@@ -6447,8 +6535,11 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
 
 export default function HomePage() {
   const [state, dispatch] = useReducer(chatReducer, initialState);
-  const [conversationList, setConversationList] = useState<ConversationListItem[]>([]);
-  const [isLoadingConversations, setIsLoadingConversations] = useState<boolean>(true);
+  const [conversationList, setConversationList] = useState<
+    ConversationListItem[]
+  >([]);
+  const [isLoadingConversations, setIsLoadingConversations] =
+    useState<boolean>(true);
   const [userData, setUserData] = useState<UserData | null>(null);
   const router = useRouter(); // Keep using next router
   const isPrefetchingRef = useRef(false);
@@ -6496,159 +6587,190 @@ export default function HomePage() {
   }, []); // Empty dependency array is fine here
 
   // --- Content Submission Handler ---
-  const handleContentSubmit = useCallback(async (text: string, background: string) => {
-    if (!background.trim()) {
-      toast.error("Please describe your background knowledge.");
-      return;
-    }
-    prefetchTargetRef.current = null; // Reset prefetch on new submission
-    isPrefetchingRef.current = false;
-
-    dispatch({
-      type: "START_INDEXING",
-      payload: { content: text, background },
-    });
-    toast.info("Generating document index...");
-
-    try {
-      const response = await fetch("/api/generate-index", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: text, userBackground: background }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || `HTTP error! status: ${response.status}`,
-        );
+  const handleContentSubmit = useCallback(
+    async (text: string, background: string) => {
+      if (!background.trim()) {
+        toast.error("Please describe your background knowledge.");
+        return;
       }
+      prefetchTargetRef.current = null; // Reset prefetch on new submission
+      isPrefetchingRef.current = false;
 
-      const data = (await response.json()) as GenerateIndexApiResponse;
-      if (data.index && data.index.length > 0 && data.conversationId) {
-        dispatch({
-          type: "INDEX_SUCCESS",
-          payload: { index: data.index, conversationId: data.conversationId },
-        });
-        await fetchConversations(); // Refresh conversation list
-        toast.success("Index generated. Loading first chapter...");
-        // Effect hook will handle fetching chapter 1 based on state change
-      } else {
-        throw new Error("Invalid response when generating index.");
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error.";
       dispatch({
-        type: "INDEX_FAIL",
-        payload: { error: `Failed to generate index: ${message}` },
+        type: "START_INDEXING",
+        payload: { content: text, background },
       });
-      toast.error(`Failed to generate index: ${message}`);
-    }
-  }, [dispatch, fetchConversations]); // Add fetchConversations
+      toast.info("Generating document index...");
+
+      try {
+        const response = await fetch("/api/generate-index", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: text, userBackground: background }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error || `HTTP error! status: ${response.status}`,
+          );
+        }
+
+        const data = (await response.json()) as GenerateIndexApiResponse;
+        if (data.index && data.index.length > 0 && data.conversationId) {
+          dispatch({
+            type: "INDEX_SUCCESS",
+            payload: { index: data.index, conversationId: data.conversationId },
+          });
+          await fetchConversations(); // Refresh conversation list
+          toast.success("Index generated. Loading first chapter...");
+          // Effect hook will handle fetching chapter 1 based on state change
+        } else {
+          throw new Error("Invalid response when generating index.");
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unknown error.";
+        dispatch({
+          type: "INDEX_FAIL",
+          payload: { error: `Failed to generate index: ${message}` },
+        });
+        toast.error(`Failed to generate index: ${message}`);
+      }
+    },
+    [dispatch, fetchConversations],
+  ); // Add fetchConversations
 
   // --- Chapter Content Fetching Logic ---
-  const fetchChapterContent = useCallback(async (chapterNumber: number, isPrefetch: boolean = false) => {
-    if (
-      !state.originalContent ||
-      state.chapterIndex.length === 0 ||
-      chapterNumber < 1 ||
-      chapterNumber > state.chapterIndex.length ||
-      !state.userBackground ||
-      !state.conversationId
-    ) {
-      if (isPrefetch) isPrefetchingRef.current = false;
-      return;
-    }
-
-    // If already generated: display if user-initiated, or skip if prefetch
-    if (state.generatedChapters[chapterNumber]) {
-      if (!isPrefetch && state.status !== 'generatingChapter') {
-        dispatch({ type: "SET_DISPLAYED_CHAPTER", payload: { chapterNumber } });
+  const fetchChapterContent = useCallback(
+    async (chapterNumber: number, isPrefetch = false) => {
+      if (
+        !state.originalContent ||
+        state.chapterIndex.length === 0 ||
+        chapterNumber < 1 ||
+        chapterNumber > state.chapterIndex.length ||
+        !state.userBackground ||
+        !state.conversationId
+      ) {
+        if (isPrefetch) isPrefetchingRef.current = false;
+        return;
       }
-      if (isPrefetch) {
-        prefetchTargetRef.current = chapterNumber + 1; // Target next one
-        isPrefetchingRef.current = false; // Done with this one
-      }
-      return;
-    }
 
-    // Prevent starting a new *user-initiated* fetch if already generating another chapter
-    if (!isPrefetch && state.status === 'generatingChapter' && state.generatingChapterNumber !== chapterNumber) {
-      toast.info(`Please wait for Chapter ${state.generatingChapterNumber} to load.`);
-      return;
-    }
-
-    // Prevent starting a *prefetch* if a user-initiated fetch is active
-    if (isPrefetch && state.status === 'generatingChapter') {
-      isPrefetchingRef.current = false; // Cancel prefetch attempt
-      prefetchTargetRef.current = null;
-      return;
-    }
-
-
-    if (!isPrefetch) {
-      prefetchTargetRef.current = null; // Cancel prefetch if user initiates
-      isPrefetchingRef.current = false;
-      dispatch({ type: "START_CHAPTER_GENERATION", payload: { chapterNumber } });
-    } else {
-      isPrefetchingRef.current = true; // Mark as prefetching
-    }
-
-    try {
-      // Prepare context of previous chapters (summary might be better for long content)
-      const previousChaptersContext: Record<string | number, string> = {};
-      Object.keys(state.generatedChapters).forEach((key) => {
-        const num = Number.parseInt(key, 10);
-        if (!isNaN(num) && num < chapterNumber) {
-          // Simple truncation for context
-          const content = state.generatedChapters[num];
-          previousChaptersContext[num] = content.length > 500 ? content.substring(0, 500) + "..." : content;
+      // If already generated: display if user-initiated, or skip if prefetch
+      if (state.generatedChapters[chapterNumber]) {
+        if (!isPrefetch && state.status !== "generatingChapter") {
+          dispatch({
+            type: "SET_DISPLAYED_CHAPTER",
+            payload: { chapterNumber },
+          });
         }
-      });
-
-      const response = await fetch("/api/generate-chapter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          conversationId: state.conversationId,
-          targetChapterNumber: chapterNumber,
-          fullContent: state.originalContent,
-          userBackground: state.userBackground,
-          generatedChapters: previousChaptersContext, // Send summarized context
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        if (isPrefetch) {
+          prefetchTargetRef.current = chapterNumber + 1; // Target next one
+          isPrefetchingRef.current = false; // Done with this one
+        }
+        return;
       }
 
-      const data = (await response.json()) as GenerateChapterResponse;
-
-      if (isPrefetch) {
-        dispatch({ type: "PREFETCH_CHAPTER_SUCCESS", payload: { chapterNumber, content: data.chapterContent } });
-        prefetchTargetRef.current = chapterNumber + 1; // Target next
-        isPrefetchingRef.current = false; // Done prefetching this one
-      } else {
-        dispatch({ type: "CHAPTER_GENERATION_SUCCESS", payload: { chapterNumber, content: data.chapterContent } });
-        isPrefetchingRef.current = false; // Ensure prefetch flag is off
-        prefetchTargetRef.current = chapterNumber + 1; // Set target for next prefetch
+      // Prevent starting a new *user-initiated* fetch if already generating another chapter
+      if (
+        !isPrefetch &&
+        state.status === "generatingChapter" &&
+        state.generatingChapterNumber !== chapterNumber
+      ) {
+        toast.info(
+          `Please wait for Chapter ${state.generatingChapterNumber} to load.`,
+        );
+        return;
       }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error.";
-      dispatch({
-        type: "CHAPTER_GENERATION_FAIL",
-        payload: { chapterNumber, error: `Failed to load chapter ${chapterNumber}: ${message}` },
-      });
+
+      // Prevent starting a *prefetch* if a user-initiated fetch is active
+      if (isPrefetch && state.status === "generatingChapter") {
+        isPrefetchingRef.current = false; // Cancel prefetch attempt
+        prefetchTargetRef.current = null;
+        return;
+      }
+
       if (!isPrefetch) {
-        toast.error(`Failed to load chapter ${chapterNumber}: ${message}`);
+        prefetchTargetRef.current = null; // Cancel prefetch if user initiates
+        isPrefetchingRef.current = false;
+        dispatch({
+          type: "START_CHAPTER_GENERATION",
+          payload: { chapterNumber },
+        });
       } else {
-        console.warn(`Prefetch failed for chapter ${chapterNumber}: ${message}`);
+        isPrefetchingRef.current = true; // Mark as prefetching
       }
-      isPrefetchingRef.current = false; // Reset prefetch flag on error
-      prefetchTargetRef.current = null;
-    }
-  },
+
+      try {
+        // Prepare context of previous chapters (summary might be better for long content)
+        const previousChaptersContext: Record<string | number, string> = {};
+        Object.keys(state.generatedChapters).forEach((key) => {
+          const num = Number.parseInt(key, 10);
+          if (!isNaN(num) && num < chapterNumber) {
+            // Simple truncation for context
+            const content = state.generatedChapters[num];
+            previousChaptersContext[num] =
+              content.length > 500
+                ? content.substring(0, 500) + "..."
+                : content;
+          }
+        });
+
+        const response = await fetch("/api/generate-chapter", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            conversationId: state.conversationId,
+            targetChapterNumber: chapterNumber,
+            fullContent: state.originalContent,
+            userBackground: state.userBackground,
+            generatedChapters: previousChaptersContext, // Send summarized context
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error || `HTTP error! status: ${response.status}`,
+          );
+        }
+
+        const data = (await response.json()) as GenerateChapterResponse;
+
+        if (isPrefetch) {
+          dispatch({
+            type: "PREFETCH_CHAPTER_SUCCESS",
+            payload: { chapterNumber, content: data.chapterContent },
+          });
+          prefetchTargetRef.current = chapterNumber + 1; // Target next
+          isPrefetchingRef.current = false; // Done prefetching this one
+        } else {
+          dispatch({
+            type: "CHAPTER_GENERATION_SUCCESS",
+            payload: { chapterNumber, content: data.chapterContent },
+          });
+          isPrefetchingRef.current = false; // Ensure prefetch flag is off
+          prefetchTargetRef.current = chapterNumber + 1; // Set target for next prefetch
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unknown error.";
+        dispatch({
+          type: "CHAPTER_GENERATION_FAIL",
+          payload: {
+            chapterNumber,
+            error: `Failed to load chapter ${chapterNumber}: ${message}`,
+          },
+        });
+        if (!isPrefetch) {
+          toast.error(`Failed to load chapter ${chapterNumber}: ${message}`);
+        } else {
+          console.warn(
+            `Prefetch failed for chapter ${chapterNumber}: ${message}`,
+          );
+        }
+        isPrefetchingRef.current = false; // Reset prefetch flag on error
+        prefetchTargetRef.current = null;
+      }
+    },
     [
       state.conversationId,
       state.originalContent,
@@ -6658,12 +6780,16 @@ export default function HomePage() {
       state.status,
       state.generatingChapterNumber,
       dispatch,
-    ]
+    ],
   );
 
   // --- Prefetching Logic ---
   const startPrefetchSequence = useCallback(async () => {
-    if (isPrefetchingRef.current || !prefetchTargetRef.current || state.status !== 'idle') {
+    if (
+      isPrefetchingRef.current ||
+      !prefetchTargetRef.current ||
+      state.status !== "idle"
+    ) {
       return;
     }
     const target = prefetchTargetRef.current;
@@ -6674,15 +6800,22 @@ export default function HomePage() {
     await fetchChapterContent(target, true);
   }, [state.status, state.chapterIndex.length, fetchChapterContent]);
 
-
   // Effect to trigger initial chapter fetch and subsequent pre-fetching
   useEffect(() => {
     // 1. Fetch Chapter 1 after index success if needed
-    if (state.status === "generatingChapter" && state.generatingChapterNumber === 1 && !state.generatedChapters[1]) {
+    if (
+      state.status === "generatingChapter" &&
+      state.generatingChapterNumber === 1 &&
+      !state.generatedChapters[1]
+    ) {
       fetchChapterContent(1, false);
     }
     // 2. Start or continue pre-fetching when idle and not already prefetching
-    else if (state.status === 'idle' && state.conversationId !== null && !isPrefetchingRef.current) {
+    else if (
+      state.status === "idle" &&
+      state.conversationId !== null &&
+      !isPrefetchingRef.current
+    ) {
       // Determine the next logical chapter to prefetch
       const nextLogicalChapter = (state.currentChapterNumber || 0) + 1;
 
@@ -6703,12 +6836,15 @@ export default function HomePage() {
       }
 
       // If we have a valid target, start the sequence
-      if (prefetchTargetRef.current && prefetchTargetRef.current <= state.chapterIndex.length) {
+      if (
+        prefetchTargetRef.current &&
+        prefetchTargetRef.current <= state.chapterIndex.length
+      ) {
         startPrefetchSequence();
       }
     }
     // 3. Cancel prefetch if state becomes busy
-    else if (state.status !== 'idle' && state.status !== 'generatingChapter') {
+    else if (state.status !== "idle" && state.status !== "generatingChapter") {
       isPrefetchingRef.current = false;
       prefetchTargetRef.current = null;
     }
@@ -6720,176 +6856,224 @@ export default function HomePage() {
     state.generatedChapters,
     state.chapterIndex.length,
     fetchChapterContent,
-    startPrefetchSequence
+    startPrefetchSequence,
   ]);
-
 
   // --- Other Handlers (Load Conversation, Ask Question, Delete, New) ---
   // (These remain largely the same as in your ChatContainer, just ensure they use the `dispatch` from this component's scope)
 
-
-  const handleLoadConversation = useCallback(async (id: number) => {
-    if (state.status === "loadingConversation" && state.conversationId === id) return;
-    if (state.status !== 'idle' && state.status !== 'error') {
-      toast.info("Please wait for the current action to complete.");
-      return;
-    }
-
-    prefetchTargetRef.current = null; // Reset prefetch
-    isPrefetchingRef.current = false;
-
-    dispatch({ type: "LOAD_CONVERSATION_START", payload: { conversationId: id } });
-    toast.info("Loading conversation...");
-
-    try {
-      const result = await getConversationDetails(id);
-
-      // --- CORRECTED PART ---
-      if (result.success) {
-        // Check if details exist (should always be true if success is true based on action return type)
-        if (result.details) {
-          dispatch({ type: "LOAD_CONVERSATION_SUCCESS", payload: result.details });
-          toast.success("Conversation loaded successfully");
-          // Effect hook will trigger chapter 1 fetch if needed by the state change
-        } else {
-          // This case should theoretically not happen if the action type is correct
-          throw new Error("Conversation loaded successfully but details are missing.");
-        }
-      } else {
-        // Only access result.error when success is false
-        const errorMessage = result.error || "Failed to load conversation details.";
-        dispatch({ type: "LOAD_CONVERSATION_FAIL", payload: { error: errorMessage } });
-        toast.error(errorMessage);
+  const handleLoadConversation = useCallback(
+    async (id: number) => {
+      if (state.status === "loadingConversation" && state.conversationId === id)
+        return;
+      if (state.status !== "idle" && state.status !== "error") {
+        toast.info("Please wait for the current action to complete.");
+        return;
       }
-      // --- END OF CORRECTION ---
 
-    } catch (error) {
-      // Catch errors from the `await getConversationDetails` call itself or the new Error thrown above
-      const message = error instanceof Error ? error.message : "Unknown error occurred";
-      dispatch({ type: "LOAD_CONVERSATION_FAIL", payload: { error: `Failed to load conversation: ${message}` } });
-      toast.error(`Failed to load conversation: ${message}`);
-      console.error("Load conversation error:", error); // Log the error for debugging
-    }
-  }, [state.status, state.conversationId, dispatch]); // Keep dependencies
+      prefetchTargetRef.current = null; // Reset prefetch
+      isPrefetchingRef.current = false;
 
-
-
-  const handleAskQuestion = useCallback(async (question: string) => {
-    if (!state.conversationId || !state.originalContent || !state.userBackground) {
-      toast.warning("Cannot ask question without an active conversation.");
-      return;
-    }
-    if (state.status === "generatingChapter") {
-      toast.info(`Please wait for Chapter ${state.generatingChapterNumber} to load.`);
-      return;
-    }
-    if (state.status === "answering") {
-      toast.info("Please wait for the current answer.");
-      return;
-    }
-
-
-    prefetchTargetRef.current = null; // Stop prefetch when asking
-    isPrefetchingRef.current = false;
-
-    dispatch({ type: "START_ANSWERING", payload: { question } });
-
-    try {
-      const response = await fetch("/api/ask-question", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          conversationId: state.conversationId,
-          fullContent: state.originalContent,
-          generatedChapters: state.generatedChapters,
-          qaHistory: state.qaHistory, // Send current history *before* adding the new question locally
-          userQuestion: question,
-          userBackground: state.userBackground,
-        }),
+      dispatch({
+        type: "LOAD_CONVERSATION_START",
+        payload: { conversationId: id },
       });
+      toast.info("Loading conversation...");
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-      }
+      try {
+        const result = await getConversationDetails(id);
 
-      const data = (await response.json()) as AskQuestionResponse;
-      dispatch({ type: "ANSWERING_SUCCESS", payload: { answer: data.answer } });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error.";
-      dispatch({ type: "ANSWERING_FAIL", payload: { error: `Failed to get answer: ${message}` } });
-      toast.error(`Failed to get answer: ${message}`);
-    }
-  }, [
-    state.conversationId,
-    state.originalContent,
-    state.userBackground,
-    state.generatedChapters,
-    state.qaHistory,
-    state.status,
-    state.generatingChapterNumber,
-    dispatch,
-  ]);
-
-  const handleDeleteConversation = useCallback(async (idToDelete: number) => {
-    if (state.status === 'loadingConversation' && state.conversationId === idToDelete) {
-      toast.warning("Cannot delete conversation while it's loading.");
-      return;
-    }
-    if (state.status !== 'idle' && state.status !== 'error') {
-      toast.info("Please wait for the current action to complete before deleting.");
-      return;
-    }
-
-    // Add confirmation dialog here if desired
-
-    try {
-      const result = await deleteConversationAction(idToDelete);
-      if (result.success) {
-        toast.success(result.message);
-        // Optimistically update UI or refetch
-        setConversationList((prev) => prev.filter((c) => c.id !== idToDelete));
-        if (state.conversationId === idToDelete) {
-          prefetchTargetRef.current = null;
-          isPrefetchingRef.current = false;
-          dispatch({ type: "RESET" }); // Reset if deleting the active one
+        // --- CORRECTED PART ---
+        if (result.success) {
+          // Check if details exist (should always be true if success is true based on action return type)
+          if (result.details) {
+            dispatch({
+              type: "LOAD_CONVERSATION_SUCCESS",
+              payload: result.details,
+            });
+            toast.success("Conversation loaded successfully");
+            // Effect hook will trigger chapter 1 fetch if needed by the state change
+          } else {
+            // This case should theoretically not happen if the action type is correct
+            throw new Error(
+              "Conversation loaded successfully but details are missing.",
+            );
+          }
+        } else {
+          // Only access result.error when success is false
+          const errorMessage =
+            result.error || "Failed to load conversation details.";
+          dispatch({
+            type: "LOAD_CONVERSATION_FAIL",
+            payload: { error: errorMessage },
+          });
+          toast.error(errorMessage);
         }
-      } else {
-        toast.error(result.message || "Failed to delete conversation");
+        // --- END OF CORRECTION ---
+      } catch (error) {
+        // Catch errors from the `await getConversationDetails` call itself or the new Error thrown above
+        const message =
+          error instanceof Error ? error.message : "Unknown error occurred";
+        dispatch({
+          type: "LOAD_CONVERSATION_FAIL",
+          payload: { error: `Failed to load conversation: ${message}` },
+        });
+        toast.error(`Failed to load conversation: ${message}`);
+        console.error("Load conversation error:", error); // Log the error for debugging
       }
-    } catch (error) {
-      toast.error("An error occurred while deleting the conversation");
-      console.error("Delete conversation error:", error);
-    }
-  }, [state.conversationId, state.status, dispatch]);
+    },
+    [state.status, state.conversationId, dispatch],
+  ); // Keep dependencies
+
+  const handleAskQuestion = useCallback(
+    async (question: string) => {
+      if (
+        !state.conversationId ||
+        !state.originalContent ||
+        !state.userBackground
+      ) {
+        toast.warning("Cannot ask question without an active conversation.");
+        return;
+      }
+      if (state.status === "generatingChapter") {
+        toast.info(
+          `Please wait for Chapter ${state.generatingChapterNumber} to load.`,
+        );
+        return;
+      }
+      if (state.status === "answering") {
+        toast.info("Please wait for the current answer.");
+        return;
+      }
+
+      prefetchTargetRef.current = null; // Stop prefetch when asking
+      isPrefetchingRef.current = false;
+
+      dispatch({ type: "START_ANSWERING", payload: { question } });
+
+      try {
+        const response = await fetch("/api/ask-question", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            conversationId: state.conversationId,
+            fullContent: state.originalContent,
+            generatedChapters: state.generatedChapters,
+            qaHistory: state.qaHistory, // Send current history *before* adding the new question locally
+            userQuestion: question,
+            userBackground: state.userBackground,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error || `HTTP error! status: ${response.status}`,
+          );
+        }
+
+        const data = (await response.json()) as AskQuestionResponse;
+        dispatch({
+          type: "ANSWERING_SUCCESS",
+          payload: { answer: data.answer },
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unknown error.";
+        dispatch({
+          type: "ANSWERING_FAIL",
+          payload: { error: `Failed to get answer: ${message}` },
+        });
+        toast.error(`Failed to get answer: ${message}`);
+      }
+    },
+    [
+      state.conversationId,
+      state.originalContent,
+      state.userBackground,
+      state.generatedChapters,
+      state.qaHistory,
+      state.status,
+      state.generatingChapterNumber,
+      dispatch,
+    ],
+  );
+
+  const handleDeleteConversation = useCallback(
+    async (idToDelete: number) => {
+      if (
+        state.status === "loadingConversation" &&
+        state.conversationId === idToDelete
+      ) {
+        toast.warning("Cannot delete conversation while it's loading.");
+        return;
+      }
+      if (state.status !== "idle" && state.status !== "error") {
+        toast.info(
+          "Please wait for the current action to complete before deleting.",
+        );
+        return;
+      }
+
+      // Add confirmation dialog here if desired
+
+      try {
+        const result = await deleteConversationAction(idToDelete);
+        if (result.success) {
+          toast.success(result.message);
+          // Optimistically update UI or refetch
+          setConversationList((prev) =>
+            prev.filter((c) => c.id !== idToDelete),
+          );
+          if (state.conversationId === idToDelete) {
+            prefetchTargetRef.current = null;
+            isPrefetchingRef.current = false;
+            dispatch({ type: "RESET" }); // Reset if deleting the active one
+          }
+        } else {
+          toast.error(result.message || "Failed to delete conversation");
+        }
+      } catch (error) {
+        toast.error("An error occurred while deleting the conversation");
+        console.error("Delete conversation error:", error);
+      }
+    },
+    [state.conversationId, state.status, dispatch],
+  );
 
   const handleNewConversation = useCallback(() => {
-    if (state.status !== 'idle' && state.status !== 'error') {
+    if (state.status !== "idle" && state.status !== "error") {
       toast.warning("Please wait for the current action to finish.");
       return;
     }
     prefetchTargetRef.current = null;
     isPrefetchingRef.current = false;
-    dispatch({ type: 'RESET' });
+    dispatch({ type: "RESET" });
   }, [dispatch, state.status]);
 
   // --- Chapter Selection and Navigation ---
-  const handleChapterSelect = useCallback((chapterNumber: number) => {
-    // Check if the chapter content is already available
-    if (state.generatedChapters[chapterNumber]) {
-      dispatch({ type: "SET_DISPLAYED_CHAPTER", payload: { chapterNumber } });
-    } else {
-      // If not available, trigger fetch (user-initiated)
-      fetchChapterContent(chapterNumber, false);
-    }
-  }, [state.generatedChapters, fetchChapterContent, dispatch]);
+  const handleChapterSelect = useCallback(
+    (chapterNumber: number) => {
+      // Check if the chapter content is already available
+      if (state.generatedChapters[chapterNumber]) {
+        dispatch({ type: "SET_DISPLAYED_CHAPTER", payload: { chapterNumber } });
+      } else {
+        // If not available, trigger fetch (user-initiated)
+        fetchChapterContent(chapterNumber, false);
+      }
+    },
+    [state.generatedChapters, fetchChapterContent, dispatch],
+  );
 
   const handleNextChapter = useCallback(() => {
     const nextChapter = (state.currentChapterNumber || 0) + 1;
     if (nextChapter <= state.chapterIndex.length) {
       handleChapterSelect(nextChapter); // Use handleChapterSelect to fetch if needed
     }
-  }, [state.currentChapterNumber, state.chapterIndex.length, handleChapterSelect]);
+  }, [
+    state.currentChapterNumber,
+    state.chapterIndex.length,
+    handleChapterSelect,
+  ]);
 
   const handlePrevChapter = useCallback(() => {
     const prevChapter = (state.currentChapterNumber || 0) - 1;
@@ -6900,19 +7084,30 @@ export default function HomePage() {
 
   // --- Derived State ---
   const currentChapterTitle =
-    state.chapterIndex.find((item) => item.chapter === state.currentChapterNumber)?.title || "";
+    state.chapterIndex.find(
+      (item) => item.chapter === state.currentChapterNumber,
+    )?.title || "";
 
-  const displayedContent = state.generatedChapters[state.currentChapterNumber] || "";
+  const displayedContent =
+    state.generatedChapters[state.currentChapterNumber] || "";
   const isContentSubmitted = state.conversationId !== null;
   // Is the *currently viewed* chapter loading?
-  const isCurrentChapterLoading = state.status === "generatingChapter" && state.generatingChapterNumber === state.currentChapterNumber;
+  const isCurrentChapterLoading =
+    state.status === "generatingChapter" &&
+    state.generatingChapterNumber === state.currentChapterNumber;
   // Is *any* chapter loading (for disabling nav)? Includes active generation or loading conversation state
-  const isNavigatingDisabled = state.status === "generatingChapter" || state.status === "loadingConversation";
+  const isNavigatingDisabled =
+    state.status === "generatingChapter" ||
+    state.status === "loadingConversation";
   // Is the whole app busy with a major action?
-  const isGloballyDisabled = state.status === 'indexing' || state.status === 'loadingConversation' || state.status === 'answering' || state.status === 'initializing';
+  const isGloballyDisabled =
+    state.status === "indexing" ||
+    state.status === "loadingConversation" ||
+    state.status === "answering" ||
+    state.status === "initializing";
 
   // Render loading skeleton if user data hasn't loaded yet
-  if (state.status === 'initializing' || !userData) {
+  if (state.status === "initializing" || !userData) {
     // You can replace this with a more sophisticated loading screen
     return (
       <div className="flex h-screen items-center justify-center">
@@ -6934,10 +7129,12 @@ export default function HomePage() {
           onSelectChapter={handleChapterSelect} // Use the combined handler
           onNewConversation={handleNewConversation}
           onDeleteConversation={handleDeleteConversation} // Pass delete handler
-          isLoading={isGloballyDisabled || state.status === 'generatingChapter'} // Sidebar items disabled if globally busy or any chapter loading
+          isLoading={isGloballyDisabled || state.status === "generatingChapter"} // Sidebar items disabled if globally busy or any chapter loading
           loadingChapter={state.generatingChapterNumber}
           isLoadingConversations={isLoadingConversations}
-          currentlyLoadingConversationId={state.status === 'loadingConversation' ? state.conversationId : null}
+          currentlyLoadingConversationId={
+            state.status === "loadingConversation" ? state.conversationId : null
+          }
         />
       }
       rightSidebar={
@@ -7640,17 +7837,25 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
-      <Card className="w-full max-w-md shadow-lg"> {/* Added shadow */}
-        <CardHeader className="space-y-1.5 text-center pb-4"> {/* Adjusted spacing */}
+      <Card className="w-full max-w-md shadow-lg">
+        {" "}
+        {/* Added shadow */}
+        <CardHeader className="space-y-1.5 text-center pb-4">
+          {" "}
+          {/* Adjusted spacing */}
           {/* Optional: Add an icon or logo here */}
-          <CardTitle className="text-2xl font-bold tracking-tight"> {/* Adjusted tracking */}
+          <CardTitle className="text-2xl font-bold tracking-tight">
+            {" "}
+            {/* Adjusted tracking */}
             Welcome to Chapters
           </CardTitle>
           <CardDescription>
             Your AI-powered document teaching assistant
           </CardDescription>
         </CardHeader>
-        <CardContent className="pt-4 pb-6"> {/* Adjusted padding */}
+        <CardContent className="pt-4 pb-6">
+          {" "}
+          {/* Adjusted padding */}
           <div className="flex flex-col gap-2 text-center text-sm text-muted-foreground">
             <p>Learn from any document with AI explanations.</p>
             <p>Ask questions and get instant, contextual answers.</p>
@@ -7671,7 +7876,8 @@ export default function LoginPage() {
               </>
             ) : (
               <>
-                <ChromeIcon className="mr-2 h-4 w-4" /> {/* Using Lucide Chrome icon */}
+                <ChromeIcon className="mr-2 h-4 w-4" />{" "}
+                {/* Using Lucide Chrome icon */}
                 Sign in with Google
               </>
             )}
@@ -7895,19 +8101,19 @@ interface ChatState {
 type ChatAction =
   | { type: "START_INDEXING"; payload: { content: string; background: string } }
   | {
-    type: "INDEX_SUCCESS";
-    payload: { index: ChapterIndexItem[]; conversationId: number };
-  }
+      type: "INDEX_SUCCESS";
+      payload: { index: ChapterIndexItem[]; conversationId: number };
+    }
   | { type: "INDEX_FAIL"; payload: { error: string } }
   | { type: "START_CHAPTER_GENERATION"; payload: { chapterNumber: number } }
   | {
-    type: "CHAPTER_GENERATION_SUCCESS";
-    payload: { chapterNumber: number; content: string };
-  }
+      type: "CHAPTER_GENERATION_SUCCESS";
+      payload: { chapterNumber: number; content: string };
+    }
   | {
-    type: "CHAPTER_GENERATION_FAIL";
-    payload: { chapterNumber: number; error: string };
-  }
+      type: "CHAPTER_GENERATION_FAIL";
+      payload: { chapterNumber: number; error: string };
+    }
   | { type: "SET_DISPLAYED_CHAPTER"; payload: { chapterNumber: number } }
   | { type: "START_ANSWERING"; payload: { question: string } }
   | { type: "ANSWERING_SUCCESS"; payload: { answer: string } }
@@ -7915,7 +8121,10 @@ type ChatAction =
   | { type: "LOAD_CONVERSATION_START"; payload: { conversationId: number } }
   | { type: "LOAD_CONVERSATION_SUCCESS"; payload: ConversationDetails }
   | { type: "LOAD_CONVERSATION_FAIL"; payload: { error: string } }
-  | { type: "PREFETCH_CHAPTER_SUCCESS"; payload: { chapterNumber: number; content: string } }
+  | {
+      type: "PREFETCH_CHAPTER_SUCCESS";
+      payload: { chapterNumber: number; content: string };
+    }
   | { type: "RESET" };
 
 const initialState: ChatState = {
@@ -7976,9 +8185,10 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
           [action.payload.chapterNumber]: action.payload.content,
         },
         // Only update displayed chapter if it matches the one that just finished loading
-        currentChapterNumber: state.generatingChapterNumber === action.payload.chapterNumber
-          ? action.payload.chapterNumber
-          : state.currentChapterNumber,
+        currentChapterNumber:
+          state.generatingChapterNumber === action.payload.chapterNumber
+            ? action.payload.chapterNumber
+            : state.currentChapterNumber,
         generatingChapterNumber: null, // Finished loading
         error: null,
       };
@@ -8005,7 +8215,7 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
     case "SET_DISPLAYED_CHAPTER":
       // When user selects an *already generated* chapter
       // Ensure we are not currently generating another chapter
-      if (state.status === 'generatingChapter') return state; // Prevent changing display while generating
+      if (state.status === "generatingChapter") return state; // Prevent changing display while generating
       return {
         ...state,
         status: "idle",
@@ -8067,11 +8277,17 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
         {} as Record<number, string>,
       );
       const firstGeneratedChapter = Math.min(
-        ...Object.keys(initialChapters).map(Number).filter(num => !isNaN(num)),
-        Infinity
+        ...Object.keys(initialChapters)
+          .map(Number)
+          .filter((num) => !isNaN(num)),
+        Number.POSITIVE_INFINITY,
       );
-      const initialChapterNum = firstGeneratedChapter === Infinity ? 0 : firstGeneratedChapter;
-      const shouldStartGenerating = initialChapterNum === 0 && simpleIndex.length > 0;
+      const initialChapterNum =
+        firstGeneratedChapter === Number.POSITIVE_INFINITY
+          ? 0
+          : firstGeneratedChapter;
+      const shouldStartGenerating =
+        initialChapterNum === 0 && simpleIndex.length > 0;
 
       return {
         ...state,
@@ -8100,7 +8316,6 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
       return state;
   }
 }
-
 
 export function ChatContainer({
   user,
@@ -8133,13 +8348,14 @@ export function ChatContainer({
   useEffect(() => {
     fetchConversations();
     isMountedRef.current = true;
-    return () => { isMountedRef.current = false; }
+    return () => {
+      isMountedRef.current = false;
+    };
   }, [fetchConversations]);
-
 
   // --- Function to fetch a specific chapter (user-initiated or prefetch) ---
   const fetchChapterContent = useCallback(
-    async (chapterNumber: number, isPrefetch: boolean = false) => {
+    async (chapterNumber: number, isPrefetch = false) => {
       if (
         !isMountedRef.current ||
         !state.originalContent ||
@@ -8155,8 +8371,12 @@ export function ChatContainer({
 
       // If already generated: display if user-initiated, or skip if prefetch
       if (state.generatedChapters[chapterNumber]) {
-        if (!isPrefetch && state.status !== 'generatingChapter') { // Only set display if not already generating another chapter
-          dispatch({ type: "SET_DISPLAYED_CHAPTER", payload: { chapterNumber } });
+        if (!isPrefetch && state.status !== "generatingChapter") {
+          // Only set display if not already generating another chapter
+          dispatch({
+            type: "SET_DISPLAYED_CHAPTER",
+            payload: { chapterNumber },
+          });
         }
         if (isPrefetch) {
           const nextPrefetchNum = chapterNumber + 1;
@@ -8171,11 +8391,16 @@ export function ChatContainer({
       }
 
       // If *another* chapter is already being generated by user action, don't start a new one
-      if (state.status === 'generatingChapter' && state.generatingChapterNumber !== chapterNumber && !isPrefetch) {
-        toast.info(`Please wait for Chapter ${state.generatingChapterNumber} to load.`);
+      if (
+        state.status === "generatingChapter" &&
+        state.generatingChapterNumber !== chapterNumber &&
+        !isPrefetch
+      ) {
+        toast.info(
+          `Please wait for Chapter ${state.generatingChapterNumber} to load.`,
+        );
         return;
       }
-
 
       // Dispatch start only for user-initiated fetches
       if (!isPrefetch) {
@@ -8187,7 +8412,8 @@ export function ChatContainer({
         });
       } else {
         // Don't dispatch START for prefetch, but mark as prefetching
-        if (state.status === 'generatingChapter') { // Don't prefetch if user is actively generating
+        if (state.status === "generatingChapter") {
+          // Don't prefetch if user is actively generating
           isPrefetchingRef.current = false;
           prefetchTargetRef.current = null;
           return;
@@ -8237,7 +8463,6 @@ export function ChatContainer({
             prefetchTargetRef.current = null;
           }
           isPrefetchingRef.current = false; // Mark prefetch cycle as done
-
         } else {
           // Success for user-initiated or initial chapter 1 load
           dispatch({
@@ -8247,7 +8472,6 @@ export function ChatContainer({
           isPrefetchingRef.current = false;
           prefetchTargetRef.current = null;
         }
-
       } catch (err) {
         const message =
           err instanceof Error
@@ -8264,7 +8488,9 @@ export function ChatContainer({
         if (!isPrefetch) {
           toast.error(`Failed to load chapter ${chapterNumber}: ${message}`);
         } else {
-          console.warn(`Prefetch failed for chapter ${chapterNumber}: ${message}`);
+          console.warn(
+            `Prefetch failed for chapter ${chapterNumber}: ${message}`,
+          );
         }
         isPrefetchingRef.current = false;
         prefetchTargetRef.current = null;
@@ -8285,13 +8511,17 @@ export function ChatContainer({
   // --- Function to start the pre-fetch sequence (remains similar) ---
   const startPrefetchSequence = useCallback(async () => {
     // Added check for generatingChapter status
-    if (!isMountedRef.current || isPrefetchingRef.current || !prefetchTargetRef.current || state.status !== 'idle') {
+    if (
+      !isMountedRef.current ||
+      isPrefetchingRef.current ||
+      !prefetchTargetRef.current ||
+      state.status !== "idle"
+    ) {
       return;
     }
 
     const target = prefetchTargetRef.current;
     await fetchChapterContent(target, true);
-
   }, [state.status, fetchChapterContent]);
 
   // --- Effect to initiate the first chapter fetch OR start pre-fetching ---
@@ -8308,7 +8538,7 @@ export function ChatContainer({
     }
     // 2. Start or continue pre-fetching when idle
     else if (
-      state.status === 'idle' && // MUST be idle
+      state.status === "idle" && // MUST be idle
       state.conversationId !== null &&
       !isPrefetchingRef.current // Only if not already prefetching
     ) {
@@ -8317,7 +8547,10 @@ export function ChatContainer({
 
       // If prefetch target is not set OR it's outdated (<= current chapter)
       // find the *first* unloaded chapter >= nextLogicalChapter
-      if (!prefetchTargetRef.current || prefetchTargetRef.current <= state.currentChapterNumber) {
+      if (
+        !prefetchTargetRef.current ||
+        prefetchTargetRef.current <= state.currentChapterNumber
+      ) {
         let foundTarget: number | null = null;
         for (let i = nextLogicalChapter; i <= state.chapterIndex.length; i++) {
           if (!state.generatedChapters[i]) {
@@ -8328,17 +8561,18 @@ export function ChatContainer({
         prefetchTargetRef.current = foundTarget;
       }
 
-
       // If there's a valid target, start the sequence
       if (prefetchTargetRef.current) {
         startPrefetchSequence();
       }
-    } else if (state.status !== 'idle' && state.status !== 'generatingChapter') {
+    } else if (
+      state.status !== "idle" &&
+      state.status !== "generatingChapter"
+    ) {
       // If status changes to something blocking (indexing, answering, loading), cancel prefetch intent
       prefetchTargetRef.current = null;
       isPrefetchingRef.current = false; // Ensure prefetch stops if active
     }
-
   }, [
     state.status,
     state.generatingChapterNumber, // Use this to trigger initial fetch
@@ -8347,7 +8581,7 @@ export function ChatContainer({
     state.conversationId,
     state.generatedChapters,
     fetchChapterContent,
-    startPrefetchSequence
+    startPrefetchSequence,
   ]);
 
   // --- Handler for Content Submission (reset prefetch state) ---
@@ -8405,8 +8639,9 @@ export function ChatContainer({
   const handleLoadConversation = useCallback(
     async (id: number) => {
       // Prevent loading if already loading this ID or during other major actions
-      if (state.status === "loadingConversation" && state.conversationId === id) return;
-      if (state.status === 'indexing' || state.status === 'answering') {
+      if (state.status === "loadingConversation" && state.conversationId === id)
+        return;
+      if (state.status === "indexing" || state.status === "answering") {
         toast.info("Please wait for the current action to complete.");
         return;
       }
@@ -8451,8 +8686,10 @@ export function ChatContainer({
         toast.warning("Cannot ask question without an active conversation.");
         return;
       }
-      if (state.status === 'generatingChapter') {
-        toast.info(`Please wait for Chapter ${state.generatingChapterNumber} to load before asking questions.`);
+      if (state.status === "generatingChapter") {
+        toast.info(
+          `Please wait for Chapter ${state.generatingChapterNumber} to load before asking questions.`,
+        );
         return;
       }
 
@@ -8513,12 +8750,21 @@ export function ChatContainer({
   const handleDeleteConversation = useCallback(
     async (idToDelete: number) => {
       // Prevent deleting if globally disabled or if this specific one is loading
-      if (state.status === 'loadingConversation' && state.conversationId === idToDelete) {
+      if (
+        state.status === "loadingConversation" &&
+        state.conversationId === idToDelete
+      ) {
         toast.warning("Cannot delete conversation while it's loading.");
         return;
       }
-      if (state.status === 'indexing' || state.status === 'answering' || state.status === 'generatingChapter') {
-        toast.info("Please wait for the current action to complete before deleting.");
+      if (
+        state.status === "indexing" ||
+        state.status === "answering" ||
+        state.status === "generatingChapter"
+      ) {
+        toast.info(
+          "Please wait for the current action to complete before deleting.",
+        );
         return;
       }
 
@@ -8560,26 +8806,34 @@ export function ChatContainer({
     (chapterNumber: number) => {
       // Allow selection even if another chapter is generating,
       // but fetchChapterContent will handle preventing simultaneous fetches.
-      if (chapterNumber !== state.currentChapterNumber || !state.generatedChapters[chapterNumber]) {
+      if (
+        chapterNumber !== state.currentChapterNumber ||
+        !state.generatedChapters[chapterNumber]
+      ) {
         fetchChapterContent(chapterNumber, false);
       } else if (state.generatedChapters[chapterNumber]) {
         // If already generated and selected, just ensure display (handled by fetchChapterContent)
         dispatch({ type: "SET_DISPLAYED_CHAPTER", payload: { chapterNumber } });
       }
     },
-    [state.currentChapterNumber, state.generatedChapters, fetchChapterContent, dispatch],
+    [
+      state.currentChapterNumber,
+      state.generatedChapters,
+      fetchChapterContent,
+      dispatch,
+    ],
   );
 
   // --- Handler for New Chat Button (reset prefetch state) ---
   const handleNewChat = useCallback(() => {
     // Prevent starting new if busy
-    if (state.status !== 'idle' && state.status !== 'error') {
+    if (state.status !== "idle" && state.status !== "error") {
       toast.warning("Please wait for the current action to finish.");
       return;
     }
     prefetchTargetRef.current = null;
     isPrefetchingRef.current = false;
-    dispatch({ type: 'RESET' });
+    dispatch({ type: "RESET" });
   }, [dispatch, state.status]);
 
   // --- Derived State ---
@@ -8589,16 +8843,21 @@ export function ChatContainer({
     )?.title ||
     (state.currentChapterNumber > 0
       ? `Chapter ${state.currentChapterNumber}`
-      : state.conversationId !== null ? "Select a chapter" : "");
+      : state.conversationId !== null
+        ? "Select a chapter"
+        : "");
 
   const displayedContent =
     state.generatedChapters[state.currentChapterNumber] || "";
 
   const isContentSubmitted = state.conversationId !== null;
   const isChapterCurrentlyLoading = state.status === "generatingChapter"; // Is *any* chapter loading?
-  const isNavigatingDisabled = isChapterCurrentlyLoading || state.status === "loadingConversation"; // Disable nav buttons during these specific loads
-  const isGloballyDisabled = state.status === 'indexing' || state.status === 'loadingConversation' || state.status === 'answering'; // When major actions block UI
-
+  const isNavigatingDisabled =
+    isChapterCurrentlyLoading || state.status === "loadingConversation"; // Disable nav buttons during these specific loads
+  const isGloballyDisabled =
+    state.status === "indexing" ||
+    state.status === "loadingConversation" ||
+    state.status === "answering"; // When major actions block UI
 
   return (
     <div className="flex h-screen bg-background text-foreground relative">
@@ -8616,7 +8875,9 @@ export function ChatContainer({
         onSelectConversation={handleLoadConversation}
         isLoading={isLoadingConversations} // For the list itself
         isDisabled={isGloballyDisabled || isChapterCurrentlyLoading} // Disable during any major load *or* chapter generation
-        currentlyLoadingConversationId={state.status === 'loadingConversation' ? state.conversationId : null} // Pass loading convo ID
+        currentlyLoadingConversationId={
+          state.status === "loadingConversation" ? state.conversationId : null
+        } // Pass loading convo ID
         onDeleteConversation={handleDeleteConversation}
       />
       {/* New Chat Button */}
@@ -8688,7 +8949,10 @@ export function ChatContainer({
             content={displayedContent}
             currentChapter={state.currentChapterNumber}
             totalChapters={state.chapterIndex.length}
-            isLoading={isChapterCurrentlyLoading && state.generatingChapterNumber === state.currentChapterNumber} // Show loading only if *this* chapter is generating
+            isLoading={
+              isChapterCurrentlyLoading &&
+              state.generatingChapterNumber === state.currentChapterNumber
+            } // Show loading only if *this* chapter is generating
             onNext={handleNextChapter}
             onPrev={handlePrevChapter}
             isNavDisabled={isNavigatingDisabled} // Disable nav buttons if *any* chapter load or convo load
@@ -8707,11 +8971,13 @@ export function ChatContainer({
           </p>
         )}
         {/* More specific loading message for chapter generation */}
-        {state.status === 'generatingChapter' && state.generatingChapterNumber !== state.currentChapterNumber && (
-          <p className="mt-4 text-muted-foreground italic">
-            Loading Chapter {state.generatingChapterNumber}... (You can browse other loaded chapters)
-          </p>
-        )}
+        {state.status === "generatingChapter" &&
+          state.generatingChapterNumber !== state.currentChapterNumber && (
+            <p className="mt-4 text-muted-foreground italic">
+              Loading Chapter {state.generatingChapterNumber}... (You can browse
+              other loaded chapters)
+            </p>
+          )}
         {state.status === "error" && (
           <p className="text-destructive mt-4">Error: {state.error}</p>
         )}
@@ -8724,7 +8990,9 @@ export function ChatContainer({
             history={state.qaHistory}
             onAskQuestion={handleAskQuestion}
             // Disable asking only when answering or indexing
-            isLoading={state.status === "answering" || state.status === 'indexing'}
+            isLoading={
+              state.status === "answering" || state.status === "indexing"
+            }
           />
         </aside>
       )}
@@ -8829,7 +9097,10 @@ File: components/theme-provider.tsx
 ================================================
 "use client";
 import * as React from "react";
-import { ThemeProvider as NextThemesProvider, ThemeProviderProps } from "next-themes";
+import {
+  ThemeProvider as NextThemesProvider,
+  type ThemeProviderProps,
+} from "next-themes";
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
@@ -8847,8 +9118,8 @@ import "highlight.js/styles/github-dark.css"; // Style for code highlighting
 import { cn } from "@/lib/utils";
 
 // +++ Add these imports for math rendering +++
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 // Ensure KaTeX CSS is imported globally (e.g., in app/globals.css)
 // @import 'katex/dist/katex.min.css';
 // ++++++++++++++++++++++++++++++++++++++++++++++
@@ -8896,7 +9167,9 @@ export function ChapterDisplay({
                   if (isBlock) {
                     return (
                       // Container for margin and styling
-                      <div className="my-4 rounded-md overflow-hidden bg-[#0d1117] text-[#c9d1d9]"> {/* Example GitHub dark background */}
+                      <div className="my-4 rounded-md overflow-hidden bg-[#0d1117] text-[#c9d1d9]">
+                        {" "}
+                        {/* Example GitHub dark background */}
                         {/* Use <pre> for the block structure */}
                         <pre className={cn("p-3 overflow-x-auto", className)}>
                           {/* Use <code> inside <pre> for semantic correctness */}
@@ -8910,10 +9183,10 @@ export function ChapterDisplay({
                     <code
                       className={cn(
                         "bg-muted px-[0.4em] py-[0.2em] rounded text-sm font-mono",
-                        className
+                        className,
                       )}
-                    // Pass other props ONLY if necessary and valid for <code>
-                    // {...props} // Generally avoid spreading unknown props
+                      // Pass other props ONLY if necessary and valid for <code>
+                      // {...props} // Generally avoid spreading unknown props
                     >
                       {children}
                     </code>
@@ -8980,7 +9253,7 @@ export function ContentSubmissionForm({
   // Effect to set worker source once on component mount
   useEffect(() => {
     // Check if window is defined (for SSR safety, though this is client-side)
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_SRC;
     }
   }, []);
@@ -8992,7 +9265,6 @@ export function ContentSubmissionForm({
   const handleBackgroundChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setUserBackground(e.target.value);
   };
-
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -9023,7 +9295,9 @@ export function ContentSubmissionForm({
           const page = await pdf.getPage(i);
           const textContentData = await page.getTextContent();
           //textContentData.items is an array of objects with 'str' property
-          const pageText = textContentData.items.map((item: any) => item.str).join(" ");
+          const pageText = textContentData.items
+            .map((item: any) => item.str)
+            .join(" ");
           fullText += pageText + "\n\n"; // Add space between pages
         }
         setTextContent(fullText.trim());
@@ -9034,13 +9308,16 @@ export function ContentSubmissionForm({
       }
     } catch (error) {
       console.error("File processing error:", error);
-      const message = error instanceof Error ? error.message : "Unknown error processing file.";
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unknown error processing file.";
       toast.error(`Error: ${message}`);
       setTextContent(""); // Clear on error
       setIsProcessingFile(false);
     } finally {
       // Reset the file input so the same file can be selected again if needed
-      e.target.value = '';
+      e.target.value = "";
     }
   };
 
@@ -9048,7 +9325,9 @@ export function ContentSubmissionForm({
     e.preventDefault();
     // Use state values instead of formData directly for text
     if (!textContent.trim()) {
-      toast.error("Content cannot be empty. Please type, paste, or upload content.");
+      toast.error(
+        "Content cannot be empty. Please type, paste, or upload content.",
+      );
       return;
     }
     if (!userBackground.trim()) {
@@ -9076,7 +9355,9 @@ export function ContentSubmissionForm({
           className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={anyLoading}
         />
-        <p className="text-xs text-muted-foreground mt-1">Accepts .txt and .pdf files. Uploading will replace the text below.</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Accepts .txt and .pdf files. Uploading will replace the text below.
+        </p>
       </div>
 
       {/* Text Area Input */}
@@ -9088,7 +9369,11 @@ export function ContentSubmissionForm({
           id="textContent"
           name="textContent"
           rows={10}
-          placeholder={isProcessingFile ? "Extracting text from file..." : "Paste your code or text here, or upload a file above..."}
+          placeholder={
+            isProcessingFile
+              ? "Extracting text from file..."
+              : "Paste your code or text here, or upload a file above..."
+          }
           className="w-full p-2 border rounded bg-input text-foreground border-border"
           required
           value={textContent} // Controlled component
@@ -9178,10 +9463,7 @@ export function ConversationDrawer({
     }
   };
 
-  const handleDeleteClick = (
-    e: MouseEvent<HTMLButtonElement>,
-    id: number,
-  ) => {
+  const handleDeleteClick = (e: MouseEvent<HTMLButtonElement>, id: number) => {
     e.stopPropagation();
     if (!isDisabled && currentlyLoadingConversationId !== id) {
       if (
@@ -9228,7 +9510,8 @@ export function ConversationDrawer({
             </div>
           ) : (
             conversations.map((convo) => {
-              const isThisOneLoading = currentlyLoadingConversationId === convo.id;
+              const isThisOneLoading =
+                currentlyLoadingConversationId === convo.id;
               const isButtonDisabled = isDisabled || isThisOneLoading;
 
               return (
@@ -9356,7 +9639,10 @@ export function IndexDrawer({
 
   const handleSelect = (chapterNumber: number) => {
     // Selection allowed unless globally disabled or this specific chapter is loading
-    if (!isGloballyDisabled && currentlyGeneratingChapterNumber !== chapterNumber) {
+    if (
+      !isGloballyDisabled &&
+      currentlyGeneratingChapterNumber !== chapterNumber
+    ) {
       onChapterSelect(chapterNumber);
     }
   };
@@ -9386,7 +9672,8 @@ export function IndexDrawer({
         </SheetHeader>
         <div className="flex-grow overflow-y-auto py-2">
           {index.map((item) => {
-            const isThisLoading = item.chapter === currentlyGeneratingChapterNumber;
+            const isThisLoading =
+              item.chapter === currentlyGeneratingChapterNumber;
             const isDisabled = isGloballyDisabled || isThisLoading;
             const isCurrent = item.chapter === currentChapter;
 
@@ -9406,7 +9693,9 @@ export function IndexDrawer({
                   <span className="font-mono text-xs w-8 text-muted-foreground mr-2 shrink-0 pt-0.5">
                     {item.chapter}.
                   </span>
-                  <span className="whitespace-normal break-words flex-grow mr-2">{item.title}</span>
+                  <span className="whitespace-normal break-words flex-grow mr-2">
+                    {item.title}
+                  </span>
                   {/* Add spinner */}
                   <Loader2 className="h-4 w-4 animate-spin shrink-0 text-muted-foreground" />
                 </Button>
@@ -9427,7 +9716,9 @@ export function IndexDrawer({
                     <span className="font-mono text-xs w-8 text-muted-foreground mr-2 shrink-0 pt-0.5">
                       {item.chapter}.
                     </span>
-                    <span className="whitespace-normal break-words">{item.title}</span>
+                    <span className="whitespace-normal break-words">
+                      {item.title}
+                    </span>
                   </Button>
                 </SheetClose>
               )
@@ -9549,14 +9840,14 @@ File: components/analyzer/QASidebar.tsx
 import type { QAItem } from "@/app/api/ask-question/route";
 import { getQAKey } from "@/lib/utils";
 import type { FormEvent } from "react";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { cn } from "@/lib/utils"; // Import cn if you use it for classes
 
 // +++ Add these imports for math rendering +++
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 // Make sure you have imported the KaTeX CSS in your global styles or layout:
 // import 'katex/dist/katex.min.css';
 // ++++++++++++++++++++++++++++++++++++++++++++++
@@ -9601,7 +9892,8 @@ export function QASidebar({
             {/* User Question */}
             <div>
               <p className="font-semibold text-primary mb-0.5">You:</p>
-              <p className="pl-2 whitespace-pre-wrap">{item.question}</p> {/* Allow wrapping for long questions */}
+              <p className="pl-2 whitespace-pre-wrap">{item.question}</p>{" "}
+              {/* Allow wrapping for long questions */}
             </div>
 
             {/* Assistant Answer */}
@@ -9610,22 +9902,26 @@ export function QASidebar({
                 Assistant:
               </p>
               {/* Container for Markdown rendering */}
-              <div className={cn(
-                "prose prose-sm max-w-none dark:prose-invert", // Base prose styles
-                "markdown-content",                           // Your custom class for specific overrides
-                "pl-2",                                       // Indentation
-                "bg-background/50 p-2 rounded border border-border/50" // Background/border like the old <pre>
-              )}>
+              <div
+                className={cn(
+                  "prose prose-sm max-w-none dark:prose-invert", // Base prose styles
+                  "markdown-content", // Your custom class for specific overrides
+                  "pl-2", // Indentation
+                  "bg-background/50 p-2 rounded border border-border/50", // Background/border like the old <pre>
+                )}
+              >
                 <ReactMarkdown
                   // +++ Updated plugins for math +++
                   remarkPlugins={[remarkGfm, remarkMath]}
                   rehypePlugins={[rehypeHighlight, rehypeKatex]}
                   // ++++++++++++++++++++++++++++++++++
-                  components={{ // Keep code block styling consistent if needed
+                  components={{
+                    // Keep code block styling consistent if needed
                     code({ node, className, children, ...props }) {
                       const match = /language-(\w+)/.exec(className || "");
                       const isInline =
-                        "inline" in props && typeof props.inline !== "undefined";
+                        "inline" in props &&
+                        typeof props.inline !== "undefined";
 
                       return !isInline && match ? (
                         <code
@@ -9656,18 +9952,23 @@ export function QASidebar({
                   }}
                 >
                   {/* Display answer or 'Thinking...' if it's the last item and currently loading */}
-                  {item.answer || (isLoading && index === history.length - 1 ? "Thinking..." : "...")}
+                  {item.answer ||
+                    (isLoading && index === history.length - 1
+                      ? "Thinking..."
+                      : "...")}
                 </ReactMarkdown>
               </div>
             </div>
           </div>
         ))}
         {/* Loading indicator specific for the thinking state */}
-        {isLoading && history.length > 0 && history[history.length - 1].answer === "" && (
-          <p className="text-sm text-muted-foreground italic">
-            Assistant is thinking...
-          </p>
-        )}
+        {isLoading &&
+          history.length > 0 &&
+          history[history.length - 1].answer === "" && (
+            <p className="text-sm text-muted-foreground italic">
+              Assistant is thinking...
+            </p>
+          )}
       </div>
 
       {/* Input form */}
@@ -9804,7 +10105,12 @@ export function ChapterDisplay({
                   if (isBlock) {
                     return (
                       <div className="my-4 rounded-md overflow-hidden bg-[#0d1117] dark:bg-muted/30 text-foreground">
-                        <pre className={cn("p-4 overflow-x-auto text-sm", className)}>
+                        <pre
+                          className={cn(
+                            "p-4 overflow-x-auto text-sm",
+                            className,
+                          )}
+                        >
                           <code>{children}</code>
                         </pre>
                       </div>
@@ -9842,8 +10148,12 @@ export function ChapterDisplay({
                 },
                 // Ensure blockquotes have styling
                 blockquote({ children }) {
-                  return <blockquote className="mt-6 border-l-2 pl-6 italic">{children}</blockquote>
-                }
+                  return (
+                    <blockquote className="mt-6 border-l-2 pl-6 italic">
+                      {children}
+                    </blockquote>
+                  );
+                },
               }}
             >
               {content}
@@ -9933,7 +10243,9 @@ export function ContentSubmissionForm({
     setTextContent(e.target.value);
   };
 
-  const handleBackgroundChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleBackgroundChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
     setUserBackground(e.target.value);
   };
 
@@ -9985,7 +10297,9 @@ export function ContentSubmissionForm({
     } catch (error) {
       console.error("File processing error:", error);
       const message =
-        error instanceof Error ? error.message : "Unknown error processing file.";
+        error instanceof Error
+          ? error.message
+          : "Unknown error processing file.";
       toast.error(`Error: ${message}`);
       setTextContent(""); // Clear on error
       setFileName(null);
@@ -10035,8 +10349,9 @@ export function ContentSubmissionForm({
               <div className="flex items-center justify-center w-full">
                 <Label
                   htmlFor="fileUpload"
-                  className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted/50 transition-colors ${anyLoading ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
+                  className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted/50 transition-colors ${
+                    anyLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 >
                   <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
                     <Upload className="w-8 h-8 mb-3 text-muted-foreground" />
@@ -10046,7 +10361,8 @@ export function ContentSubmissionForm({
                       </p>
                     ) : (
                       <p className="mb-1 text-sm text-muted-foreground">
-                        <span className="font-semibold">Click to upload</span> or drag and drop
+                        <span className="font-semibold">Click to upload</span>{" "}
+                        or drag and drop
                       </p>
                     )}
                     <p className="text-xs text-muted-foreground">
@@ -10066,7 +10382,9 @@ export function ContentSubmissionForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="textContent">Content to Analyze (or Paste Here)</Label>
+              <Label htmlFor="textContent">
+                Content to Analyze (or Paste Here)
+              </Label>
               <Textarea
                 id="textContent"
                 placeholder={
@@ -10170,7 +10488,8 @@ export function QASidebar({
       // Use setTimeout to allow the DOM to update before scrolling
       setTimeout(() => {
         if (scrollAreaRef.current) {
-          const scrollableViewport = scrollAreaRef.current.children[0] as HTMLElement; // Access the viewport div
+          const scrollableViewport = scrollAreaRef.current
+            .children[0] as HTMLElement; // Access the viewport div
           if (scrollableViewport) {
             scrollableViewport.scrollTop = scrollableViewport.scrollHeight;
           }
@@ -10208,10 +10527,14 @@ export function QASidebar({
                 <div className="flex justify-start">
                   <div className="bg-muted p-3 rounded-lg max-w-[80%]">
                     {/* Conditional rendering for loading state */}
-                    {isLoading && index === history.length - 1 && !item.answer ? (
+                    {isLoading &&
+                    index === history.length - 1 &&
+                    !item.answer ? (
                       <div className="flex items-center space-x-2 py-1">
                         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Thinking...</span>
+                        <span className="text-sm text-muted-foreground">
+                          Thinking...
+                        </span>
                       </div>
                     ) : (
                       <div className="prose prose-sm dark:prose-invert max-w-none markdown-content text-foreground">
@@ -10221,19 +10544,31 @@ export function QASidebar({
                           components={{
                             // Consistent code styling
                             code({ node, className, children, ...props }) {
-                              const match = /language-(\w+)/.exec(className || "");
+                              const match = /language-(\w+)/.exec(
+                                className || "",
+                              );
                               const isBlock = !!match;
                               if (isBlock) {
                                 return (
                                   <div className="my-2 rounded-md overflow-hidden bg-muted/50 dark:bg-secondary text-foreground">
-                                    <pre className={cn("p-3 overflow-x-auto text-xs", className)}>
+                                    <pre
+                                      className={cn(
+                                        "p-3 overflow-x-auto text-xs",
+                                        className,
+                                      )}
+                                    >
                                       <code>{children}</code>
                                     </pre>
                                   </div>
                                 );
                               }
                               return (
-                                <code className={cn("bg-muted/50 px-1 py-0.5 rounded text-xs font-mono", className)}>
+                                <code
+                                  className={cn(
+                                    "bg-muted/50 px-1 py-0.5 rounded text-xs font-mono",
+                                    className,
+                                  )}
+                                >
                                   {children}
                                 </code>
                               );
@@ -10264,7 +10599,7 @@ export function QASidebar({
             className="flex-1 resize-none min-h-[40px] max-h-[150px] text-sm" // Adjusted height
             rows={1} // Start with 1 row, auto-expands
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+              if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
               }
@@ -10511,7 +10846,9 @@ export function SidebarNav({
                       "w-full justify-start text-left mb-1 h-auto py-2 px-3 group", // Added group class
                       isDisabled && "opacity-70 cursor-not-allowed",
                     )}
-                    onClick={() => !isDisabled && onSelectChapter(chapter.chapter)}
+                    onClick={() =>
+                      !isDisabled && onSelectChapter(chapter.chapter)
+                    }
                     disabled={isDisabled}
                   >
                     <div className="flex items-center w-full min-w-0">
@@ -10559,7 +10896,10 @@ export function SidebarNav({
                         "flex-1 justify-start text-left h-auto py-2 px-3",
                         isButtonDisabled && "opacity-70 cursor-not-allowed",
                       )}
-                      onClick={() => !isButtonDisabled && onSelectConversation(conversation.id)}
+                      onClick={() =>
+                        !isButtonDisabled &&
+                        onSelectConversation(conversation.id)
+                      }
                       disabled={isButtonDisabled}
                     >
                       <div className="flex flex-col items-start w-full min-w-0">
@@ -10567,9 +10907,12 @@ export function SidebarNav({
                           {conversation.preview || "Untitled Conversation"}
                         </span>
                         <span className="text-xs text-muted-foreground mt-0.5">
-                          {formatDistanceToNow(new Date(conversation.created_at), {
-                            addSuffix: true,
-                          })}
+                          {formatDistanceToNow(
+                            new Date(conversation.created_at),
+                            {
+                              addSuffix: true,
+                            },
+                          )}
                         </span>
                       </div>
                     </Button>
@@ -10834,9 +11177,9 @@ export { Button, buttonVariants };
 ================================================
 File: components/ui/card.tsx
 ================================================
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const Card = React.forwardRef<
   HTMLDivElement,
@@ -10846,12 +11189,12 @@ const Card = React.forwardRef<
     ref={ref}
     className={cn(
       "rounded-lg border bg-card text-card-foreground shadow-sm",
-      className
+      className,
     )}
     {...props}
   />
-))
-Card.displayName = "Card"
+));
+Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<
   HTMLDivElement,
@@ -10862,8 +11205,8 @@ const CardHeader = React.forwardRef<
     className={cn("flex flex-col space-y-1.5 p-6", className)}
     {...props}
   />
-))
-CardHeader.displayName = "CardHeader"
+));
+CardHeader.displayName = "CardHeader";
 
 const CardTitle = React.forwardRef<
   HTMLDivElement,
@@ -10873,12 +11216,12 @@ const CardTitle = React.forwardRef<
     ref={ref}
     className={cn(
       "text-2xl font-semibold leading-none tracking-tight",
-      className
+      className,
     )}
     {...props}
   />
-))
-CardTitle.displayName = "CardTitle"
+));
+CardTitle.displayName = "CardTitle";
 
 const CardDescription = React.forwardRef<
   HTMLDivElement,
@@ -10889,16 +11232,16 @@ const CardDescription = React.forwardRef<
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
-))
-CardDescription.displayName = "CardDescription"
+));
+CardDescription.displayName = "CardDescription";
 
 const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
-))
-CardContent.displayName = "CardContent"
+));
+CardContent.displayName = "CardContent";
 
 const CardFooter = React.forwardRef<
   HTMLDivElement,
@@ -10909,10 +11252,17 @@ const CardFooter = React.forwardRef<
     className={cn("flex items-center p-6 pt-0", className)}
     {...props}
   />
-))
-CardFooter.displayName = "CardFooter"
+));
+CardFooter.displayName = "CardFooter";
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+};
 
 
 
@@ -11182,9 +11532,9 @@ export {
 ================================================
 File: components/ui/input.tsx
 ================================================
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
   ({ className, type, ...props }, ref) => {
@@ -11193,34 +11543,34 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
         type={type}
         className={cn(
           "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-          className
+          className,
         )}
         ref={ref}
         {...props}
       />
-    )
-  }
-)
-Input.displayName = "Input"
+    );
+  },
+);
+Input.displayName = "Input";
 
-export { Input }
+export { Input };
 
 
 
 ================================================
 File: components/ui/label.tsx
 ================================================
-"use client"
+"use client";
 
-import * as React from "react"
-import * as LabelPrimitive from "@radix-ui/react-label"
-import { cva, type VariantProps } from "class-variance-authority"
+import * as React from "react";
+import * as LabelPrimitive from "@radix-ui/react-label";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const labelVariants = cva(
-  "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-)
+  "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+);
 
 const Label = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
@@ -11232,22 +11582,22 @@ const Label = React.forwardRef<
     className={cn(labelVariants(), className)}
     {...props}
   />
-))
-Label.displayName = LabelPrimitive.Root.displayName
+));
+Label.displayName = LabelPrimitive.Root.displayName;
 
-export { Label }
+export { Label };
 
 
 
 ================================================
 File: components/ui/scroll-area.tsx
 ================================================
-"use client"
+"use client";
 
-import * as React from "react"
-import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
+import * as React from "react";
+import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const ScrollArea = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Root>,
@@ -11264,8 +11614,8 @@ const ScrollArea = React.forwardRef<
     <ScrollBar />
     <ScrollAreaPrimitive.Corner />
   </ScrollAreaPrimitive.Root>
-))
-ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName
+));
+ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName;
 
 const ScrollBar = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>,
@@ -11280,16 +11630,16 @@ const ScrollBar = React.forwardRef<
         "h-full w-2.5 border-l border-l-transparent p-[1px]",
       orientation === "horizontal" &&
         "h-2.5 flex-col border-t border-t-transparent p-[1px]",
-      className
+      className,
     )}
     {...props}
   >
     <ScrollAreaPrimitive.ScrollAreaThumb className="relative flex-1 rounded-full bg-border" />
   </ScrollAreaPrimitive.ScrollAreaScrollbar>
-))
-ScrollBar.displayName = ScrollAreaPrimitive.ScrollAreaScrollbar.displayName
+));
+ScrollBar.displayName = ScrollAreaPrimitive.ScrollAreaScrollbar.displayName;
 
-export { ScrollArea, ScrollBar }
+export { ScrollArea, ScrollBar };
 
 
 
@@ -11441,7 +11791,7 @@ export {
 ================================================
 File: components/ui/skeleton.tsx
 ================================================
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 function Skeleton({
   className,
@@ -11452,10 +11802,10 @@ function Skeleton({
       className={cn("animate-pulse rounded-md bg-muted", className)}
       {...props}
     />
-  )
+  );
 }
 
-export { Skeleton }
+export { Skeleton };
 
 
 
@@ -11492,9 +11842,9 @@ export const Toaster = ({ ...props }: ToasterProps) => {
 ================================================
 File: components/ui/textarea.tsx
 ================================================
-import * as React from "react"
+import type * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
@@ -11502,30 +11852,30 @@ function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
       data-slot="textarea"
       className={cn(
         "border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { Textarea }
+export { Textarea };
 
 
 
 ================================================
 File: components/ui/theme-toggle.tsx
 ================================================
-"use client"
+"use client";
 
-import * as React from "react"
-import { Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
+import * as React from "react";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
-  const { setTheme, theme } = useTheme()
+  const { setTheme, theme } = useTheme();
 
   return (
     <Button
@@ -11537,7 +11887,7 @@ export function ThemeToggle() {
       <Moon className="hidden h-5 w-5 dark:block" />
       <span className="sr-only">Toggle theme</span>
     </Button>
-  )
+  );
 }
 
 
@@ -11545,16 +11895,16 @@ export function ThemeToggle() {
 ================================================
 File: components/ui/toast.tsx
 ================================================
-"use client"
+"use client";
 
-import * as React from "react"
-import * as ToastPrimitives from "@radix-ui/react-toast"
-import { cva, type VariantProps } from "class-variance-authority"
-import { X } from "lucide-react"
+import * as React from "react";
+import * as ToastPrimitives from "@radix-ui/react-toast";
+import { cva, type VariantProps } from "class-variance-authority";
+import { X } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-const ToastProvider = ToastPrimitives.Provider
+const ToastProvider = ToastPrimitives.Provider;
 
 const ToastViewport = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Viewport>,
@@ -11564,12 +11914,12 @@ const ToastViewport = React.forwardRef<
     ref={ref}
     className={cn(
       "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
-      className
+      className,
     )}
     {...props}
   />
-))
-ToastViewport.displayName = ToastPrimitives.Viewport.displayName
+));
+ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
   "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
@@ -11584,8 +11934,8 @@ const toastVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
-)
+  },
+);
 
 const Toast = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,
@@ -11598,9 +11948,9 @@ const Toast = React.forwardRef<
       className={cn(toastVariants({ variant }), className)}
       {...props}
     />
-  )
-})
-Toast.displayName = ToastPrimitives.Root.displayName
+  );
+});
+Toast.displayName = ToastPrimitives.Root.displayName;
 
 const ToastAction = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Action>,
@@ -11610,12 +11960,12 @@ const ToastAction = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive",
-      className
+      className,
     )}
     {...props}
   />
-))
-ToastAction.displayName = ToastPrimitives.Action.displayName
+));
+ToastAction.displayName = ToastPrimitives.Action.displayName;
 
 const ToastClose = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Close>,
@@ -11625,15 +11975,15 @@ const ToastClose = React.forwardRef<
     ref={ref}
     className={cn(
       "absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600",
-      className
+      className,
     )}
     toast-close=""
     {...props}
   >
     <X className="h-4 w-4" />
   </ToastPrimitives.Close>
-))
-ToastClose.displayName = ToastPrimitives.Close.displayName
+));
+ToastClose.displayName = ToastPrimitives.Close.displayName;
 
 const ToastTitle = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Title>,
@@ -11644,8 +11994,8 @@ const ToastTitle = React.forwardRef<
     className={cn("text-sm font-semibold", className)}
     {...props}
   />
-))
-ToastTitle.displayName = ToastPrimitives.Title.displayName
+));
+ToastTitle.displayName = ToastPrimitives.Title.displayName;
 
 const ToastDescription = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Description>,
@@ -11656,12 +12006,12 @@ const ToastDescription = React.forwardRef<
     className={cn("text-sm opacity-90", className)}
     {...props}
   />
-))
-ToastDescription.displayName = ToastPrimitives.Description.displayName
+));
+ToastDescription.displayName = ToastPrimitives.Description.displayName;
 
-type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
+type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>;
 
-type ToastActionElement = React.ReactElement<typeof ToastAction>
+type ToastActionElement = React.ReactElement<typeof ToastAction>;
 
 export {
   type ToastProps,
@@ -11673,16 +12023,16 @@ export {
   ToastDescription,
   ToastClose,
   ToastAction,
-}
+};
 
 
 
 ================================================
 File: components/ui/toaster.tsx
 ================================================
-"use client"
+"use client";
 
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast";
 import {
   Toast,
   ToastClose,
@@ -11690,30 +12040,26 @@ import {
   ToastProvider,
   ToastTitle,
   ToastViewport,
-} from "@/components/ui/toast"
+} from "@/components/ui/toast";
 
 export function Toaster() {
-  const { toasts } = useToast()
+  const { toasts } = useToast();
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, ...props }) {
-        return (
-          <Toast key={id} {...props}>
-            <div className="grid gap-1">
-              {title && <ToastTitle>{title}</ToastTitle>}
-              {description && (
-                <ToastDescription>{description}</ToastDescription>
-              )}
-            </div>
-            {action}
-            <ToastClose />
-          </Toast>
-        )
-      })}
+      {toasts.map(({ id, title, description, action, ...props }) => (
+        <Toast key={id} {...props}>
+          <div className="grid gap-1">
+            {title && <ToastTitle>{title}</ToastTitle>}
+            {description && <ToastDescription>{description}</ToastDescription>}
+          </div>
+          {action}
+          <ToastClose />
+        </Toast>
+      ))}
       <ToastViewport />
     </ToastProvider>
-  )
+  );
 }
 
 
@@ -11761,81 +12107,78 @@ export function useIsMobile() {
 ================================================
 File: hooks/use-toast.ts
 ================================================
-"use client"
+"use client";
 
 // Inspired by react-hot-toast library
-import * as React from "react"
+import * as React from "react";
 
-import type {
-  ToastActionElement,
-  ToastProps,
-} from "@/components/ui/toast"
+import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
 
-const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const TOAST_LIMIT = 1;
+const TOAST_REMOVE_DELAY = 1000000;
 
 type ToasterToast = ToastProps & {
-  id: string
-  title?: React.ReactNode
-  description?: React.ReactNode
-  action?: ToastActionElement
-}
+  id: string;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  action?: ToastActionElement;
+};
 
 const actionTypes = {
   ADD_TOAST: "ADD_TOAST",
   UPDATE_TOAST: "UPDATE_TOAST",
   DISMISS_TOAST: "DISMISS_TOAST",
   REMOVE_TOAST: "REMOVE_TOAST",
-} as const
+} as const;
 
-let count = 0
+let count = 0;
 
 function genId() {
-  count = (count + 1) % Number.MAX_SAFE_INTEGER
-  return count.toString()
+  count = (count + 1) % Number.MAX_SAFE_INTEGER;
+  return count.toString();
 }
 
-type ActionType = typeof actionTypes
+type ActionType = typeof actionTypes;
 
 type Action =
   | {
-      type: ActionType["ADD_TOAST"]
-      toast: ToasterToast
+      type: ActionType["ADD_TOAST"];
+      toast: ToasterToast;
     }
   | {
-      type: ActionType["UPDATE_TOAST"]
-      toast: Partial<ToasterToast>
+      type: ActionType["UPDATE_TOAST"];
+      toast: Partial<ToasterToast>;
     }
   | {
-      type: ActionType["DISMISS_TOAST"]
-      toastId?: ToasterToast["id"]
+      type: ActionType["DISMISS_TOAST"];
+      toastId?: ToasterToast["id"];
     }
   | {
-      type: ActionType["REMOVE_TOAST"]
-      toastId?: ToasterToast["id"]
-    }
+      type: ActionType["REMOVE_TOAST"];
+      toastId?: ToasterToast["id"];
+    };
 
 interface State {
-  toasts: ToasterToast[]
+  toasts: ToasterToast[];
 }
 
-const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
+const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
 
 const addToRemoveQueue = (toastId: string) => {
   if (toastTimeouts.has(toastId)) {
-    return
+    return;
   }
 
   const timeout = setTimeout(() => {
-    toastTimeouts.delete(toastId)
+    toastTimeouts.delete(toastId);
     dispatch({
       type: "REMOVE_TOAST",
       toastId: toastId,
-    })
-  }, TOAST_REMOVE_DELAY)
+    });
+  }, TOAST_REMOVE_DELAY);
 
-  toastTimeouts.set(toastId, timeout)
-}
+  toastTimeouts.set(toastId, timeout);
+};
 
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -11843,27 +12186,27 @@ export const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
-      }
+      };
 
     case "UPDATE_TOAST":
       return {
         ...state,
         toasts: state.toasts.map((t) =>
-          t.id === action.toast.id ? { ...t, ...action.toast } : t
+          t.id === action.toast.id ? { ...t, ...action.toast } : t,
         ),
-      }
+      };
 
     case "DISMISS_TOAST": {
-      const { toastId } = action
+      const { toastId } = action;
 
       // ! Side effects ! - This could be extracted into a dismissToast() action,
       // but I'll keep it here for simplicity
       if (toastId) {
-        addToRemoveQueue(toastId)
+        addToRemoveQueue(toastId);
       } else {
         state.toasts.forEach((toast) => {
-          addToRemoveQueue(toast.id)
-        })
+          addToRemoveQueue(toast.id);
+        });
       }
 
       return {
@@ -11874,46 +12217,46 @@ export const reducer = (state: State, action: Action): State => {
                 ...t,
                 open: false,
               }
-            : t
+            : t,
         ),
-      }
+      };
     }
     case "REMOVE_TOAST":
       if (action.toastId === undefined) {
         return {
           ...state,
           toasts: [],
-        }
+        };
       }
       return {
         ...state,
         toasts: state.toasts.filter((t) => t.id !== action.toastId),
-      }
+      };
   }
-}
+};
 
-const listeners: Array<(state: State) => void> = []
+const listeners: Array<(state: State) => void> = [];
 
-let memoryState: State = { toasts: [] }
+let memoryState: State = { toasts: [] };
 
 function dispatch(action: Action) {
-  memoryState = reducer(memoryState, action)
+  memoryState = reducer(memoryState, action);
   listeners.forEach((listener) => {
-    listener(memoryState)
-  })
+    listener(memoryState);
+  });
 }
 
-type Toast = Omit<ToasterToast, "id">
+type Toast = Omit<ToasterToast, "id">;
 
 function toast({ ...props }: Toast) {
-  const id = genId()
+  const id = genId();
 
   const update = (props: ToasterToast) =>
     dispatch({
       type: "UPDATE_TOAST",
       toast: { ...props, id },
-    })
-  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
+    });
+  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id });
 
   dispatch({
     type: "ADD_TOAST",
@@ -11922,39 +12265,39 @@ function toast({ ...props }: Toast) {
       id,
       open: true,
       onOpenChange: (open) => {
-        if (!open) dismiss()
+        if (!open) dismiss();
       },
     },
-  })
+  });
 
   return {
     id: id,
     dismiss,
     update,
-  }
+  };
 }
 
 function useToast() {
-  const [state, setState] = React.useState<State>(memoryState)
+  const [state, setState] = React.useState<State>(memoryState);
 
   React.useEffect(() => {
-    listeners.push(setState)
+    listeners.push(setState);
     return () => {
-      const index = listeners.indexOf(setState)
+      const index = listeners.indexOf(setState);
       if (index > -1) {
-        listeners.splice(index, 1)
+        listeners.splice(index, 1);
       }
-    }
-  }, [state])
+    };
+  }, [state]);
 
   return {
     ...state,
     toast,
     dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
-  }
+  };
 }
 
-export { useToast, toast }
+export { useToast, toast };
 
 
 
@@ -13178,7 +13521,9 @@ export function getQAKey(item: QAItem): string {
   // Ensure both question and answer are defined before hashing
   const question = item.question ?? "";
   const answer = item.answer ?? "";
-  return createHash("sha256").update(question + answer).digest("hex");
+  return createHash("sha256")
+    .update(question + answer)
+    .digest("hex");
 }
 
 

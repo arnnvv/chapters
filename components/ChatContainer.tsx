@@ -234,10 +234,12 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ...Object.keys(initialChapters)
           .map(Number)
           .filter((num) => !isNaN(num)),
-        Infinity,
+        Number.POSITIVE_INFINITY,
       );
       const initialChapterNum =
-        firstGeneratedChapter === Infinity ? 0 : firstGeneratedChapter;
+        firstGeneratedChapter === Number.POSITIVE_INFINITY
+          ? 0
+          : firstGeneratedChapter;
       const shouldStartGenerating =
         initialChapterNum === 0 && simpleIndex.length > 0;
 
@@ -307,7 +309,7 @@ export function ChatContainer({
 
   // --- Function to fetch a specific chapter (user-initiated or prefetch) ---
   const fetchChapterContent = useCallback(
-    async (chapterNumber: number, isPrefetch: boolean = false) => {
+    async (chapterNumber: number, isPrefetch = false) => {
       if (
         !isMountedRef.current ||
         !state.originalContent ||
