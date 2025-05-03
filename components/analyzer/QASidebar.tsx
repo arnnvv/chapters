@@ -5,11 +5,15 @@ import { getQAKey } from "@/lib/utils";
 import type { FormEvent } from "react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-// Optional: If you expect code blocks in answers and want highlighting
-// import rehypeHighlight from 'rehype-highlight';
-// import "highlight.js/styles/github-dark.css"; // Or your preferred theme
-import { cn } from "@/lib/utils"; // Import cn if you use it for classes
 import rehypeHighlight from "rehype-highlight";
+import { cn } from "@/lib/utils"; // Import cn if you use it for classes
+
+// +++ Add these imports for math rendering +++
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+// Make sure you have imported the KaTeX CSS in your global styles or layout:
+// import 'katex/dist/katex.min.css';
+// ++++++++++++++++++++++++++++++++++++++++++++++
 
 export function QASidebar({
   history,
@@ -66,7 +70,44 @@ export function QASidebar({
                 "pl-2",                                       // Indentation
                 "bg-background/50 p-2 rounded border border-border/50" // Background/border like the old <pre>
               )}>
-                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}
+                <ReactMarkdown
+                  // +++ Updated plugins for math +++
+                  remarkPlugins={[remarkGfm, remarkMath]}
+                  rehypePlugins={[rehypeHighlight, rehypeKatex]}
+                  // ++++++++++++++++++++++++++++++++++
+                  components={{ // Keep code block styling consistent if needed
+                    code({ node, className, children, ...props }) {
+                      const match = /language-(\w+)/.exec(className || "");
+                      const isInline =
+                        "inline" in props && typeof props.inline !== "undefined";
+
+                      return !isInline && match ? (
+                        <code
+                          className={cn(
+                            className,
+                            "block p-3 rounded-md overflow-x-auto",
+                            // Ensure KaTeX styles don't conflict badly here
+                          )}
+                          {...props}
+                        >
+                          {children}
+                        </code>
+                      ) : (
+                        <code
+                          className={cn(
+                            "bg-muted px-1 py-0.5 rounded text-sm",
+                            className,
+                            // Ensure KaTeX styles don't conflict badly here
+                          )}
+                          {...props}
+                        >
+                          {children}
+                        </code>
+                      );
+                    },
+                    // Add other custom components like table, th, td if you had them before
+                    // and want them applied here too.
+                  }}
                 >
                   {/* Display answer or 'Thinking...' if it's the last item and currently loading */}
                   {item.answer || (isLoading && index === history.length - 1 ? "Thinking..." : "...")}
@@ -75,11 +116,10 @@ export function QASidebar({
             </div>
           </div>
         ))}
-        {isLoading && (
+        {/* Loading indicator specific for the thinking state */}
+        {isLoading && history.length > 0 && history[history.length - 1].answer === "" && (
           <p className="text-sm text-muted-foreground italic">
-            {history.length > 0 && history[history.length - 1].answer === ""
-              ? "Assistant is thinking..."
-              : "Loading..."}
+            Assistant is thinking...
           </p>
         )}
       </div>

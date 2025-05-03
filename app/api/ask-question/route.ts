@@ -170,7 +170,14 @@ Your task is to answer the user's question accurately and clearly, explaining co
 
 **Prioritize information found within the provided context below**, especially when the question is specifically about the document's content. However, you **may use your general knowledge** to provide broader context or answer more general questions (like asking about other common architectures) if the provided document doesn't cover it or is limited.
 
-Ensure all code snippets, command outputs, and data structure examples (like tensors) are enclosed in triple backticks (\`\`\`) with their respective language.
+**Formatting Rules:**
+1.  Ensure all actual programming code snippets, command outputs, and data structure examples (like tensors) are enclosed in triple backticks (\`\`\`) with their respective language (e.g., \`\`\`python ... \`\`\`).
+2.  **CRITICAL Formatting Rule for Math:**
+    - ALL mathematical variables, symbols, equations, and formulas MUST be enclosed in standard LaTeX delimiters.
+    - Use single dollar signs (\`$ ... $\`) for inline math (like \`$V = (1/3) \\pi R^2 H$\`).
+    - Use double dollar signs (\`$$ ... $$\`) for display/block math (like \`$$ V = \\int_{0}^{H} \\pi \\left(\\frac{R}{H} y\\right)^2 dy $$\`).
+    - Do NOT use Unicode math symbols like π, ∫, ∑, ², ³ directly in the text. Use the LaTeX equivalents (e.g., \`\\pi\`, \`\\int\`, \`\\sum\`, \`^2\`, \`^3\`).
+    - Do NOT put mathematical formulas inside Markdown code blocks (\`\`\`) unless you are showing actual programming code that *calculates* the math. Regular formulas should use \`$ ... $\` or \`$$ ... $$\`.
 
 Provided Context for Your Reference:
 
@@ -189,7 +196,7 @@ Provided Context for Your Reference:
     ${historyContext}
 
 ---
-Now, answer the following user question. Remember your role as a teacher and consider the learner's background.
+Now, answer the following user question. Remember your role as a teacher, consider the learner's background, and strictly follow all formatting rules above.
 
 **User Question:** ${userQuestion}
 
@@ -197,7 +204,7 @@ Now, answer the following user question. Remember your role as a teacher and con
 `;
 
     const answer: string = await callGemini(prompt);
-
+    console.log("Raw AI Answer (JSON Stringified):\n", JSON.stringify(answer));
     await Promise.all([
       client.query(
         `INSERT INTO messages (conversation_id, sender, content, created_at)

@@ -1,8 +1,15 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
-import "highlight.js/styles/github-dark.css";
+import "highlight.js/styles/github-dark.css"; // Style for code highlighting
 import { cn } from "@/lib/utils";
+
+// +++ Add these imports for math rendering +++
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+// Ensure KaTeX CSS is imported globally (e.g., in app/globals.css)
+// @import 'katex/dist/katex.min.css';
+// ++++++++++++++++++++++++++++++++++++++++++++++
 
 interface ChapterDisplayProps {
   title: string;
@@ -22,7 +29,7 @@ export function ChapterDisplay({
       </h2>
       <div
         className={cn(
-          "flex-grow overflow-y-auto",
+          "flex-grow overflow-y-auto", // Ensure vertical scroll within this div
           isLoading ? "flex items-center justify-center" : "",
         )}
       >
@@ -33,40 +40,48 @@ export function ChapterDisplay({
         ) : (
           <div className="prose prose-sm sm:prose-base max-w-none dark:prose-invert markdown-content">
             <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeHighlight]}
+              // +++ Updated plugins for math +++
+              remarkPlugins={[remarkGfm, remarkMath]}
+              rehypePlugins={[rehypeHighlight, rehypeKatex]}
+              // ++++++++++++++++++++++++++++++++++
               components={{
                 code({ node, className, children, ...props }) {
                   const match = /language-(\w+)/.exec(className || "");
-                  const isInline =
-                    "inline" in props && typeof props.inline !== "undefined";
+                  // Determine if it's a block based on language match
+                  const isBlock = !!match;
 
-                  return !isInline && match ? (
+                  // --- Fixed Code Block Rendering ---
+                  if (isBlock) {
+                    return (
+                      // Container for margin and styling
+                      <div className="my-4 rounded-md overflow-hidden bg-[#0d1117] text-[#c9d1d9]"> {/* Example GitHub dark background */}
+                        {/* Use <pre> for the block structure */}
+                        <pre className={cn("p-3 overflow-x-auto", className)}>
+                          {/* Use <code> inside <pre> for semantic correctness */}
+                          <code>{children}</code>
+                        </pre>
+                      </div>
+                    );
+                  }
+                  // --- Fixed Inline Code Rendering ---
+                  return (
                     <code
                       className={cn(
-                        className,
-                        "block p-3 rounded-md overflow-x-auto",
+                        "bg-muted px-[0.4em] py-[0.2em] rounded text-sm font-mono",
+                        className
                       )}
-                      {...props}
-                    >
-                      {children}
-                    </code>
-                  ) : (
-                    <code
-                      className={cn(
-                        "bg-muted px-1 py-0.5 rounded text-sm",
-                        className,
-                      )}
-                      {...props}
+                    // Pass other props ONLY if necessary and valid for <code>
+                    // {...props} // Generally avoid spreading unknown props
                     >
                       {children}
                     </code>
                   );
                 },
+                // --- Table components remain the same ---
                 table({ children }) {
                   return (
-                    <div className="overflow-x-auto">
-                      <table className="my-4 w-full">{children}</table>
+                    <div className="overflow-x-auto my-4">
+                      <table className="w-full">{children}</table>
                     </div>
                   );
                 },
