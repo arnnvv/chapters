@@ -165,7 +165,7 @@ export async function POST(request: Request) {
         : "No previous conversation history.";
 
     const prompt = `
-Act as a helpful and knowledgeable AI teaching assistant. You are answering a question from a learner whose background is: "\${userBackground}".
+Act as a helpful and knowledgeable AI teaching assistant. You are answering a question from a learner whose background is: "${userBackground}".
 Your task is to answer the user's question accurately and clearly, explaining concepts in a way the learner can understand.
 
 **Prioritize information found within the provided context below**, especially when the question is specifically about the document's content. However, you **may use your general knowledge** to provide broader context or answer more general questions (like asking about other common architectures) if the provided document doesn't cover it or is limited.
