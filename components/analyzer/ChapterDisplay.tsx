@@ -18,7 +18,7 @@ export function ChapterDisplay({
       {isLoading ? (
         <p>Loading chapter content...</p>
       ) : (
-        <div className="prose max-w-none dark:prose-invert">
+        <div className="prose max-w-none dark:prose-invert markdown-content">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeHighlight]}

@@ -3,6 +3,13 @@
 import type { QAItem } from "@/app/api/ask-question/route";
 import { getQAKey } from "@/lib/utils";
 import type { FormEvent } from "react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+// Optional: If you expect code blocks in answers and want highlighting
+// import rehypeHighlight from 'rehype-highlight';
+// import "highlight.js/styles/github-dark.css"; // Or your preferred theme
+import { cn } from "@/lib/utils"; // Import cn if you use it for classes
+import rehypeHighlight from "rehype-highlight";
 
 export function QASidebar({
   history,
@@ -29,40 +36,57 @@ export function QASidebar({
         Ask Questions
       </h3>
 
+      {/* Scrollable history area */}
       <div className="flex-grow overflow-y-auto mb-4 space-y-4 pr-2">
+        {/* Placeholder when no history and not loading */}
         {history.length === 0 && !isLoading && (
           <p className="text-sm text-muted-foreground italic">
             Ask a question about the content.
           </p>
         )}
-        {history.map((item) => (
+
+        {/* Map through history items */}
+        {history.map((item, index) => (
           <div key={getQAKey(item)} className="text-sm space-y-1">
+            {/* User Question */}
             <div>
               <p className="font-semibold text-primary mb-0.5">You:</p>
-              <p className="pl-2">{item.question}</p>
+              <p className="pl-2 whitespace-pre-wrap">{item.question}</p> {/* Allow wrapping for long questions */}
             </div>
+
+            {/* Assistant Answer */}
             <div>
               <p className="font-semibold text-accent-foreground mb-0.5">
                 Assistant:
               </p>
-              <pre className="whitespace-pre-wrap font-sans text-sm pl-2 bg-background/50 p-2 rounded border border-border/50">
-                {item.answer}
-              </pre>
+              {/* Container for Markdown rendering */}
+              <div className={cn(
+                "prose prose-sm max-w-none dark:prose-invert", // Base prose styles
+                "markdown-content",                           // Your custom class for specific overrides
+                "pl-2",                                       // Indentation
+                "bg-background/50 p-2 rounded border border-border/50" // Background/border like the old <pre>
+              )}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}
+                >
+                  {/* Display answer or 'Thinking...' if it's the last item and currently loading */}
+                  {item.answer || (isLoading && index === history.length - 1 ? "Thinking..." : "...")}
+                </ReactMarkdown>
+              </div>
             </div>
           </div>
         ))}
+
+        {/* Loading placeholders */}
         {isLoading && history.length === 0 && (
           <p className="text-sm text-muted-foreground italic">
             Assistant is preparing...
           </p>
         )}
-        {isLoading && history.length > 0 && (
-          <p className="text-sm text-muted-foreground italic">
-            Assistant is thinking...
-          </p>
-        )}
+        {/* Note: The "Thinking..." state is now handled inside the map */}
+
       </div>
 
+      {/* Input form */}
       <form
         onSubmit={handleSubmit}
         className="mt-auto pt-4 border-t border-border shrink-0"

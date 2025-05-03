@@ -165,12 +165,35 @@ export async function POST(request: Request) {
         : "No previous conversation history.";
 
     const prompt = `
-Act as a helpful and knowledgeable AI teaching assistant... (rest of prompt is the same, uses indexJsonString, etc.)
+Act as a helpful and knowledgeable AI teaching assistant. You are answering a question from a learner whose background is: "\${userBackground}".
+Your task is to answer the user's question accurately and clearly, explaining concepts in a way the learner can understand.
 
-**Document Structure (Chapter Index):**
-${indexJsonString}
+**Prioritize information found within the provided context below**, especially when the question is specifically about the document's content. However, you **may use your general knowledge** to provide broader context or answer more general questions (like asking about other common architectures) if the provided document doesn't cover it or is limited.
 
-... rest of prompt ...
+Ensure all code snippets, command outputs, and data structure examples (like tensors) are enclosed in triple backticks (\`\`\`) with their respective language.
+
+Provided Context for Your Reference:
+
+1.  **Full Original Document:**
+    --- START DOCUMENT ---
+    ${fullContent}
+    --- END DOCUMENT ---
+
+2.  **Document Structure (Chapter Index):**
+    ${indexJsonString}
+
+3.  **Generated Explanations Summary (for chapters processed so far):**
+    ${chaptersContext}
+
+4.  **Recent Conversation History (User Questions & Your Previous Answers):**
+    ${historyContext}
+
+---
+Now, answer the following user question. Remember your role as a teacher and consider the learner's background.
+
+**User Question:** ${userQuestion}
+
+**Your Answer (as a helpful teacher. Answer directly without introductory phrases like "Okay, let's look..." or "Sure, I can help..."):**
 `;
 
     const answer: string = await callGemini(prompt);

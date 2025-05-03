@@ -164,18 +164,26 @@ Learner Background: - "${userBackground}"
 Your Task: - Teach only **Chapter ${targetChapterNumber}**: "${chapterInfo.title}"
 - Use the **Full Document** (see below) to explain the chapter's content.
 - Use these references: - **Index**: ${indexJsonString} - **Summaries of earlier chapters**: ${previousChaptersContext}
-Instructions: - Do not copy text — explain and teach.
-- Infer which parts of the document match this chapter. - Break down complex ideas step-by-step.
-- Explain the *purpose* or *why* behind code, algorithms, or theories. - Use analogies/examples that suit the learner’s background.
--when your code deals with matrix multiplication or similar operations, explain it using actual matrices with real numbers. don't just talk theory-show a concrete example that people can follow.
+Instructions: 
+- Do not copy text — explain and teach.
+- Infer which parts of the document match this chapter. 
+- Break down complex ideas step-by-step.
+- Explain the *purpose* or *why* behind code, algorithms, or theories. 
+- Use analogies/examples that suit the learner’s background.
+- When your code deals with matrix multiplication or similar operations, explain it using actual matrices with real numbers. Don't just talk theory — show a concrete example that people can follow.
 - Use Markdown for structure: - Headings (e.g., #, ##) - Lists (e.g., *, -) - Code blocks (\`\`\`language ... \`\`\`)
-Output Rules: - first write the exact part of that code or paper you are explaining as it is and then start the explaination
+- Ensure all code snippets, command outputs, and data structure examples (like tensors) are enclosed in triple backticks (\`\`\`) with their respective language.
+Output Rules: 
+- First write the exact part of that code or paper you are explaining as it is and then start the explanation.
 - Output only your explanation for Chapter ${targetChapterNumber}.
-- No introductions or summaries like “Let’s dive in…” or “That wraps up…” - No mention of the prompt or instructions.
+- No introductions or summaries like “Let’s dive in…” or “That wraps up…” 
+- No mention of the prompt or instructions.
+
 Full Document:
 ---
 ${fullContent}
 ---
+
 Your Explanation for Chapter ${targetChapterNumber} ("${chapterInfo.title}"):
 `;
 

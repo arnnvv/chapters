@@ -120,3 +120,32 @@
     @apply bg-background text-foreground;
   }
 }
+
+.markdown-content p {
+  margin-bottom: 1em; /* Adjust value as needed (e.g., 1.25em, 16px) */
+}
+
+/* Optional: Add margin below other common block elements too for consistency */
+.markdown-content ul,
+.markdown-content ol,
+.markdown-content pre,
+.markdown-content blockquote,
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+   margin-bottom: 1em; /* Or adjust individually */
+}
+
+/* Optional: Prevent margin on the very last element within the container */
+.markdown-content > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Optional: Ensure lists have some indentation */
+.markdown-content ul,
+.markdown-content ol {
+ padding-left: 1.6em; /* Adjust as needed */
+}
