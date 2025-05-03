@@ -12,7 +12,7 @@ import { globalGETRateLimit, globalPOSTRateLimit } from "@/lib/requests";
 import { deleteSessionTokenCookie } from "@/lib/session";
 import type {
   Conversation,
-  ChapterIndexItem, // Keep simple type for UI list if needed
+  ChapterIndexItem,
   ChapterIndexItemDB,
   Message,
 } from "@/lib/db/types";
@@ -106,7 +106,7 @@ export const getUserConversations = async (): Promise<
 
 export interface ConversationDetails {
   conversation: Omit<Conversation, "chapter_index">;
-  index: Array<ChapterIndexItem & { generated_content: string | null }>; // Updated index type
+  index: Array<ChapterIndexItem & { generated_content: string | null }>;
   messages: QAItem[];
 }
 
@@ -177,8 +177,9 @@ export const getConversationDetails = async (
         currentQuestion = msg.content;
       } else if (msg.sender === "ai" && currentQuestion !== null) {
         qaHistory.push({ question: currentQuestion, answer: msg.content });
-        currentQuestion = null;
+        currentQuestion = null; // Reset after pairing
       }
+      // Handle potential case where the last message is from the user
     }
 
     await client.query("COMMIT");
@@ -200,3 +201,55 @@ export const getConversationDetails = async (
     client.release();
   }
 };
+
+// --- NEW ACTION ---
+export const deleteConversationAction = async (
+  conversationId: number,
+): Promise<{ success: boolean; message: string }> => {
+  const { session, user } = await getCurrentSession();
+  if (!session || !user) {
+    return { success: false, message: "Unauthorized" };
+  }
+  const userId = user.id;
+
+  if (!(await globalPOSTRateLimit())) {
+    return { success: false, message: "Rate limit exceeded." };
+  }
+
+  if (typeof conversationId !== "number") {
+    return { success: false, message: "Invalid conversation ID." };
+  }
+
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+
+    // Verify ownership first
+    const checkResult = await client.query<{ count: string }>(
+      "SELECT COUNT(*) FROM conversations WHERE id = $1 AND user_id = $2",
+      [conversationId, userId],
+    );
+
+    if (parseInt(checkResult.rows[0].count, 10) === 0) {
+      await client.query("ROLLBACK");
+      return { success: false, message: "Conversation not found or access denied." };
+    }
+
+    // Delete the conversation (cascades should handle related items)
+    await client.query("DELETE FROM conversations WHERE id = $1 AND user_id = $2", [
+      conversationId,
+      userId,
+    ]);
+
+    await client.query("COMMIT");
+    return { success: true, message: "Conversation deleted successfully." };
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error deleting conversation:", error);
+    const message = error instanceof Error ? error.message : "Database error.";
+    return { success: false, message: `Failed to delete conversation: ${message}` };
+  } finally {
+    client.release();
+  }
+};
+// --- END NEW ACTION ---
