@@ -183,6 +183,7 @@ File: package.json
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "highlight.js": "^11.11.1",
+    "katex": "^0.16.22",
     "lucide-react": "^0.503.0",
     "next": "15.4.0-canary.17",
     "next-themes": "^0.4.6",
@@ -192,14 +193,17 @@ File: package.json
     "react-markdown": "^10.1.0",
     "react-syntax-highlighter": "^15.6.1",
     "rehype-highlight": "^7.0.2",
+    "rehype-katex": "^7.0.1",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.2.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@tailwindcss/postcss": "^4",
+    "@types/katex": "^0.16.7",
     "@types/node": "^20",
     "@types/pg": "^8.11.14",
     "@types/react": "^19",
@@ -253,6 +257,9 @@ importers:
       highlight.js:
         specifier: ^11.11.1
         version: 11.11.1
+      katex:
+        specifier: ^0.16.22
+        version: 0.16.22
       lucide-react:
         specifier: ^0.503.0
         version: 0.503.0(react@19.1.0)
@@ -280,12 +287,18 @@ importers:
       rehype-highlight:
         specifier: ^7.0.2
         version: 7.0.2
+      rehype-katex:
+        specifier: ^7.0.1
+        version: 7.0.1
       remark-breaks:
         specifier: ^4.0.0
         version: 4.0.0
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
+      remark-math:
+        specifier: ^6.0.0
+        version: 6.0.0
       sonner:
         specifier: ^2.0.3
         version: 2.0.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -299,6 +312,9 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.1.5
+      '@types/katex':
+        specifier: ^0.16.7
+        version: 0.16.7
       '@types/node':
         specifier: ^20
         version: 20.17.32
@@ -985,6 +1001,9 @@ packages:
   '@types/hast@3.0.4':
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
 
+  '@types/katex@0.16.7':
+    resolution: {integrity: sha512-HMwFiRujE5PjrgwHQ25+bsLJgowjGjm5Z8FVSf0N6PwgJrwxH0QxzHYDcKsTfV3wva0vzrpqMTJS2jXPr5BMEQ==}
+
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
 
@@ -1084,6 +1103,10 @@ packages:
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
 
+  commander@8.3.0:
+    resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
+    engines: {node: '>= 12'}
+
   csstype@3.1.3:
     resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
 
@@ -1120,6 +1143,10 @@ packages:
     resolution: {integrity: sha512-ZSW3ma5GkcQBIpwZTSRAI8N71Uuwgs93IezB7mf7R60tC8ZbJideoDNKjHn2O9KIlx6rkGTTEk1xUCK2E1Y2Yg==}
     engines: {node: '>=10.13.0'}
 
+  entities@6.0.0:
+    resolution: {integrity: sha512-aKstq2TDOndCn4diEyp9Uq/Flu2i1GlLkc6XIDQSDMuaFE3OPW5OphLCyQ5SpSJZTb4reN+kTcYru5yIfXoRPw==}
+    engines: {node: '>=0.12'}
+
   escape-string-regexp@5.0.0:
     resolution: {integrity: sha512-/veY75JbMK4j1yjvuUxuVsiS/hr/4iHs9FTT6cgTexxdE0Ly/glccBAkloH/DofkjRbZU3bnoj38mOmhkZ0lHw==}
     engines: {node: '>=12'}
@@ -1144,11 +1171,26 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
+  hast-util-from-dom@5.0.1:
+    resolution: {integrity: sha512-N+LqofjR2zuzTjCPzyDUdSshy4Ma6li7p/c3pA78uTwzFgENbgbUrm2ugwsOdcjI1muO+o6Dgzp9p8WHtn/39Q==}
+
+  hast-util-from-html-isomorphic@2.0.0:
+    resolution: {integrity: sha512-zJfpXq44yff2hmE0XmwEOzdWin5xwH+QIhMLOScpX91e/NSGPsAzNCvLQDIEPyO2TXi+lBmU6hjLIhV8MwP2kw==}
+
+  hast-util-from-html@2.0.3:
+    resolution: {integrity: sha512-CUSRHXyKjzHov8yKsQjGOElXy/3EKpyX56ELnkHH34vDVw1N1XSQ1ZcAvTyAPtGqLTuKP/uxM+aLkSPqF/EtMw==}
+
+  hast-util-from-parse5@8.0.3:
+    resolution: {integrity: sha512-3kxEVkEKt0zvcZ3hCRYI8rqrgwtlIOFMWkbclACvjlDw8Li9S2hk/d51OI0nr/gIpdMHNepwgOKqZ/sy0Clpyg==}
+
   hast-util-is-element@3.0.0:
     resolution: {integrity: sha512-Val9mnv2IWpLbNPqc/pUem+a7Ipj2aHacCwgNfTiK0vJKl0LF+4Ba4+v1oPHFpf3bLYmreq0/l3Gud9S5OH42g==}
 
   hast-util-parse-selector@2.2.5:
     resolution: {integrity: sha512-7j6mrk/qqkSehsM92wQjdIgWM2/BW61u/53G6xmC8i1OmEdKLHbk419QKQUjz6LglWsfqoiHmyMRkP1BGjecNQ==}
+
+  hast-util-parse-selector@4.0.0:
+    resolution: {integrity: sha512-wkQCkSYoOGCRKERFWcxMVMOcYE2K1AaNLU8DXS9arxnLOUEWbOXKXiJUNzEpqZ3JOKpnha3jkFrumEjVliDe7A==}
 
   hast-util-to-jsx-runtime@2.3.6:
     resolution: {integrity: sha512-zl6s8LwNyo1P9uw+XJGvZtdFF1GdAkOg8ujOw+4Pyb76874fLps4ueHXDhXWdk6YHQ6OgUtinliG7RsYvCbbBg==}
@@ -1161,6 +1203,9 @@ packages:
 
   hastscript@6.0.0:
     resolution: {integrity: sha512-nDM6bvd7lIqDUiYEiu5Sl/+6ReP0BMk/2f4U/Rooccxkj0P5nm+acM5PrGJ/t5I8qPGiqZSE6hVAwZEdZIvP4w==}
+
+  hastscript@9.0.1:
+    resolution: {integrity: sha512-g7df9rMFX/SPi34tyGCyUBREQoKkapwdY/T04Qn9TDWfHhAYt4/I0gMVirzK5wEzeUqIjEB+LXC/ypb7Aqno5w==}
 
   highlight.js@10.7.3:
     resolution: {integrity: sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==}
@@ -1211,6 +1256,10 @@ packages:
 
   jiti@2.4.2:
     resolution: {integrity: sha512-rg9zJN+G4n2nfJl5MW3BMygZX56zKPNVEYYqq7adpmMh4Jn2QNEwhvQlFy6jPVdcod7txZtKHWnyZiA3a0zP7A==}
+    hasBin: true
+
+  katex@0.16.22:
+    resolution: {integrity: sha512-XCHRdUw4lf3SKBaJe4EvgqIuWwkPSo9XoeO8GjQW94Bp7TWv9hNhzZjZ+OH9yf1UmLygb7DIT5GSFQiyt16zYg==}
     hasBin: true
 
   lightningcss-darwin-arm64@1.29.2:
@@ -1318,6 +1367,9 @@ packages:
   mdast-util-gfm@3.1.0:
     resolution: {integrity: sha512-0ulfdQOM3ysHhCJ1p06l0b0VKlhU0wuQs3thxZQagjcjPrlFRqY215uZGHHJan9GEAXd9MbfPjFJz+qMkVR6zQ==}
 
+  mdast-util-math@3.0.0:
+    resolution: {integrity: sha512-Tl9GBNeG/AhJnQM221bJR2HPvLOSnLE/T9cJI9tlc6zwQk2nPk/4f0cHkOdEixQPC/j8UtKDdITswvLAy1OZ1w==}
+
   mdast-util-mdx-expression@2.0.1:
     resolution: {integrity: sha512-J6f+9hUp+ldTZqKRSg7Vw5V6MqjATc+3E4gf3CFNcuZNWD8XdyI6zQ8GqH7f8169MM6P7hMBRDVGnn7oHB9kXQ==}
 
@@ -1365,6 +1417,9 @@ packages:
 
   micromark-extension-gfm@3.0.0:
     resolution: {integrity: sha512-vsKArQsicm7t0z2GugkCKtZehqUm31oeGBV/KVSorWSy8ZlNAv7ytjFhvaryUiCUJYqs+NoE6AFhpQvBTM6Q4w==}
+
+  micromark-extension-math@3.1.0:
+    resolution: {integrity: sha512-lvEqd+fHjATVs+2v/8kg9i5Q0AP2k85H0WUOwpIVvUML8BapsMvh1XAogmQjOCsLpoKRCVQqEkQBB3NhVBcsOg==}
 
   micromark-factory-destination@2.0.1:
     resolution: {integrity: sha512-Xe6rDdJlkmbFRExpTOmRj9N3MaWmbAgdpSrBQvCFqhezUn4AHqJHbaEnfbVYYiexVSs//tqOdY/DxhjdCiJnIA==}
@@ -1469,6 +1524,9 @@ packages:
 
   parse-entities@4.0.2:
     resolution: {integrity: sha512-GG2AQYWoLgL877gQIKeRPGO1xF9+eG1ujIb5soS5gPvLQ1y2o8FL90w2QWNdf9I361Mpp7726c+lj3U0qK1uGw==}
+
+  parse5@7.3.0:
+    resolution: {integrity: sha512-IInvU7fabl34qmi9gY8XOVxhYyMyuH2xUNpb2q8/Y+7552KlejkRvqvD19nMoUW/uQGGbqNpA6Tufu5FL5BZgw==}
 
   pg-cloudflare@1.2.5:
     resolution: {integrity: sha512-OOX22Vt0vOSRrdoUPKJ8Wi2OpE/o/h9T8X1s4qSkCedbNah9ei2W2765be8iMVxQUsvgT7zIAT2eIa9fs5+vtg==}
@@ -1628,11 +1686,17 @@ packages:
   rehype-highlight@7.0.2:
     resolution: {integrity: sha512-k158pK7wdC2qL3M5NcZROZ2tR/l7zOzjxXd5VGdcfIyoijjQqpHd3JKtYSBDpDZ38UI2WJWuFAtkMDxmx5kstA==}
 
+  rehype-katex@7.0.1:
+    resolution: {integrity: sha512-OiM2wrZ/wuhKkigASodFoo8wimG3H12LWQaH8qSPVJn9apWKFSH3YOCtbKpBorTVw/eI7cuT21XBbvwEswbIOA==}
+
   remark-breaks@4.0.0:
     resolution: {integrity: sha512-IjEjJOkH4FuJvHZVIW0QCDWxcG96kCq7An/KVH2NfJe6rKZU2AsHeB3OEjPNRxi4QC34Xdx7I2KGYn6IpT7gxQ==}
 
   remark-gfm@4.0.1:
     resolution: {integrity: sha512-1quofZ2RQ9EWdeN34S79+KExV1764+wCUGop5CPL1WGdD0ocPpu91lzPGbwWMECpEpd42kJGQwzRfyov9j4yNg==}
+
+  remark-math@6.0.0:
+    resolution: {integrity: sha512-MMqgnP74Igy+S3WwnhQ7kqGlEerTETXMvJhrUzDikVZ2/uogJCb+WHUg97hK9/jcfc0dkD73s3LN8zU49cTEtA==}
 
   remark-parse@11.0.0:
     resolution: {integrity: sha512-FCxlKLNGknS5ba/1lmpYijMUzX2esxW5xQqjWxw2eHFfS2MSdaHVINFmhjo+qN1WhZhNimq0dZATN9pH0IDrpA==}
@@ -1742,6 +1806,9 @@ packages:
   unist-util-position@5.0.0:
     resolution: {integrity: sha512-fucsC7HjXvkB5R3kTCO7kUjRdrS0BJt3M/FPxmHMBOm8JQi2BsHAHFsy27E0EolP8rp0NzXsJ+jNPyDWvOJZPA==}
 
+  unist-util-remove-position@5.0.0:
+    resolution: {integrity: sha512-Hp5Kh3wLxv0PHj9m2yZhhLt58KzPtEYKQQ4yxfYFEO7EvHwzyDYnduhHnY1mDxoqr7VUwVuHXk9RXKIiYS1N8Q==}
+
   unist-util-stringify-position@4.0.0:
     resolution: {integrity: sha512-0ASV06AAoKCDkS2+xw5RXJywruurpbC4JZSm7nr7MOt1ojAzvyyaO+UxZf18j8FCF6kmzCZKcAgN/yu2gm2XgQ==}
 
@@ -1776,11 +1843,17 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
+  vfile-location@5.0.3:
+    resolution: {integrity: sha512-5yXvWDEgqeiYiBe1lbxYF7UMAIm/IcopxMHrMQDq3nvKcjPKIhZklUKL+AE7J7uApI4kwe2snsK+eI6UTj9EHg==}
+
   vfile-message@4.0.2:
     resolution: {integrity: sha512-jRDZ1IMLttGj41KcZvlrYAaI3CfqpLpfpf+Mfig13viT6NKvRzWZ+lXz0Y5D60w6uJIBAOGq9mSHf0gktF0duw==}
 
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
+
+  web-namespaces@2.0.1:
+    resolution: {integrity: sha512-bKr1DkiNa2krS7qxNtdrtHAmzuYGFQLiQ13TsorsdT6ULTkPLKuu5+GsFpDlg6JFjUTwX2DyhMPG2be8uPrqsQ==}
 
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
@@ -2335,6 +2408,8 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
 
+  '@types/katex@0.16.7': {}
+
   '@types/mdast@4.0.4':
     dependencies:
       '@types/unist': 3.0.3
@@ -2429,6 +2504,8 @@ snapshots:
 
   comma-separated-tokens@2.0.3: {}
 
+  commander@8.3.0: {}
+
   csstype@3.1.3: {}
 
   date-fns@4.1.0: {}
@@ -2456,6 +2533,8 @@ snapshots:
       graceful-fs: 4.2.11
       tapable: 2.2.1
 
+  entities@6.0.0: {}
+
   escape-string-regexp@5.0.0: {}
 
   estree-util-is-identifier-name@3.0.0: {}
@@ -2472,11 +2551,48 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
+  hast-util-from-dom@5.0.1:
+    dependencies:
+      '@types/hast': 3.0.4
+      hastscript: 9.0.1
+      web-namespaces: 2.0.1
+
+  hast-util-from-html-isomorphic@2.0.0:
+    dependencies:
+      '@types/hast': 3.0.4
+      hast-util-from-dom: 5.0.1
+      hast-util-from-html: 2.0.3
+      unist-util-remove-position: 5.0.0
+
+  hast-util-from-html@2.0.3:
+    dependencies:
+      '@types/hast': 3.0.4
+      devlop: 1.1.0
+      hast-util-from-parse5: 8.0.3
+      parse5: 7.3.0
+      vfile: 6.0.3
+      vfile-message: 4.0.2
+
+  hast-util-from-parse5@8.0.3:
+    dependencies:
+      '@types/hast': 3.0.4
+      '@types/unist': 3.0.3
+      devlop: 1.1.0
+      hastscript: 9.0.1
+      property-information: 7.0.0
+      vfile: 6.0.3
+      vfile-location: 5.0.3
+      web-namespaces: 2.0.1
+
   hast-util-is-element@3.0.0:
     dependencies:
       '@types/hast': 3.0.4
 
   hast-util-parse-selector@2.2.5: {}
+
+  hast-util-parse-selector@4.0.0:
+    dependencies:
+      '@types/hast': 3.0.4
 
   hast-util-to-jsx-runtime@2.3.6:
     dependencies:
@@ -2517,6 +2633,14 @@ snapshots:
       property-information: 5.6.0
       space-separated-tokens: 1.1.5
 
+  hastscript@9.0.1:
+    dependencies:
+      '@types/hast': 3.0.4
+      comma-separated-tokens: 2.0.3
+      hast-util-parse-selector: 4.0.0
+      property-information: 7.0.0
+      space-separated-tokens: 2.0.2
+
   highlight.js@10.7.3: {}
 
   highlight.js@11.11.1: {}
@@ -2555,6 +2679,10 @@ snapshots:
   is-plain-obj@4.1.0: {}
 
   jiti@2.4.2: {}
+
+  katex@0.16.22:
+    dependencies:
+      commander: 8.3.0
 
   lightningcss-darwin-arm64@1.29.2:
     optional: true
@@ -2698,6 +2826,18 @@ snapshots:
       mdast-util-gfm-table: 2.0.0
       mdast-util-gfm-task-list-item: 2.0.0
       mdast-util-to-markdown: 2.1.2
+    transitivePeerDependencies:
+      - supports-color
+
+  mdast-util-math@3.0.0:
+    dependencies:
+      '@types/hast': 3.0.4
+      '@types/mdast': 4.0.4
+      devlop: 1.1.0
+      longest-streak: 3.1.0
+      mdast-util-from-markdown: 2.0.2
+      mdast-util-to-markdown: 2.1.2
+      unist-util-remove-position: 5.0.0
     transitivePeerDependencies:
       - supports-color
 
@@ -2853,6 +2993,16 @@ snapshots:
       micromark-extension-gfm-tagfilter: 2.0.0
       micromark-extension-gfm-task-list-item: 2.1.0
       micromark-util-combine-extensions: 2.0.1
+      micromark-util-types: 2.0.2
+
+  micromark-extension-math@3.1.0:
+    dependencies:
+      '@types/katex': 0.16.7
+      devlop: 1.1.0
+      katex: 0.16.22
+      micromark-factory-space: 2.0.1
+      micromark-util-character: 2.1.1
+      micromark-util-symbol: 2.0.1
       micromark-util-types: 2.0.2
 
   micromark-factory-destination@2.0.1:
@@ -3023,6 +3173,10 @@ snapshots:
       is-decimal: 2.0.1
       is-hexadecimal: 2.0.1
 
+  parse5@7.3.0:
+    dependencies:
+      entities: 6.0.0
+
   pg-cloudflare@1.2.5:
     optional: true
 
@@ -3192,6 +3346,16 @@ snapshots:
       unist-util-visit: 5.0.0
       vfile: 6.0.3
 
+  rehype-katex@7.0.1:
+    dependencies:
+      '@types/hast': 3.0.4
+      '@types/katex': 0.16.7
+      hast-util-from-html-isomorphic: 2.0.0
+      hast-util-to-text: 4.0.2
+      katex: 0.16.22
+      unist-util-visit-parents: 6.0.1
+      vfile: 6.0.3
+
   remark-breaks@4.0.0:
     dependencies:
       '@types/mdast': 4.0.4
@@ -3205,6 +3369,15 @@ snapshots:
       micromark-extension-gfm: 3.0.0
       remark-parse: 11.0.0
       remark-stringify: 11.0.0
+      unified: 11.0.5
+    transitivePeerDependencies:
+      - supports-color
+
+  remark-math@6.0.0:
+    dependencies:
+      '@types/mdast': 4.0.4
+      mdast-util-math: 3.0.0
+      micromark-extension-math: 3.1.0
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
@@ -3342,6 +3515,11 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
 
+  unist-util-remove-position@5.0.0:
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-visit: 5.0.0
+
   unist-util-stringify-position@4.0.0:
     dependencies:
       '@types/unist': 3.0.3
@@ -3376,6 +3554,11 @@ snapshots:
     dependencies:
       react: 19.1.0
 
+  vfile-location@5.0.3:
+    dependencies:
+      '@types/unist': 3.0.3
+      vfile: 6.0.3
+
   vfile-message@4.0.2:
     dependencies:
       '@types/unist': 3.0.3
@@ -3385,6 +3568,8 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
+
+  web-namespaces@2.0.1: {}
 
   xtend@4.0.2: {}
 
@@ -3649,6 +3834,7 @@ File: app/globals.css
 ================================================
 @import "tailwindcss";
 @import "tw-animate-css";
+@import 'katex/dist/katex.min.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -3797,6 +3983,35 @@ File: app/globals.css
 .markdown-content ul,
 .markdown-content ol {
  padding-left: 1.6em; /* Adjust as needed */
+}
+
+.prose .katex {
+  /* Adjust base KaTeX font size to better match prose */
+  /* Experiment with values like 0.9em, 0.95em, 1em, 1.05em */
+  /* 'em' is relative to the surrounding text size */
+  font-size: 1em; 
+  
+  /* Improve vertical alignment for inline math if needed */
+  /* vertical-align: baseline; */ /* or maybe -0.1em, etc. */
+  
+  /* Prevent line breaks inside simple inline formulas if desired */
+   white-space: nowrap; 
+}
+
+.prose .katex-display {
+  /* Add vertical margins for block math */
+  /* Match prose paragraph margins or adjust as needed */
+  margin-top: 1.25em; 
+  margin-bottom: 1.25em; 
+  
+  /* Ensure block math is centered or left-aligned as desired */
+  /* display: block; */ /* KaTeX usually handles this */
+  /* text-align: center; */ /* If you want centered block math */
+  
+  /* Ensure block math can scroll horizontally if very wide */
+  overflow-x: auto;
+  /* Add some padding if scrolling */
+  padding: 0.5em 0.2em; 
 }
 
 
@@ -4039,11 +4254,23 @@ export async function POST(request: Request) {
 
     const prompt = `
 Act as a helpful and knowledgeable AI teaching assistant. You are answering a question from a learner whose background is: "${userBackground}".
-Your task is to answer the user's question accurately and clearly, explaining concepts in a way the learner can understand.
+Your task is to answer the user's question accurately and clearly, explaining concepts in a way the learner can understand. Use relatively short paragraphs, breaking up complex explanations logically.
 
 **Prioritize information found within the provided context below**, especially when the question is specifically about the document's content. However, you **may use your general knowledge** to provide broader context or answer more general questions (like asking about other common architectures) if the provided document doesn't cover it or is limited.
 
-Ensure all code snippets, command outputs, and data structure examples (like tensors) are enclosed in triple backticks (\`\`\`) with their respective language.
+**Formatting Rules:**
+1.  Ensure all actual programming code snippets, command outputs, and data structure examples (like tensors) are enclosed in triple backticks (\`\`\`) with their respective language (e.g., \`\`\`python ... \`\`\`).
+2.  **CRITICAL Formatting Rule for Math:**
+    - ALL mathematical variables, symbols, equations, and formulas MUST be enclosed in standard LaTeX delimiters.
+    - Use single dollar signs (\`$ ... $\`) for *inline* math (math within a sentence).
+    - Use double dollar signs (\`$$ ... $$\`) for *display* math (important formulas, multi-step derivations, equations with fractions/integrals/summations that should stand alone on their own line). **Use display math generously for clarity.**
+    - Do NOT use Unicode math symbols like π, ∫, ∑, ², ³ directly in the text. Use the LaTeX equivalents (e.g., \`\\pi\`, \`\\int\`, \`\\sum\`, \`^2\`, \`^3\`).
+    - Do NOT put mathematical formulas inside Markdown code blocks (\`\`\`) unless you are showing actual programming code that *calculates* the math.
+
+**Output Structure:**
+- Keep paragraphs concise and focused on a single point or step.
+- Use Markdown lists (\`*\`, \`-\`, \`1.\`) to break down steps or related ideas.
+- Ensure adequate spacing between different parts of the explanation.
 
 Provided Context for Your Reference:
 
@@ -4062,15 +4289,14 @@ Provided Context for Your Reference:
     ${historyContext}
 
 ---
-Now, answer the following user question. Remember your role as a teacher and consider the learner's background.
+Now, answer the following user question. Remember your role as a teacher, consider the learner's background, use short paragraphs, utilize display math ($$) appropriately for emphasis and clarity, and strictly follow all formatting rules above.
 
 **User Question:** ${userQuestion}
 
 **Your Answer (as a helpful teacher. Answer directly without introductory phrases like "Okay, let's look..." or "Sure, I can help..."):**
 `;
-
     const answer: string = await callGemini(prompt);
-
+    console.log("Raw AI Answer (JSON Stringified):\n", JSON.stringify(answer));
     await Promise.all([
       client.query(
         `INSERT INTO messages (conversation_id, sender, content, created_at)
@@ -4268,25 +4494,35 @@ export async function POST(request: Request) {
     }
 
     const prompt = `
-Act as an expert professor and clear teacher.
+Act as an expert professor and clear teacher, generating content for **Chapter ${targetChapterNumber}**: "${chapterInfo.title}".
 Learner Background: - "${userBackground}"
-Your Task: - Teach only **Chapter ${targetChapterNumber}**: "${chapterInfo.title}"
-- Use the **Full Document** (see below) to explain the chapter's content.
-- Use these references: - **Index**: ${indexJsonString} - **Summaries of earlier chapters**: ${previousChaptersContext}
-Instructions: 
-- Do not copy text — explain and teach.
-- Infer which parts of the document match this chapter. 
-- Break down complex ideas step-by-step.
-- Explain the *purpose* or *why* behind code, algorithms, or theories. 
-- Use analogies/examples that suit the learner’s background.
-- When your code deals with matrix multiplication or similar operations, explain it using actual matrices with real numbers. Don't just talk theory — show a concrete example that people can follow.
-- Use Markdown for structure: - Headings (e.g., #, ##) - Lists (e.g., *, -) - Code blocks (\`\`\`language ... \`\`\`)
-- Ensure all code snippets, command outputs, and data structure examples (like tensors) are enclosed in triple backticks (\`\`\`) with their respective language.
-Output Rules: 
-- First write the exact part of that code or paper you are explaining as it is and then start the explanation.
-- Output only your explanation for Chapter ${targetChapterNumber}.
-- No introductions or summaries like “Let’s dive in…” or “That wraps up…” 
-- No mention of the prompt or instructions.
+
+**Formatting Rules:**
+1.  Use standard Markdown for structure: Headings (e.g., #, ##), Lists (e.g., *, -), Bold/Italics.
+2.  Ensure all actual programming code snippets, command outputs, and data structure examples (like tensors) are enclosed in triple backticks (\`\`\`) with their respective language (e.g., \`\`\`python ... \`\`\`).
+3.  **CRITICAL Formatting Rule for Math:**
+    - ALL mathematical variables, symbols, equations, and formulas MUST be enclosed in standard LaTeX delimiters.
+    - Use single dollar signs (\`$ ... $\`) for *inline* math (math within a sentence).
+    - Use double dollar signs (\`$$ ... $$\`) for *display* math (important formulas, multi-step derivations, equations with fractions/integrals/summations that should stand alone on their own line). **Use display math generously for clarity and emphasis.**
+    - Do NOT use Unicode math symbols like π, ∫, ∑, ², ³ directly in the text. Use the LaTeX equivalents (e.g., \`\\pi\`, \`\\int\`, \`\\sum\`, \`^2\`, \`^3\`).
+    - Do NOT put mathematical formulas inside Markdown code blocks (\`\`\`) unless you are showing actual programming code that *calculates* the math.
+
+**Teaching Instructions:**
+- Use the **Full Document** (provided below) as the primary source material for explaining the chapter's content.
+- Use these references for context: - **Index**: ${indexJsonString} - **Summaries of earlier chapters**: ${previousChaptersContext}
+- Infer which parts of the Full Document are relevant to **Chapter ${targetChapterNumber}**.
+- Do not just copy text — explain and teach the concepts clearly.
+- **Keep paragraphs concise and focused.** Break down complex ideas step-by-step, often using lists (\`*\`, \`-\`, \`1.\`).
+- Explain the *purpose* or *why* behind code, algorithms, or theories relevant to this chapter.
+- Use analogies and examples suitable for the learner’s background: "${userBackground}".
+- When explaining operations like matrix multiplication, illustrate with concrete numerical examples if appropriate for the chapter content, likely using display math (\`$$...$$\`).
+
+**Output Rules:**
+- **Crucially:** Before explaining a specific section of the source text (code or paper paragraph), first quote that *exact* section using Markdown blockquotes (\`> ...\`). Then, provide your explanation immediately following the quote.
+- Output only your explanation content specifically for **Chapter ${targetChapterNumber}**.
+- Do NOT include any introductory or concluding phrases like “Let’s dive into Chapter X…” or “That concludes our look at…”.
+- Do NOT mention this prompt or these instructions in your output.
+- Strictly adhere to all **Formatting Rules** and **Teaching Instructions** regarding paragraph length and display math usage.
 
 Full Document:
 ---
@@ -4297,7 +4533,7 @@ Your Explanation for Chapter ${targetChapterNumber} ("${chapterInfo.title}"):
 `;
 
     const newlyGeneratedContent: string = await callGemini(prompt);
-
+    // console.log("Raw Chapter Content (JSON Stringified):\n", JSON.stringify(newlyGeneratedContent))
     await client.query(
       `UPDATE chapter_index_items
          SET generated_content = $1
@@ -5360,8 +5596,15 @@ File: components/analyzer/ChapterDisplay.tsx
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
-import "highlight.js/styles/github-dark.css";
+import "highlight.js/styles/github-dark.css"; // Style for code highlighting
 import { cn } from "@/lib/utils";
+
+// +++ Add these imports for math rendering +++
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+// Ensure KaTeX CSS is imported globally (e.g., in app/globals.css)
+// @import 'katex/dist/katex.min.css';
+// ++++++++++++++++++++++++++++++++++++++++++++++
 
 interface ChapterDisplayProps {
   title: string;
@@ -5381,7 +5624,7 @@ export function ChapterDisplay({
       </h2>
       <div
         className={cn(
-          "flex-grow overflow-y-auto",
+          "flex-grow overflow-y-auto", // Ensure vertical scroll within this div
           isLoading ? "flex items-center justify-center" : "",
         )}
       >
@@ -5392,40 +5635,48 @@ export function ChapterDisplay({
         ) : (
           <div className="prose prose-sm sm:prose-base max-w-none dark:prose-invert markdown-content">
             <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeHighlight]}
+              // +++ Updated plugins for math +++
+              remarkPlugins={[remarkGfm, remarkMath]}
+              rehypePlugins={[rehypeHighlight, rehypeKatex]}
+              // ++++++++++++++++++++++++++++++++++
               components={{
                 code({ node, className, children, ...props }) {
                   const match = /language-(\w+)/.exec(className || "");
-                  const isInline =
-                    "inline" in props && typeof props.inline !== "undefined";
+                  // Determine if it's a block based on language match
+                  const isBlock = !!match;
 
-                  return !isInline && match ? (
+                  // --- Fixed Code Block Rendering ---
+                  if (isBlock) {
+                    return (
+                      // Container for margin and styling
+                      <div className="my-4 rounded-md overflow-hidden bg-[#0d1117] text-[#c9d1d9]"> {/* Example GitHub dark background */}
+                        {/* Use <pre> for the block structure */}
+                        <pre className={cn("p-3 overflow-x-auto", className)}>
+                          {/* Use <code> inside <pre> for semantic correctness */}
+                          <code>{children}</code>
+                        </pre>
+                      </div>
+                    );
+                  }
+                  // --- Fixed Inline Code Rendering ---
+                  return (
                     <code
                       className={cn(
-                        className,
-                        "block p-3 rounded-md overflow-x-auto",
+                        "bg-muted px-[0.4em] py-[0.2em] rounded text-sm font-mono",
+                        className
                       )}
-                      {...props}
-                    >
-                      {children}
-                    </code>
-                  ) : (
-                    <code
-                      className={cn(
-                        "bg-muted px-1 py-0.5 rounded text-sm",
-                        className,
-                      )}
-                      {...props}
+                    // Pass other props ONLY if necessary and valid for <code>
+                    // {...props} // Generally avoid spreading unknown props
                     >
                       {children}
                     </code>
                   );
                 },
+                // --- Table components remain the same ---
                 table({ children }) {
                   return (
-                    <div className="overflow-x-auto">
-                      <table className="my-4 w-full">{children}</table>
+                    <div className="overflow-x-auto my-4">
+                      <table className="w-full">{children}</table>
                     </div>
                   );
                 },
@@ -5825,11 +6076,15 @@ import { getQAKey } from "@/lib/utils";
 import type { FormEvent } from "react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-// Optional: If you expect code blocks in answers and want highlighting
-// import rehypeHighlight from 'rehype-highlight';
-// import "highlight.js/styles/github-dark.css"; // Or your preferred theme
-import { cn } from "@/lib/utils"; // Import cn if you use it for classes
 import rehypeHighlight from "rehype-highlight";
+import { cn } from "@/lib/utils"; // Import cn if you use it for classes
+
+// +++ Add these imports for math rendering +++
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+// Make sure you have imported the KaTeX CSS in your global styles or layout:
+// import 'katex/dist/katex.min.css';
+// ++++++++++++++++++++++++++++++++++++++++++++++
 
 export function QASidebar({
   history,
@@ -5886,7 +6141,44 @@ export function QASidebar({
                 "pl-2",                                       // Indentation
                 "bg-background/50 p-2 rounded border border-border/50" // Background/border like the old <pre>
               )}>
-                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}
+                <ReactMarkdown
+                  // +++ Updated plugins for math +++
+                  remarkPlugins={[remarkGfm, remarkMath]}
+                  rehypePlugins={[rehypeHighlight, rehypeKatex]}
+                  // ++++++++++++++++++++++++++++++++++
+                  components={{ // Keep code block styling consistent if needed
+                    code({ node, className, children, ...props }) {
+                      const match = /language-(\w+)/.exec(className || "");
+                      const isInline =
+                        "inline" in props && typeof props.inline !== "undefined";
+
+                      return !isInline && match ? (
+                        <code
+                          className={cn(
+                            className,
+                            "block p-3 rounded-md overflow-x-auto",
+                            // Ensure KaTeX styles don't conflict badly here
+                          )}
+                          {...props}
+                        >
+                          {children}
+                        </code>
+                      ) : (
+                        <code
+                          className={cn(
+                            "bg-muted px-1 py-0.5 rounded text-sm",
+                            className,
+                            // Ensure KaTeX styles don't conflict badly here
+                          )}
+                          {...props}
+                        >
+                          {children}
+                        </code>
+                      );
+                    },
+                    // Add other custom components like table, th, td if you had them before
+                    // and want them applied here too.
+                  }}
                 >
                   {/* Display answer or 'Thinking...' if it's the last item and currently loading */}
                   {item.answer || (isLoading && index === history.length - 1 ? "Thinking..." : "...")}
@@ -5895,11 +6187,10 @@ export function QASidebar({
             </div>
           </div>
         ))}
-        {isLoading && (
+        {/* Loading indicator specific for the thinking state */}
+        {isLoading && history.length > 0 && history[history.length - 1].answer === "" && (
           <p className="text-sm text-muted-foreground italic">
-            {history.length > 0 && history[history.length - 1].answer === ""
-              ? "Assistant is thinking..."
-              : "Loading..."}
+            Assistant is thinking...
           </p>
         )}
       </div>

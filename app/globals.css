@@ -164,6 +164,11 @@
    white-space: nowrap; 
 }
 
+.markdown-content li {
+   margin-bottom: 0.8em; /* Adjust the value (e.g., 1em, 0.5em, 10px) as needed */
+}
+
+
 .prose .katex-display {
   /* Add vertical margins for block math */
   /* Match prose paragraph margins or adjust as needed */
