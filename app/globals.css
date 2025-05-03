@@ -150,3 +150,32 @@
 .markdown-content ol {
  padding-left: 1.6em; /* Adjust as needed */
 }
+
+.prose .katex {
+  /* Adjust base KaTeX font size to better match prose */
+  /* Experiment with values like 0.9em, 0.95em, 1em, 1.05em */
+  /* 'em' is relative to the surrounding text size */
+  font-size: 1em; 
+  
+  /* Improve vertical alignment for inline math if needed */
+  /* vertical-align: baseline; */ /* or maybe -0.1em, etc. */
+  
+  /* Prevent line breaks inside simple inline formulas if desired */
+   white-space: nowrap; 
+}
+
+.prose .katex-display {
+  /* Add vertical margins for block math */
+  /* Match prose paragraph margins or adjust as needed */
+  margin-top: 1.25em; 
+  margin-bottom: 1.25em; 
+  
+  /* Ensure block math is centered or left-aligned as desired */
+  /* display: block; */ /* KaTeX usually handles this */
+  /* text-align: center; */ /* If you want centered block math */
+  
+  /* Ensure block math can scroll horizontally if very wide */
+  overflow-x: auto;
+  /* Add some padding if scrolling */
+  padding: 0.5em 0.2em; 
+}

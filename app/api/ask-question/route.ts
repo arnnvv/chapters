@@ -166,7 +166,7 @@ export async function POST(request: Request) {
 
     const prompt = `
 Act as a helpful and knowledgeable AI teaching assistant. You are answering a question from a learner whose background is: "${userBackground}".
-Your task is to answer the user's question accurately and clearly, explaining concepts in a way the learner can understand.
+Your task is to answer the user's question accurately and clearly, explaining concepts in a way the learner can understand. Use relatively short paragraphs, breaking up complex explanations logically.
 
 **Prioritize information found within the provided context below**, especially when the question is specifically about the document's content. However, you **may use your general knowledge** to provide broader context or answer more general questions (like asking about other common architectures) if the provided document doesn't cover it or is limited.
 
@@ -174,10 +174,15 @@ Your task is to answer the user's question accurately and clearly, explaining co
 1.  Ensure all actual programming code snippets, command outputs, and data structure examples (like tensors) are enclosed in triple backticks (\`\`\`) with their respective language (e.g., \`\`\`python ... \`\`\`).
 2.  **CRITICAL Formatting Rule for Math:**
     - ALL mathematical variables, symbols, equations, and formulas MUST be enclosed in standard LaTeX delimiters.
-    - Use single dollar signs (\`$ ... $\`) for inline math (like \`$V = (1/3) \\pi R^2 H$\`).
-    - Use double dollar signs (\`$$ ... $$\`) for display/block math (like \`$$ V = \\int_{0}^{H} \\pi \\left(\\frac{R}{H} y\\right)^2 dy $$\`).
+    - Use single dollar signs (\`$ ... $\`) for *inline* math (math within a sentence).
+    - Use double dollar signs (\`$$ ... $$\`) for *display* math (important formulas, multi-step derivations, equations with fractions/integrals/summations that should stand alone on their own line). **Use display math generously for clarity.**
     - Do NOT use Unicode math symbols like π, ∫, ∑, ², ³ directly in the text. Use the LaTeX equivalents (e.g., \`\\pi\`, \`\\int\`, \`\\sum\`, \`^2\`, \`^3\`).
-    - Do NOT put mathematical formulas inside Markdown code blocks (\`\`\`) unless you are showing actual programming code that *calculates* the math. Regular formulas should use \`$ ... $\` or \`$$ ... $$\`.
+    - Do NOT put mathematical formulas inside Markdown code blocks (\`\`\`) unless you are showing actual programming code that *calculates* the math.
+
+**Output Structure:**
+- Keep paragraphs concise and focused on a single point or step.
+- Use Markdown lists (\`*\`, \`-\`, \`1.\`) to break down steps or related ideas.
+- Ensure adequate spacing between different parts of the explanation.
 
 Provided Context for Your Reference:
 
@@ -196,13 +201,12 @@ Provided Context for Your Reference:
     ${historyContext}
 
 ---
-Now, answer the following user question. Remember your role as a teacher, consider the learner's background, and strictly follow all formatting rules above.
+Now, answer the following user question. Remember your role as a teacher, consider the learner's background, use short paragraphs, utilize display math ($$) appropriately for emphasis and clarity, and strictly follow all formatting rules above.
 
 **User Question:** ${userQuestion}
 
 **Your Answer (as a helpful teacher. Answer directly without introductory phrases like "Okay, let's look..." or "Sure, I can help..."):**
 `;
-
     const answer: string = await callGemini(prompt);
     console.log("Raw AI Answer (JSON Stringified):\n", JSON.stringify(answer));
     await Promise.all([
