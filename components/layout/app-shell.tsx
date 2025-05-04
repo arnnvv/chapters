@@ -25,7 +25,6 @@ interface AppShellProps {
   sidebar?: React.ReactNode;
   rightSidebar?: React.ReactNode;
   showRightSidebar?: boolean;
-  // +++ NEW PROPS +++
   isLeftSidebarOpen: boolean;
   isRightSidebarOpen: boolean;
   toggleLeftSidebar: () => void;
@@ -38,14 +37,16 @@ export function AppShell({
   sidebar,
   rightSidebar,
   showRightSidebar = true,
-  // +++ DESTRUCTURE NEW PROPS +++
   isLeftSidebarOpen,
   isRightSidebarOpen,
   toggleLeftSidebar,
   toggleRightSidebar,
 }: AppShellProps) {
+  // Condition for constraining the main content width
+  const constrainMainContent =
+    !isLeftSidebarOpen && (!showRightSidebar || !isRightSidebarOpen);
+
   return (
-    // Wrap with TooltipProvider for button tooltips
     <TooltipProvider delayDuration={100}>
       <div className="flex h-screen overflow-hidden bg-background">
         {/* Main sidebar - Conditionally render and add transition */}
@@ -99,7 +100,9 @@ export function AppShell({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
-                    <p>{isLeftSidebarOpen ? "Close" : "Open"} chapters/history</p>
+                    <p>
+                      {isLeftSidebarOpen ? "Close" : "Open"} chapters/history
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               )}
@@ -141,19 +144,32 @@ export function AppShell({
           {/* Content area */}
           <div className="flex flex-1 overflow-hidden">
             {/* Main child content - takes remaining space */}
-            <div className="flex-1 overflow-auto">{children}</div>
+            {/* --- MODIFIED: Added inner div for conditional width constraint --- */}
+            <div className="flex-1 overflow-auto">
+              <div
+                className={cn(
+                  "h-full w-full transition-all duration-300 ease-in-out",
+                  // Apply margin auto and max-width only when both sidebars are effectively closed
+                  constrainMainContent && "mx-auto max-w-7xl", // ~65-70% on larger screens
+                )}
+              >
+                {children}
+              </div>
+            </div>
+            {/* ---------------------------------------------------------------- */}
 
             {/* Right Sidebar - Conditionally render and set width/transition */}
             {showRightSidebar && rightSidebar && (
               <aside
                 className={cn(
                   "hidden md:flex flex-col h-full border-l border-border bg-muted/20 transition-all duration-300 ease-in-out flex-shrink-0",
-                  // Apply 40% width when open
-                  "md:w-[40%]",
+                  // --- MODIFIED: Changed width to 50% ---
+                  "md:w-1/2",
                   // Translate when closed
                   isRightSidebarOpen ? "md:translate-x-0" : "md:translate-x-full",
                   // Hide when closed using width and opacity for smoother transition
-                  !isRightSidebarOpen && "md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0",
+                  !isRightSidebarOpen &&
+                  "md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0",
                 )}
               >
                 {rightSidebar}
