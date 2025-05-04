@@ -1,14 +1,15 @@
 import type { Config } from "tailwindcss";
-import animatePlugin from "tailwindcss-animate"; // Import the plugin
+import animatePlugin from "tailwindcss-animate";
+import typographyPlugin from "@tailwindcss/typography"; // Import the typography plugin
 
 const config: Config = {
-  darkMode: "class", // Corrected line
+  darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./lib/**/*.{js,ts,jsx,tsx}", // Added lib for potential utils using TW
-    "./hooks/**/*.{js,ts,jsx,tsx}", // Added hooks
+    "./lib/**/*.{js,ts,jsx,tsx}",
+    "./hooks/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     container: {
@@ -53,9 +54,8 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Added sidebar colors from target CSS variables
         sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))", // Renamed from --sidebar
+          DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
           primary: "hsl(var(--sidebar-primary))",
           "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
@@ -64,7 +64,6 @@ const config: Config = {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Added chart colors from target CSS variables
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
@@ -87,7 +86,6 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        // Added caret-blink if needed by input-otp
         "caret-blink": {
           "0%,70%,100%": { opacity: "1" },
           "20%,50%": { opacity: "0" },
@@ -96,15 +94,57 @@ const config: Config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "caret-blink": "caret-blink 1.25s ease-out infinite", // Added caret-blink
+        "caret-blink": "caret-blink 1.25s ease-out infinite",
       },
       fontFamily: {
-        // Assuming Inter is still desired
         sans: ["var(--font-sans)", "sans-serif"],
-        mono: ["var(--font-mono)", "monospace"], // Keep if needed
+        mono: ["var(--font-mono)", "monospace"],
       },
+      // +++ START: Typography configuration +++
+      typography: ({ theme }: { theme: (path: string) => string }) => ({
+        // Target the DEFAULT (base) prose styles
+        DEFAULT: {
+          css: {
+            // Target code elements within prose
+            "code, pre code": {
+              "font-size": "inherit", // Force inherit font size
+            },
+            // Also reset potential ::before/::after pseudo-elements
+            "code::before, code::after": {
+              "font-size": "inherit", // Force inherit font size
+              // You might not need these, but good to include
+              content: "none", // Remove potential quote characters added by themes
+            },
+            // --- Optional: Adjust pre background/text colors if needed ---
+            // pre: {
+            //   'background-color': theme('colors.muted/50'),
+            //   color: theme('colors.foreground'),
+            // },
+            // --- Optional: Adjust inline code colors if needed ---
+            // ':not(pre) > code': {
+            //    'background-color': theme('colors.muted'),
+            //    color: theme('colors.foreground'),
+            //    // other styles...
+            // },
+          },
+        },
+        // You can define overrides for specific prose sizes (sm, lg, xl) here if needed
+        // lg: {
+        //   css: {
+        //     'code, pre code': { 'font-size': 'inherit' },
+        //     'code::before, code::after': { 'font-size': 'inherit', content: 'none' },
+        //   }
+        // },
+        // xl: {
+        //   css: {
+        //     'code, pre code': { 'font-size': 'inherit' },
+        //     'code::before, code::after': { 'font-size': 'inherit', content: 'none' },
+        //   }
+        // }
+      }),
+      // +++ END: Typography configuration +++
     },
   },
-  plugins: [animatePlugin], // Use the imported plugin
+  plugins: [animatePlugin, typographyPlugin],
 };
 export default config;

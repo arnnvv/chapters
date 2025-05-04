@@ -31,6 +31,8 @@ import type { AskQuestionResponse, QAItem } from "@/app/api/ask-question/route";
 import type { GenerateChapterResponse } from "@/app/api/generate-chapter/route";
 import type { GenerateIndexApiResponse } from "@/app/api/generate-index/route";
 import { Loader2 } from "lucide-react";
+// Import useIsMobile hook if you want responsive defaults (Optional)
+// import { useIsMobile } from "@/hooks/use-mobile";
 
 const ContentSubmissionForm = dynamic(
   () =>
@@ -87,19 +89,19 @@ type ChatAction =
   | { type: "INITIALIZE"; payload: { user: UserData } }
   | { type: "START_INDEXING"; payload: { content: string; background: string } }
   | {
-      type: "INDEX_SUCCESS";
-      payload: { index: ChapterIndexItem[]; conversationId: number };
-    }
+    type: "INDEX_SUCCESS";
+    payload: { index: ChapterIndexItem[]; conversationId: number };
+  }
   | { type: "INDEX_FAIL"; payload: { error: string } }
   | { type: "START_CHAPTER_GENERATION"; payload: { chapterNumber: number } }
   | {
-      type: "CHAPTER_GENERATION_SUCCESS";
-      payload: { chapterNumber: number; content: string };
-    }
+    type: "CHAPTER_GENERATION_SUCCESS";
+    payload: { chapterNumber: number; content: string };
+  }
   | {
-      type: "CHAPTER_GENERATION_FAIL";
-      payload: { chapterNumber: number; error: string };
-    }
+    type: "CHAPTER_GENERATION_FAIL";
+    payload: { chapterNumber: number; error: string };
+  }
   | { type: "SET_DISPLAYED_CHAPTER"; payload: { chapterNumber: number } }
   | { type: "START_ANSWERING"; payload: { question: string } }
   | { type: "ANSWERING_SUCCESS"; payload: { answer: string } }
@@ -108,9 +110,9 @@ type ChatAction =
   | { type: "LOAD_CONVERSATION_SUCCESS"; payload: ConversationDetails }
   | { type: "LOAD_CONVERSATION_FAIL"; payload: { error: string } }
   | {
-      type: "PREFETCH_CHAPTER_SUCCESS";
-      payload: { chapterNumber: number; content: string };
-    }
+    type: "PREFETCH_CHAPTER_SUCCESS";
+    payload: { chapterNumber: number; content: string };
+  }
   | { type: "RESET" };
 
 const initialState: ChatState = {
@@ -132,6 +134,7 @@ interface UserData {
 }
 
 function chatReducer(state: ChatState, action: ChatAction): ChatState {
+  // --- Keep your existing reducer logic ---
   switch (action.type) {
     case "INITIALIZE":
       return {
@@ -340,29 +343,11 @@ export default function HomePage() {
   const isPrefetchingRef = useRef(false);
   const prefetchTargetRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    const initialize = async () => {
-      try {
-        const sessionResult = await getCurrentSession();
-        if (!sessionResult.session || !sessionResult.user) {
-          router.push("/login");
-          return;
-        }
-        setUserData({
-          name: sessionResult.user.name,
-          picture: sessionResult.user.picture,
-        });
-        dispatch({ type: "INITIALIZE", payload: { user: sessionResult.user } });
-        await fetchConversations();
-      } catch (error) {
-        console.error("Initialization error:", error);
-        toast.error("Failed to initialize application.");
-        dispatch({ type: "RESET" });
-      }
-    };
-    initialize();
-  }, [router]);
+  // Sidebar State
+  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
 
+  // *** MOVED fetchConversations DEFINITION UP ***
   const fetchConversations = useCallback(async () => {
     setIsLoadingConversations(true);
     try {
@@ -378,8 +363,43 @@ export default function HomePage() {
     } finally {
       setIsLoadingConversations(false);
     }
+  }, []); // Keep empty dependency array if no external state is used
+
+  // Initialization Effect (Now calls fetchConversations defined above)
+  useEffect(() => {
+    const initialize = async () => {
+      try {
+        const sessionResult = await getCurrentSession();
+        if (!sessionResult.session || !sessionResult.user) {
+          router.push("/login");
+          return;
+        }
+        setUserData({
+          name: sessionResult.user.name,
+          picture: sessionResult.user.picture,
+        });
+        dispatch({ type: "INITIALIZE", payload: { user: sessionResult.user } });
+        await fetchConversations(); // Call fetchConversations here
+      } catch (error) {
+        console.error("Initialization error:", error);
+        toast.error("Failed to initialize application.");
+        dispatch({ type: "RESET" });
+      }
+    };
+    initialize();
+    // Note: fetchConversations is included in the dependency array now
+  }, [router, fetchConversations]);
+
+  // Sidebar Toggle Functions
+  const toggleLeftSidebar = useCallback(() => {
+    setIsLeftSidebarOpen((prev) => !prev);
   }, []);
 
+  const toggleRightSidebar = useCallback(() => {
+    setIsRightSidebarOpen((prev) => !prev);
+  }, []);
+
+  // Content Submission Handler
   const handleContentSubmit = useCallback(
     async (text: string, background: string) => {
       if (!background.trim()) {
@@ -388,6 +408,8 @@ export default function HomePage() {
       }
       prefetchTargetRef.current = null;
       isPrefetchingRef.current = false;
+      setIsRightSidebarOpen(false);
+      setIsLeftSidebarOpen(true);
 
       dispatch({
         type: "START_INDEXING",
@@ -415,8 +437,9 @@ export default function HomePage() {
             type: "INDEX_SUCCESS",
             payload: { index: data.index, conversationId: data.conversationId },
           });
-          await fetchConversations();
+          await fetchConversations(); // Refresh list
           toast.success("Index generated. Loading first chapter...");
+          setIsRightSidebarOpen(true);
         } else {
           throw new Error("Invalid response when generating index.");
         }
@@ -429,9 +452,10 @@ export default function HomePage() {
         toast.error(`Failed to generate index: ${message}`);
       }
     },
-    [dispatch, fetchConversations],
+    [dispatch, fetchConversations], // fetchConversations is a dependency
   );
 
+  // Fetch Chapter Content Handler
   const fetchChapterContent = useCallback(
     async (chapterNumber: number, isPrefetch = false) => {
       if (
@@ -569,6 +593,7 @@ export default function HomePage() {
     ],
   );
 
+  // Start Prefetch Sequence Handler
   const startPrefetchSequence = useCallback(async () => {
     if (
       isPrefetchingRef.current ||
@@ -585,6 +610,7 @@ export default function HomePage() {
     await fetchChapterContent(target, true);
   }, [state.status, state.chapterIndex.length, fetchChapterContent]);
 
+  // Prefetching Effect
   useEffect(() => {
     if (
       state.status === "generatingChapter" &&
@@ -636,6 +662,7 @@ export default function HomePage() {
     startPrefetchSequence,
   ]);
 
+  // Load Conversation Handler
   const handleLoadConversation = useCallback(
     async (id: number) => {
       if (state.status === "loadingConversation" && state.conversationId === id)
@@ -647,6 +674,8 @@ export default function HomePage() {
 
       prefetchTargetRef.current = null;
       isPrefetchingRef.current = false;
+      setIsLeftSidebarOpen(true);
+      setIsRightSidebarOpen(true);
 
       dispatch({
         type: "LOAD_CONVERSATION_START",
@@ -691,6 +720,7 @@ export default function HomePage() {
     [state.status, state.conversationId, dispatch],
   );
 
+  // Ask Question Handler
   const handleAskQuestion = useCallback(
     async (question: string) => {
       if (
@@ -714,6 +744,7 @@ export default function HomePage() {
 
       prefetchTargetRef.current = null;
       isPrefetchingRef.current = false;
+      setIsRightSidebarOpen(true);
 
       dispatch({ type: "START_ANSWERING", payload: { question } });
 
@@ -764,6 +795,7 @@ export default function HomePage() {
     ],
   );
 
+  // Delete Conversation Handler
   const handleDeleteConversation = useCallback(
     async (idToDelete: number) => {
       if (
@@ -791,6 +823,8 @@ export default function HomePage() {
             prefetchTargetRef.current = null;
             isPrefetchingRef.current = false;
             dispatch({ type: "RESET" });
+            setIsLeftSidebarOpen(true);
+            setIsRightSidebarOpen(false);
           }
         } else {
           toast.error(result.message || "Failed to delete conversation");
@@ -803,6 +837,7 @@ export default function HomePage() {
     [state.conversationId, state.status, dispatch],
   );
 
+  // New Conversation Handler
   const handleNewConversation = useCallback(() => {
     if (state.status !== "idle" && state.status !== "error") {
       toast.warning("Please wait for the current action to finish.");
@@ -811,12 +846,16 @@ export default function HomePage() {
     prefetchTargetRef.current = null;
     isPrefetchingRef.current = false;
     dispatch({ type: "RESET" });
+    setIsLeftSidebarOpen(false);
+    setIsRightSidebarOpen(false);
   }, [dispatch, state.status]);
 
+  // Chapter Selection Handler
   const handleChapterSelect = useCallback(
     (chapterNumber: number) => {
       if (state.generatedChapters[chapterNumber]) {
         dispatch({ type: "SET_DISPLAYED_CHAPTER", payload: { chapterNumber } });
+        setIsLeftSidebarOpen(false); // Close sidebar after selection
       } else {
         fetchChapterContent(chapterNumber, false);
       }
@@ -824,6 +863,7 @@ export default function HomePage() {
     [state.generatedChapters, fetchChapterContent, dispatch],
   );
 
+  // Navigation Handlers
   const handleNextChapter = useCallback(() => {
     const nextChapter = (state.currentChapterNumber || 0) + 1;
     if (nextChapter <= state.chapterIndex.length) {
@@ -842,6 +882,7 @@ export default function HomePage() {
     }
   }, [state.currentChapterNumber, handleChapterSelect]);
 
+  // Derived State
   const currentChapterTitle =
     state.chapterIndex.find(
       (item) => item.chapter === state.currentChapterNumber,
@@ -873,6 +914,10 @@ export default function HomePage() {
   return (
     <AppShell
       user={userData}
+      isLeftSidebarOpen={isLeftSidebarOpen}
+      isRightSidebarOpen={isRightSidebarOpen}
+      toggleLeftSidebar={toggleLeftSidebar}
+      toggleRightSidebar={toggleRightSidebar}
       sidebar={
         <SidebarNav
           conversations={conversationList}

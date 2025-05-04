@@ -70,6 +70,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/katex": "^0.16.7",
     "@types/node": "^22",
     "@types/pg": "^8.11.14",
