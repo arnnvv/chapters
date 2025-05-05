@@ -20,8 +20,7 @@ import { cn } from "@/lib/utils";
 
 // --- MODIFIED: Use CDN URL instead of local path ---
 // Make sure this version (5.2.133) matches the one in your pnpm-lock.yaml
-const PDF_WORKER_CDN_URL =
-  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.2.133/pdf.worker.min.mjs";
+const PDF_WORKER_CDN_URL = '/pdf.worker.min.mjs';
 // Alternative CDNs (ensure version match):
 // const PDF_WORKER_CDN_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.2.133/build/pdf.worker.min.mjs';
 // const PDF_WORKER_CDN_URL = 'https://unpkg.com/pdfjs-dist@5.2.133/build/pdf.worker.min.mjs';
@@ -304,9 +303,9 @@ export function ContentSubmissionForm({
             className={cn(
               "absolute right-2 bottom-2 z-10 h-8 w-8 rounded-lg",
               !canSubmit &&
-                "bg-muted/60 text-muted-foreground hover:bg-muted/60 cursor-not-allowed",
+              "bg-muted/60 text-muted-foreground hover:bg-muted/60 cursor-not-allowed",
               canSubmit &&
-                "bg-primary text-primary-foreground hover:bg-primary/90",
+              "bg-primary text-primary-foreground hover:bg-primary/90",
             )}
             disabled={!canSubmit}
             aria-label="Submit content"
