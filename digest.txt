@@ -9927,162 +9927,182 @@ File: components/analyzer/QASidebar.tsx
 ================================================
 "use client";
 
-import type { QAItem } from "@/app/api/ask-question/route";
-import { getQAKey } from "@/lib/utils";
-import type { FormEvent } from "react";
+import type React from "react";
+import { useState, useEffect, useRef } from "react"; // Added useEffect, useRef
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Loader2, Send } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
-import { cn } from "@/lib/utils"; // Import cn if you use it for classes
-
-// +++ Add these imports for math rendering +++
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-// Make sure you have imported the KaTeX CSS in your global styles or layout:
-// import 'katex/dist/katex.min.css';
-// ++++++++++++++++++++++++++++++++++++++++++++++
+import rehypeHighlight from "rehype-highlight";
+import { cn } from "@/lib/utils";
+import type { QAItem } from "@/app/api/ask-question/route"; // Keep using your API type
+import { getQAKey } from "@/lib/utils"; // Keep using your key generator
+
+interface QASidebarProps {
+  history: QAItem[];
+  onAskQuestion: (question: string) => void;
+  isLoading: boolean; // Loading state for the answer generation
+}
 
 export function QASidebar({
   history,
   onAskQuestion,
   isLoading,
-}: {
-  history: QAItem[];
-  onAskQuestion: (question: string) => void;
-  isLoading: boolean;
-}) {
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+}: QASidebarProps) {
+  const [question, setQuestion] = useState("");
+  const scrollAreaRef = useRef<HTMLDivElement>(null); // Ref for the scroll area content
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const question = formData.get("question") as string;
-    if (question.trim()) {
+    if (question.trim() && !isLoading) {
       onAskQuestion(question.trim());
-      e.currentTarget.reset();
+      setQuestion("");
     }
   };
 
+  // Effect to scroll to bottom when new message/answer arrives or loading starts
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      // Use setTimeout to allow the DOM to update before scrolling
+      setTimeout(() => {
+        if (scrollAreaRef.current) {
+          const scrollableViewport = scrollAreaRef.current
+            .children[0] as HTMLElement; // Access the viewport div
+          if (scrollableViewport) {
+            scrollableViewport.scrollTop = scrollableViewport.scrollHeight;
+          }
+        }
+      }, 0);
+    }
+  }, [history, isLoading]); // Trigger on history change or loading state change
+
   return (
-    <div className="flex flex-col h-full p-4 border-l border-border bg-muted/40">
-      <h3 className="text-lg font-semibold mb-4 text-muted-foreground shrink-0">
-        Ask Questions
-      </h3>
-
-      {/* Scrollable history area */}
-      <div className="flex-grow overflow-y-auto mb-4 space-y-4 pr-2">
-        {/* Placeholder when no history and not loading */}
-        {history.length === 0 && !isLoading && (
-          <p className="text-sm text-muted-foreground italic">
-            Ask a question about the content.
-          </p>
-        )}
-
-        {/* Map through history items */}
-        {history.map((item, index) => (
-          <div key={getQAKey(item)} className="text-sm space-y-1">
-            {/* User Question */}
-            <div>
-              <p className="font-semibold text-primary mb-0.5">You:</p>
-              <p className="pl-2 whitespace-pre-wrap">{item.question}</p>{" "}
-              {/* Allow wrapping for long questions */}
-            </div>
-
-            {/* Assistant Answer */}
-            <div>
-              <p className="font-semibold text-accent-foreground mb-0.5">
-                Assistant:
-              </p>
-              {/* Container for Markdown rendering */}
-              <div
-                className={cn(
-                  "prose prose-sm max-w-none dark:prose-invert", // Base prose styles
-                  "markdown-content", // Your custom class for specific overrides
-                  "pl-2", // Indentation
-                  "bg-background/50 p-2 rounded border border-border/50", // Background/border like the old <pre>
-                )}
-              >
-                <ReactMarkdown
-                  // +++ Updated plugins for math +++
-                  remarkPlugins={[remarkGfm, remarkMath]}
-                  rehypePlugins={[rehypeHighlight, rehypeKatex]}
-                  // ++++++++++++++++++++++++++++++++++
-                  components={{
-                    // Keep code block styling consistent if needed
-                    code({ node, className, children, ...props }) {
-                      const match = /language-(\w+)/.exec(className || "");
-                      const isInline =
-                        "inline" in props &&
-                        typeof props.inline !== "undefined";
-
-                      return !isInline && match ? (
-                        <code
-                          className={cn(
-                            className,
-                            "block p-3 rounded-md overflow-x-auto",
-                            // Ensure KaTeX styles don't conflict badly here
-                          )}
-                          {...props}
-                        >
-                          {children}
-                        </code>
-                      ) : (
-                        <code
-                          className={cn(
-                            "bg-muted px-1 py-0.5 rounded text-sm",
-                            className,
-                            // Ensure KaTeX styles don't conflict badly here
-                          )}
-                          {...props}
-                        >
-                          {children}
-                        </code>
-                      );
-                    },
-                    // Add other custom components like table, th, td if you had them before
-                    // and want them applied here too.
-                  }}
-                >
-                  {/* Display answer or 'Thinking...' if it's the last item and currently loading */}
-                  {item.answer ||
-                    (isLoading && index === history.length - 1
-                      ? "Thinking..."
-                      : "...")}
-                </ReactMarkdown>
-              </div>
-            </div>
-          </div>
-        ))}
-        {/* Loading indicator specific for the thinking state */}
-        {isLoading &&
-          history.length > 0 &&
-          history[history.length - 1].answer === "" && (
-            <p className="text-sm text-muted-foreground italic">
-              Assistant is thinking...
-            </p>
-          )}
+    <div className="flex flex-col h-full border-l border-border bg-background">
+      {/* Header */}
+      <div className="p-4 border-b border-border shrink-0">
+        <h2 className="text-lg font-semibold">Ask Questions</h2>
       </div>
 
-      {/* Input form */}
-      <form
-        onSubmit={handleSubmit}
-        className="mt-auto pt-4 border-t border-border shrink-0"
-      >
-        <textarea
-          name="question"
-          rows={3}
-          placeholder="Ask anything about the document..."
-          className="w-full p-2 border rounded bg-input text-foreground border-border mb-2 text-sm focus:ring-ring focus:ring-1"
-          required
-          disabled={isLoading}
-          aria-label="Ask a question"
-        />
-        <button
-          type="submit"
-          className="w-full px-4 py-2 rounded bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm"
-          disabled={isLoading}
-        >
-          {isLoading ? "Asking..." : "Ask"}
-        </button>
-      </form>
+      {/* Messages Area */}
+      {/* Use ScrollArea component */}
+      <ScrollArea className="flex-1" ref={scrollAreaRef}>
+        <div className="p-4 space-y-6">
+          {history.length === 0 && !isLoading ? (
+            <div className="flex flex-col items-center justify-center h-full text-center p-4 text-sm text-muted-foreground">
+              Ask a question about the document content using the input below.
+            </div>
+          ) : (
+            history.map((item, index) => (
+              <div key={getQAKey(item)} className="space-y-3">
+                {/* User Question */}
+                <div className="flex justify-end">
+                  <div className="bg-primary text-primary-foreground p-3 rounded-lg max-w-[80%]">
+                    <p className="text-sm">{item.question}</p>
+                  </div>
+                </div>
+
+                {/* Assistant Answer */}
+                <div className="flex justify-start">
+                  <div className="bg-muted p-3 rounded-lg max-w-[80%]">
+                    {/* Conditional rendering for loading state */}
+                    {isLoading &&
+                      index === history.length - 1 &&
+                      !item.answer ? (
+                      <div className="flex items-center space-x-2 py-1">
+                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">
+                          Thinking...
+                        </span>
+                      </div>
+                    ) : (
+                      // --- MODIFIED LINE: Apply same prose classes as ChapterDisplay ---
+                      <div className="prose sm:prose-lg lg:prose-xl dark:prose-invert max-w-none markdown-content text-foreground">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm, remarkMath]}
+                          rehypePlugins={[rehypeHighlight, rehypeKatex]}
+                          components={{
+                            // Consistent code styling
+                            code({ node, className, children, ...props }) {
+                              const match = /language-(\w+)/.exec(
+                                className || "",
+                              );
+                              const isBlock = !!match;
+                              if (isBlock) {
+                                return (
+                                  <div className="my-2 rounded-md overflow-hidden bg-muted/50 dark:bg-secondary text-foreground">
+                                    <pre
+                                      className={cn(
+                                        "p-3 overflow-x-auto text-xs", // Adjusted text size for code blocks in QA
+                                        className,
+                                      )}
+                                    >
+                                      <code>{children}</code>
+                                    </pre>
+                                  </div>
+                                );
+                              }
+                              return (
+                                <code
+                                  className={cn(
+                                    "bg-muted/50 px-1 py-0.5 rounded text-xs font-mono", // Adjusted text size for inline code in QA
+                                    className,
+                                  )}
+                                >
+                                  {children}
+                                </code>
+                              );
+                            },
+                            // Ensure other elements like lists, links are styled by prose
+                          }}
+                        >
+                          {item.answer || "..."}
+                        </ReactMarkdown>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </ScrollArea>
+
+      {/* Input Area */}
+      <div className="p-4 border-t border-border shrink-0 bg-background">
+        <form onSubmit={handleSubmit} className="flex items-start gap-2">
+          <Textarea
+            placeholder="Ask anything..."
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            disabled={isLoading}
+            className="flex-1 resize-none min-h-[40px] max-h-[150px] text-sm" // Adjusted height
+            rows={1} // Start with 1 row, auto-expands
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
+              }
+            }}
+          />
+          <Button
+            type="submit"
+            size="icon"
+            disabled={isLoading || !question.trim()}
+            className="h-10 w-10 shrink-0" // Ensure button size matches textarea height
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+            <span className="sr-only">Send message</span>
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }
@@ -10741,7 +10761,6 @@ interface AppShellProps {
   sidebar?: React.ReactNode;
   rightSidebar?: React.ReactNode;
   showRightSidebar?: boolean;
-  // +++ NEW PROPS +++
   isLeftSidebarOpen: boolean;
   isRightSidebarOpen: boolean;
   toggleLeftSidebar: () => void;
@@ -10754,14 +10773,16 @@ export function AppShell({
   sidebar,
   rightSidebar,
   showRightSidebar = true,
-  // +++ DESTRUCTURE NEW PROPS +++
   isLeftSidebarOpen,
   isRightSidebarOpen,
   toggleLeftSidebar,
   toggleRightSidebar,
 }: AppShellProps) {
+  // Condition for constraining the main content width
+  const constrainMainContent =
+    !isLeftSidebarOpen && (!showRightSidebar || !isRightSidebarOpen);
+
   return (
-    // Wrap with TooltipProvider for button tooltips
     <TooltipProvider delayDuration={100}>
       <div className="flex h-screen overflow-hidden bg-background">
         {/* Main sidebar - Conditionally render and add transition */}
@@ -10815,7 +10836,9 @@ export function AppShell({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
-                    <p>{isLeftSidebarOpen ? "Close" : "Open"} chapters/history</p>
+                    <p>
+                      {isLeftSidebarOpen ? "Close" : "Open"} chapters/history
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               )}
@@ -10857,19 +10880,32 @@ export function AppShell({
           {/* Content area */}
           <div className="flex flex-1 overflow-hidden">
             {/* Main child content - takes remaining space */}
-            <div className="flex-1 overflow-auto">{children}</div>
+            {/* --- MODIFIED: Added inner div for conditional width constraint --- */}
+            <div className="flex-1 overflow-auto">
+              <div
+                className={cn(
+                  "h-full w-full transition-all duration-300 ease-in-out",
+                  // Apply margin auto and max-width only when both sidebars are effectively closed
+                  constrainMainContent && "mx-auto max-w-7xl", // ~65-70% on larger screens
+                )}
+              >
+                {children}
+              </div>
+            </div>
+            {/* ---------------------------------------------------------------- */}
 
             {/* Right Sidebar - Conditionally render and set width/transition */}
             {showRightSidebar && rightSidebar && (
               <aside
                 className={cn(
                   "hidden md:flex flex-col h-full border-l border-border bg-muted/20 transition-all duration-300 ease-in-out flex-shrink-0",
-                  // Apply 40% width when open
-                  "md:w-[40%]",
+                  // --- MODIFIED: Changed width to 50% ---
+                  "md:w-1/2",
                   // Translate when closed
                   isRightSidebarOpen ? "md:translate-x-0" : "md:translate-x-full",
                   // Hide when closed using width and opacity for smoother transition
-                  !isRightSidebarOpen && "md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0",
+                  !isRightSidebarOpen &&
+                  "md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0",
                 )}
               >
                 {rightSidebar}
