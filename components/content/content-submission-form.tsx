@@ -7,23 +7,51 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Upload, SendHorizontal, Loader2, Paperclip, X, FileText } from "lucide-react";
+import {
+  Upload,
+  SendHorizontal,
+  Loader2,
+  Paperclip,
+  X,
+  FileText,
+} from "lucide-react";
 import * as pdfjsLib from "pdfjs-dist"; // Import pdfjs library
 import { cn } from "@/lib/utils";
 
 // --- MODIFIED: Use CDN URL instead of local path ---
 // Make sure this version (5.2.133) matches the one in your pnpm-lock.yaml
-const PDF_WORKER_CDN_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.2.133/pdf.worker.min.mjs';
+const PDF_WORKER_CDN_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.2.133/pdf.worker.min.mjs";
 // Alternative CDNs (ensure version match):
 // const PDF_WORKER_CDN_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.2.133/build/pdf.worker.min.mjs';
 // const PDF_WORKER_CDN_URL = 'https://unpkg.com/pdfjs-dist@5.2.133/build/pdf.worker.min.mjs';
 // --- End Modification ---
 
-
 const ALLOWED_CODE_EXTENSIONS = new Set([
-  ".py", ".js", ".jsx", ".ts", ".tsx", ".html", ".css", ".java", ".c",
-  ".cpp", ".cs", ".go", ".php", ".rb", ".rs", ".swift", ".kt", ".kts",
-  ".sql", ".sh", ".json", ".yml", ".yaml", ".md",
+  ".py",
+  ".js",
+  ".jsx",
+  ".ts",
+  ".tsx",
+  ".html",
+  ".css",
+  ".java",
+  ".c",
+  ".cpp",
+  ".cs",
+  ".go",
+  ".php",
+  ".rb",
+  ".rs",
+  ".swift",
+  ".kt",
+  ".kts",
+  ".sql",
+  ".sh",
+  ".json",
+  ".yml",
+  ".yaml",
+  ".md",
 ]);
 
 const getFileExtension = (filename: string): string => {
@@ -44,7 +72,8 @@ export function ContentSubmissionForm({
   isLoading,
 }: ContentSubmissionFormProps) {
   const [textContent, setTextContent] = useState("");
-  const [isProcessingFileSelection, setIsProcessingFileSelection] = useState(false);
+  const [isProcessingFileSelection, setIsProcessingFileSelection] =
+    useState(false);
   const [isReadingFileOnSubmit, setIsReadingFileOnSubmit] = useState(false);
   const [userBackground, setUserBackground] = useState("");
   const [fileNames, setFileNames] = useState<string[]>([]);
@@ -109,7 +138,9 @@ export function ContentSubmissionForm({
     }
 
     if (skippedFiles.length > 0) {
-      toast.warning(`Skipped ${skippedFiles.length} file(s): ${skippedFiles.join(", ")}`);
+      toast.warning(
+        `Skipped ${skippedFiles.length} file(s): ${skippedFiles.join(", ")}`,
+      );
     }
 
     if (fileInputRef.current) {
@@ -160,9 +191,7 @@ export function ContentSubmissionForm({
             for (let i = 1; i <= pdf.numPages; i++) {
               const page = await pdf.getPage(i);
               const textContentData = await page.getTextContent();
-              const pageText = (
-                textContentData.items as Array<{ str: string }>
-              )
+              const pageText = (textContentData.items as Array<{ str: string }>)
                 .map((item) => item.str)
                 .join(" ");
               fullText += pageText + (i < pdf.numPages ? "\n\n" : "");
@@ -176,7 +205,6 @@ export function ContentSubmissionForm({
           fileContents.push(`\n--- END FILE: ${file.name} ---`);
         }
         finalContent = fileContents.join("\n\n");
-
       } catch (error) {
         console.error("Error reading files on submit:", error);
         toast.error(
@@ -214,7 +242,8 @@ export function ContentSubmissionForm({
     userBackground.trim() &&
     !anyLoading;
 
-  const acceptedFileTypes = ".txt,.pdf," + Array.from(ALLOWED_CODE_EXTENSIONS).join(',');
+  const acceptedFileTypes =
+    ".txt,.pdf," + Array.from(ALLOWED_CODE_EXTENSIONS).join(",");
 
   return (
     <div className="flex flex-col items-center justify-center h-full w-full px-4 pt-8 pb-20">
@@ -275,9 +304,9 @@ export function ContentSubmissionForm({
             className={cn(
               "absolute right-2 bottom-2 z-10 h-8 w-8 rounded-lg",
               !canSubmit &&
-              "bg-muted/60 text-muted-foreground hover:bg-muted/60 cursor-not-allowed",
+                "bg-muted/60 text-muted-foreground hover:bg-muted/60 cursor-not-allowed",
               canSubmit &&
-              "bg-primary text-primary-foreground hover:bg-primary/90",
+                "bg-primary text-primary-foreground hover:bg-primary/90",
             )}
             disabled={!canSubmit}
             aria-label="Submit content"

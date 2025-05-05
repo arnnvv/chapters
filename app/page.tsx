@@ -35,7 +35,8 @@ const ContentSubmissionForm = dynamic(
     ),
   {
     ssr: false, // <-- This is crucial
-    loading: () => ( // Optional: Add a loading skeleton for the form
+    loading: () => (
+      // Optional: Add a loading skeleton for the form
       <div className="flex flex-col items-center justify-center h-full w-full px-4 pt-8 pb-20">
         <h2 className="text-3xl font-semibold mb-8 text-center text-foreground/90">
           Upload papers or code you want to understand
@@ -78,19 +79,19 @@ type ChatAction =
   | { type: "INITIALIZE"; payload: { user: UserData } }
   | { type: "START_INDEXING"; payload: { content: string; background: string } }
   | {
-    type: "INDEX_SUCCESS";
-    payload: { index: ChapterIndexItem[]; conversationId: number };
-  }
+      type: "INDEX_SUCCESS";
+      payload: { index: ChapterIndexItem[]; conversationId: number };
+    }
   | { type: "INDEX_FAIL"; payload: { error: string } }
   | { type: "START_CHAPTER_GENERATION"; payload: { chapterNumber: number } }
   | {
-    type: "CHAPTER_GENERATION_SUCCESS";
-    payload: { chapterNumber: number; content: string };
-  }
+      type: "CHAPTER_GENERATION_SUCCESS";
+      payload: { chapterNumber: number; content: string };
+    }
   | {
-    type: "CHAPTER_GENERATION_FAIL";
-    payload: { chapterNumber: number; error: string };
-  }
+      type: "CHAPTER_GENERATION_FAIL";
+      payload: { chapterNumber: number; error: string };
+    }
   | { type: "SET_DISPLAYED_CHAPTER"; payload: { chapterNumber: number } }
   | { type: "START_ANSWERING"; payload: { question: string } }
   | { type: "ANSWERING_SUCCESS"; payload: { answer: string } }
@@ -99,9 +100,9 @@ type ChatAction =
   | { type: "LOAD_CONVERSATION_SUCCESS"; payload: ConversationDetails }
   | { type: "LOAD_CONVERSATION_FAIL"; payload: { error: string } }
   | {
-    type: "PREFETCH_CHAPTER_SUCCESS";
-    payload: { chapterNumber: number; content: string };
-  }
+      type: "PREFETCH_CHAPTER_SUCCESS";
+      payload: { chapterNumber: number; content: string };
+    }
   | { type: "RESET" };
 
 const initialState: ChatState = {
@@ -323,7 +324,6 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
       return state;
   }
 }
-
 
 export default function HomePage() {
   const [state, dispatch] = useReducer(chatReducer, initialState);
@@ -819,7 +819,9 @@ export default function HomePage() {
           toast.error(result.message || "Failed to delete conversation");
         }
       } catch (error) {
-        toast.error("An unexpected error occurred while deleting the conversation");
+        toast.error(
+          "An unexpected error occurred while deleting the conversation",
+        );
         console.error("Delete conversation error:", error);
       }
     },
@@ -867,7 +869,6 @@ export default function HomePage() {
       handleChapterSelect(prevChapter);
     }
   }, [state.currentChapterNumber, handleChapterSelect]);
-
 
   // Derived State
   const currentChapterTitle =

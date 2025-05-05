@@ -83,8 +83,8 @@ export function QASidebar({
                   <div className="bg-muted p-3 rounded-lg max-w-[80%]">
                     {/* Conditional rendering for loading state */}
                     {isLoading &&
-                      index === history.length - 1 &&
-                      !item.answer ? (
+                    index === history.length - 1 &&
+                    !item.answer ? (
                       <div className="flex items-center space-x-2 py-1">
                         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                         <span className="text-sm text-muted-foreground">

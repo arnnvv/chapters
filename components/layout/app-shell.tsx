@@ -59,7 +59,8 @@ export function AppShell({
               // Apply transform to hide/show
               isLeftSidebarOpen ? "md:translate-x-0" : "md:-translate-x-full",
               // Add absolute positioning when closed to prevent layout shifts
-              !isLeftSidebarOpen && "md:absolute md:left-0 md:top-0 md:bottom-0",
+              !isLeftSidebarOpen &&
+                "md:absolute md:left-0 md:top-0 md:bottom-0",
               // Ensure it's visually hidden when closed
               !isLeftSidebarOpen && "md:opacity-0 md:pointer-events-none",
             )}
@@ -114,30 +115,31 @@ export function AppShell({
               <ThemeToggle />
               <UserNav user={user} />
               {/* Right Sidebar Toggle Button */}
-              {rightSidebar && showRightSidebar && ( // Only show if exists and should be shown
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={toggleRightSidebar}
-                      className="hidden md:inline-flex h-8 w-8" // Show on medium+ screens
-                    >
-                      {isRightSidebarOpen ? (
-                        <PanelRightClose className="h-4 w-4" />
-                      ) : (
-                        <PanelRightOpen className="h-4 w-4" />
-                      )}
-                      <span className="sr-only">
-                        {isRightSidebarOpen ? "Close" : "Open"} right sidebar
-                      </span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom">
-                    <p>{isRightSidebarOpen ? "Close" : "Open"} Q&A</p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
+              {rightSidebar &&
+                showRightSidebar && ( // Only show if exists and should be shown
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={toggleRightSidebar}
+                        className="hidden md:inline-flex h-8 w-8" // Show on medium+ screens
+                      >
+                        {isRightSidebarOpen ? (
+                          <PanelRightClose className="h-4 w-4" />
+                        ) : (
+                          <PanelRightOpen className="h-4 w-4" />
+                        )}
+                        <span className="sr-only">
+                          {isRightSidebarOpen ? "Close" : "Open"} right sidebar
+                        </span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <p>{isRightSidebarOpen ? "Close" : "Open"} Q&A</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
             </div>
           </header>
 
@@ -166,10 +168,12 @@ export function AppShell({
                   // --- MODIFIED: Changed width to 50% ---
                   "md:w-1/2",
                   // Translate when closed
-                  isRightSidebarOpen ? "md:translate-x-0" : "md:translate-x-full",
+                  isRightSidebarOpen
+                    ? "md:translate-x-0"
+                    : "md:translate-x-full",
                   // Hide when closed using width and opacity for smoother transition
                   !isRightSidebarOpen &&
-                  "md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0",
+                    "md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0",
                 )}
               >
                 {rightSidebar}
