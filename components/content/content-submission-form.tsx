@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Upload, SendHorizontal, Loader2, Paperclip } from "lucide-react";
+import { Upload, SendHorizontal, Loader2, Paperclip, X, FileText } from "lucide-react";
 import * as pdfjsLib from "pdfjs-dist";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +16,7 @@ const PDF_WORKER_SRC = "/pdf.worker.min.mjs";
 
 interface ContentSubmissionFormProps {
   onSubmit: (text: string, background: string) => void;
-  isLoading: boolean;
+  isLoading: boolean; // Loading state from parent (API call)
 }
 
 export function ContentSubmissionForm({
@@ -24,9 +24,11 @@ export function ContentSubmissionForm({
   isLoading,
 }: ContentSubmissionFormProps) {
   const [textContent, setTextContent] = useState("");
-  const [isProcessingFile, setIsProcessingFile] = useState(false);
+  const [isProcessingFileSelection, setIsProcessingFileSelection] = useState(false);
+  const [isReadingFileOnSubmit, setIsReadingFileOnSubmit] = useState(false);
   const [userBackground, setUserBackground] = useState("");
-  const [fileName, setFileName] = useState<string | null>(null);
+  const [fileNames, setFileNames] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -35,9 +37,12 @@ export function ContentSubmissionForm({
     }
   }, []);
 
+  // --- MODIFIED: Removed file clearing logic ---
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // No longer clears files when typing
     setTextContent(e.target.value);
   };
+  // --- End Modification ---
 
   const handleBackgroundChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
@@ -46,84 +51,151 @@ export function ContentSubmissionForm({
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-    setIsProcessingFile(true);
-    setTextContent("");
-    setFileName(null);
-    toast.info(`Processing ${file.name}...`);
+    setIsProcessingFileSelection(true);
+    // Don't clear textContent automatically anymore, user might have typed something first
+    // setTextContent("");
 
-    try {
-      if (file.type === "text/plain") {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          setTextContent(event.target?.result as string);
-          setIsProcessingFile(false);
-          setFileName(file.name);
-          toast.success("Text file loaded successfully.");
-        };
-        reader.onerror = () => {
-          throw new Error("Failed to read text file.");
-        };
-        reader.readAsText(file);
-      } else if (file.type === "application/pdf") {
-        const arrayBuffer = await file.arrayBuffer();
-        const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-        const pdf = await loadingTask.promise;
-        let fullText = "";
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const textContentData = await page.getTextContent();
-          const pageText = (
-            textContentData.items as Array<{ str: string }>
-          )
-            .map((item) => item.str)
-            .join(" ");
-          fullText += pageText + "\n\n";
-        }
-        setTextContent(fullText.trim());
-        setIsProcessingFile(false);
-        setFileName(file.name);
-        toast.success("PDF content extracted successfully.");
-      } else {
-        throw new Error("Unsupported file type. Please upload .txt or .pdf");
+    const newlyAddedFiles: File[] = [];
+    const newlyAddedFileNames: string[] = [];
+    const skippedFiles: string[] = [];
+
+    for (const file of Array.from(files)) {
+      if (fileNames.includes(file.name)) {
+        skippedFiles.push(file.name);
+        continue;
       }
-    } catch (error) {
-      console.error("File processing error:", error);
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Unknown error processing file.";
-      toast.error(`Error: ${message}`);
-      setTextContent("");
-      setFileName(null);
-      setIsProcessingFile(false);
-    } finally {
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+      if (file.type !== "text/plain" && file.type !== "application/pdf") {
+        skippedFiles.push(file.name);
+        continue;
       }
+      newlyAddedFiles.push(file);
+      newlyAddedFileNames.push(file.name);
+    }
+
+    if (newlyAddedFiles.length > 0) {
+      setSelectedFiles((prevFiles) => [...prevFiles, ...newlyAddedFiles]);
+      setFileNames((prevNames) => [...prevNames, ...newlyAddedFileNames]);
+      toast.success(
+        `Added ${newlyAddedFiles.length} file(s): ${newlyAddedFileNames.join(", ")}`,
+      );
+    }
+
+    if (skippedFiles.length > 0) {
+      toast.warning(
+        `Skipped ${skippedFiles.length} file(s) (duplicate or unsupported type): ${skippedFiles.join(", ")}`,
+      );
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    setIsProcessingFileSelection(false);
+  };
+
+  const handleRemoveFile = (indexToRemove: number) => {
+    setSelectedFiles((prevFiles) =>
+      prevFiles.filter((_, index) => index !== indexToRemove),
+    );
+    setFileNames((prevNames) =>
+      prevNames.filter((_, index) => index !== indexToRemove),
+    );
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!textContent.trim()) {
-      toast.error(
-        "Content cannot be empty. Please type, paste, or upload content.",
-      );
-      return;
-    }
+
     if (!userBackground.trim()) {
       toast.error(
         "Background knowledge is required. Please describe your current understanding.",
       );
       return;
     }
-    onSubmit(textContent, userBackground);
+
+    let finalContent = "";
+    let contentSource = "";
+
+    if (selectedFiles.length > 0) {
+      setIsReadingFileOnSubmit(true);
+      const fileContents: string[] = [];
+      contentSource = `${selectedFiles.length} file(s)`;
+      try {
+        for (const file of selectedFiles) {
+          let fileText = "";
+          fileContents.push(`--- FILE: ${file.name} ---`);
+          if (file.type === "text/plain") {
+            fileText = await file.text();
+          } else if (file.type === "application/pdf") {
+            const arrayBuffer = await file.arrayBuffer();
+            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+            const pdf = await loadingTask.promise;
+            let fullText = "";
+            for (let i = 1; i <= pdf.numPages; i++) {
+              const page = await pdf.getPage(i);
+              const textContentData = await page.getTextContent();
+              const pageText = (
+                textContentData.items as Array<{ str: string }>
+              )
+                .map((item) => item.str)
+                .join(" ");
+              fullText += pageText + (i < pdf.numPages ? "\n\n" : "");
+            }
+            fileText = fullText.trim();
+          }
+          fileContents.push(fileText);
+        }
+        finalContent = fileContents.join("\n\n");
+
+        // --- Optional: Append text from textarea if files are also present ---
+        // if (textContent.trim()) {
+        //   finalContent += `\n\n--- User Notes ---\n${textContent.trim()}`;
+        //   contentSource += " + pasted notes";
+        // }
+        // --- End Optional Append ---
+
+      } catch (error) {
+        console.error("Error reading files on submit:", error);
+        toast.error(
+          `Failed to read file content: ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
+        setIsReadingFileOnSubmit(false);
+        return;
+      } finally {
+        setIsReadingFileOnSubmit(false);
+      }
+    }
+    // If no files, use textarea content
+    else {
+      if (!textContent.trim()) {
+        toast.error(
+          "Content cannot be empty. Please type, paste, or upload files.",
+        );
+        return;
+      }
+      finalContent = textContent.trim();
+      contentSource = "pasted text";
+    }
+
+    if (!finalContent) {
+      toast.error("Could not obtain content to submit.");
+      return;
+    }
+
+    console.log(`Submitting content from ${contentSource}`);
+    onSubmit(finalContent, userBackground);
   };
 
-  const anyLoading = isLoading || isProcessingFile;
+  const anyLoading =
+    isLoading || isProcessingFileSelection || isReadingFileOnSubmit;
+  const canSubmit =
+    (selectedFiles.length > 0 || textContent.trim()) &&
+    userBackground.trim() &&
+    !anyLoading;
 
   return (
     <div className="flex flex-col items-center justify-center h-full w-full px-4 pt-8 pb-20">
@@ -146,6 +218,7 @@ export function ContentSubmissionForm({
             disabled={anyLoading}
             className="hidden"
             ref={fileInputRef}
+            multiple
           />
           <Button
             type="button"
@@ -160,42 +233,41 @@ export function ContentSubmissionForm({
           >
             <label htmlFor="fileUploadHidden">
               <Paperclip className="h-5 w-5" />
-              <span className="sr-only">Upload file</span>
+              <span className="sr-only">Upload file(s)</span>
             </label>
           </Button>
           <Textarea
             id="textContent"
             placeholder={
-              isProcessingFile
-                ? "Processing file..."
-                : fileName
-                  ? `File "${fileName}" loaded. Add context or background below.`
-                  : "Paste text, code, or upload a file..."
+              selectedFiles.length > 0
+                ? `${selectedFiles.length} file(s) selected. Add optional context or paste different text...` // Modified placeholder
+                : "Paste text, code, or upload file(s)..."
             }
-            rows={5}
+            rows={3}
             value={textContent}
             onChange={handleTextChange}
+            // --- MODIFIED: Removed file selection from disabled condition ---
             disabled={anyLoading}
-            required
-            // Main input styling
-            className="block w-full resize-none rounded-2xl border border-border/50 bg-muted/30 focus:bg-muted/50 dark:bg-input/20 dark:focus:bg-input/40 shadow-lg p-4 pr-12 pl-12 min-h-[56px] text-base focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:ring-primary transition-shadow duration-200"
+            // --- End Modification ---
+            className={cn(
+              "block w-full resize-y rounded-2xl border border-border/50 bg-muted/30 focus:bg-muted/50 dark:bg-input/20 dark:focus:bg-input/40 shadow-lg p-4 pr-12 pl-12 min-h-[48px] text-base focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:ring-primary transition-shadow duration-200",
+              // --- MODIFIED: Removed opacity change ---
+            )}
           />
           <Button
             type="submit"
             size="icon"
             className={cn(
               "absolute right-2 bottom-2 z-10 h-8 w-8 rounded-lg",
-              (!textContent.trim() || !userBackground.trim() || anyLoading) &&
+              !canSubmit &&
               "bg-muted/60 text-muted-foreground hover:bg-muted/60 cursor-not-allowed",
-              textContent.trim() &&
-              userBackground.trim() &&
-              !anyLoading &&
+              canSubmit &&
               "bg-primary text-primary-foreground hover:bg-primary/90",
             )}
-            disabled={!textContent.trim() || !userBackground.trim() || anyLoading}
+            disabled={!canSubmit}
             aria-label="Submit content"
           >
-            {isLoading || isProcessingFile ? (
+            {isLoading || isReadingFileOnSubmit ? (
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
               <SendHorizontal className="h-5 w-5" />
@@ -203,25 +275,50 @@ export function ContentSubmissionForm({
           </Button>
         </div>
 
-        {/* Background Knowledge Textarea - MODIFIED Styling */}
-        <div className="w-full max-w-3xl mt-2">
+        {/* File Indicator Chips Area */}
+        {fileNames.length > 0 && (
+          <div className="w-full max-w-3xl flex flex-wrap gap-2 mt-[-8px] px-2 justify-start mb-2">
+            {fileNames.map((name, index) => (
+              <div
+                key={`${name}-${index}`}
+                className="inline-flex items-center gap-1.5 bg-amber-100 dark:bg-amber-900/30 border border-amber-400/60 dark:border-amber-600/50 rounded-full px-2.5 py-1 text-xs text-amber-900 dark:text-amber-200 shadow-sm"
+              >
+                <FileText className="h-3 w-3" />
+                <span className="font-medium truncate max-w-[150px]">
+                  {name}
+                </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-4 w-4 rounded-full text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-800/50 ml-1"
+                  onClick={() => handleRemoveFile(index)}
+                  disabled={anyLoading}
+                  aria-label={`Remove file ${name}`}
+                >
+                  <X className="h-2.5 w-2.5" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Background Knowledge Textarea */}
+        <div className="w-full max-w-3xl mt-0">
           <Textarea
             id="userBackground"
             placeholder="Please share your current knowledge level and what you're hoping to get out of this material (e.g., 'Python basics, want to understand the core algorithm')..."
-            rows={3} // Can make it slightly shorter than main input
+            rows={3}
             value={userBackground}
             onChange={handleBackgroundChange}
             disabled={anyLoading}
             required
             className={cn(
-              // Base styles copied from main input for consistency
-              "block w-full resize-none rounded-2xl shadow-lg p-4 min-h-[56px] text-base", // Match padding/rounding/min-height
+              "block w-full resize-none rounded-2xl shadow-lg p-4 min-h-[56px] text-base",
               "transition-shadow duration-200",
-              // Unique background/border for this field
-              "bg-muted/20 focus:bg-muted/40 dark:bg-input/10 dark:focus:bg-input/30", // Slightly different background
-              "border border-amber-400/60 dark:border-amber-600/50", // Amber border always visible but subtle
-              // Focus visible styles for the amber border
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-amber-500/60 dark:focus-visible:ring-amber-400/60 focus-visible:ring-offset-background", // Amber ring on focus
+              "bg-muted/20 focus:bg-muted/40 dark:bg-input/10 dark:focus:bg-input/30",
+              "border border-amber-400/60 dark:border-amber-600/50",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-amber-500/60 dark:focus-visible:ring-amber-400/60 focus-visible:ring-offset-background",
             )}
           />
         </div>

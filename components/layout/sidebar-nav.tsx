@@ -42,25 +42,24 @@ export function SidebarNav({
     "chapters",
   );
 
+  // --- MODIFIED: Removed window.confirm ---
   const handleDeleteClick = (e: MouseEvent<HTMLButtonElement>, id: number) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Prevent triggering the conversation selection behind the button
+    // Directly call onDeleteConversation if not disabled
     if (!isLoading && currentlyLoadingConversationId !== id) {
-      if (
-        window.confirm(
-          "Are you sure you want to delete this conversation? This cannot be undone.",
-        )
-      ) {
-        onDeleteConversation(id);
-      }
+      onDeleteConversation(id);
     }
   };
+  // --- End Modification ---
 
   useEffect(() => {
+    // Automatically switch tab based on whether a conversation is active
     setActiveTab(currentConversationId ? "chapters" : "history");
   }, [currentConversationId]);
 
   return (
     <div className="flex flex-col h-full">
+      {/* Header with Title and New Button */}
       <div className="p-4 flex items-center justify-between border-b">
         <div className="flex items-center space-x-2">
           {activeTab === "chapters" ? (
@@ -84,6 +83,7 @@ export function SidebarNav({
         </Button>
       </div>
 
+      {/* Tabs */}
       <div className="flex border-b">
         <Button
           variant="ghost"
@@ -94,6 +94,7 @@ export function SidebarNav({
               : "border-transparent text-muted-foreground hover:text-foreground",
           )}
           onClick={() => setActiveTab("chapters")}
+          // Disable Chapters tab if no conversation is selected
           disabled={!currentConversationId}
         >
           Chapters
@@ -112,7 +113,9 @@ export function SidebarNav({
         </Button>
       </div>
 
+      {/* Scrollable Content Area */}
       <ScrollArea className="flex-1">
+        {/* Chapters List */}
         {activeTab === "chapters" ? (
           <div className="p-2">
             {!currentConversationId ? (
@@ -127,6 +130,7 @@ export function SidebarNav({
               chapters.map((chapter) => {
                 const isActive = chapter.chapter === currentChapter;
                 const isChapterLoading = chapter.chapter === loadingChapter;
+                // Disable chapter selection if globally loading OR this specific chapter is loading
                 const isDisabled = isChapterLoading || isLoading;
 
                 return (
@@ -159,13 +163,15 @@ export function SidebarNav({
             )}
           </div>
         ) : (
+          // History List
           <div className="p-2">
             {isLoadingConversations ? (
               <div className="p-4 text-center text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin inline mr-2" />
                 Loading history...
               </div>
             ) : conversations.length === 0 ? (
-              <div className="p-4 text-center text-sm text-muted-foreground">
+              <div className="p-4 text-center text-sm text-muted-foreground italic">
                 No conversation history yet.
               </div>
             ) : (
@@ -173,6 +179,7 @@ export function SidebarNav({
                 const isCurrent = conversation.id === currentConversationId;
                 const isThisLoading =
                   currentlyLoadingConversationId === conversation.id;
+                // Disable selection/deletion if globally loading OR this specific conversation is loading
                 const isButtonDisabled = isLoading || isThisLoading;
 
                 return (
