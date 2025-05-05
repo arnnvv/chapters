@@ -13,13 +13,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Chapters | AI Document Teaching Assistant", // Updated title
+  title: "Ace", // Updated title
   description:
     "Learn from any document with AI-powered chapter explanations and interactive Q&A", // Updated description
-  // Add favicon link if you have one in public/
-  // icons: {
-  //   icon: "/favicon.ico",
-  // },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export const viewport: Viewport = {
