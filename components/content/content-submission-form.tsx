@@ -14,6 +14,23 @@ import { cn } from "@/lib/utils";
 // Ensure the worker is available in your public folder
 const PDF_WORKER_SRC = "/pdf.worker.min.mjs";
 
+const ALLOWED_CODE_EXTENSIONS = new Set([
+  ".py", ".js", ".jsx", ".ts", ".tsx", ".html", ".css", ".java", ".c",
+  ".cpp", ".cs", ".go", ".php", ".rb", ".rs", ".swift", ".kt", ".kts",
+  ".sql", ".sh", ".json", ".yml", ".yaml", ".md",
+]);
+
+// --- REFINED: Function to get file extension (including the dot) ---
+const getFileExtension = (filename: string): string => {
+  const lastDotIndex = filename.lastIndexOf(".");
+  // Ensure dot exists, is not the first character, and there's something after it
+  if (lastDotIndex > 0 && lastDotIndex < filename.length - 1) {
+    return filename.substring(lastDotIndex).toLowerCase(); // Includes the dot
+  }
+  return ""; // No valid extension found
+};
+// --- End Refined ---
+
 interface ContentSubmissionFormProps {
   onSubmit: (text: string, background: string) => void;
   isLoading: boolean; // Loading state from parent (API call)
@@ -37,12 +54,9 @@ export function ContentSubmissionForm({
     }
   }, []);
 
-  // --- MODIFIED: Removed file clearing logic ---
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    // No longer clears files when typing
     setTextContent(e.target.value);
   };
-  // --- End Modification ---
 
   const handleBackgroundChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
@@ -55,7 +69,7 @@ export function ContentSubmissionForm({
     if (!files || files.length === 0) return;
 
     setIsProcessingFileSelection(true);
-    // Don't clear textContent automatically anymore, user might have typed something first
+    // Don't clear text content anymore
     // setTextContent("");
 
     const newlyAddedFiles: File[] = [];
@@ -64,13 +78,27 @@ export function ContentSubmissionForm({
 
     for (const file of Array.from(files)) {
       if (fileNames.includes(file.name)) {
-        skippedFiles.push(file.name);
+        skippedFiles.push(`${file.name} (duplicate)`);
         continue;
       }
-      if (file.type !== "text/plain" && file.type !== "application/pdf") {
-        skippedFiles.push(file.name);
+
+      // --- ADDED: Debugging Logs ---
+      const fileExtension = getFileExtension(file.name);
+      const isAllowedCodeFile = ALLOWED_CODE_EXTENSIONS.has(fileExtension);
+      console.log(`File: ${file.name}, Type: ${file.type}, Extension: "${fileExtension}", Is Code Allowed: ${isAllowedCodeFile}`);
+      // --- End Debugging Logs ---
+
+      const isAllowedType =
+        file.type === "text/plain" ||
+        file.type === "application/pdf" ||
+        isAllowedCodeFile; // Relies on isAllowedCodeFile check
+
+      if (!isAllowedType) {
+        console.log(`Skipping ${file.name} because isAllowedType is false.`); // Added skip log
+        skippedFiles.push(`${file.name} (unsupported type)`);
         continue;
       }
+
       newlyAddedFiles.push(file);
       newlyAddedFileNames.push(file.name);
     }
@@ -84,9 +112,7 @@ export function ContentSubmissionForm({
     }
 
     if (skippedFiles.length > 0) {
-      toast.warning(
-        `Skipped ${skippedFiles.length} file(s) (duplicate or unsupported type): ${skippedFiles.join(", ")}`,
-      );
+      toast.warning(`Skipped ${skippedFiles.length} file(s): ${skippedFiles.join(", ")}`);
     }
 
     if (fileInputRef.current) {
@@ -127,10 +153,9 @@ export function ContentSubmissionForm({
       try {
         for (const file of selectedFiles) {
           let fileText = "";
-          fileContents.push(`--- FILE: ${file.name} ---`);
-          if (file.type === "text/plain") {
-            fileText = await file.text();
-          } else if (file.type === "application/pdf") {
+          fileContents.push(`--- START FILE: ${file.name} ---\n`);
+
+          if (file.type === "application/pdf") {
             const arrayBuffer = await file.arrayBuffer();
             const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
             const pdf = await loadingTask.promise;
@@ -146,17 +171,15 @@ export function ContentSubmissionForm({
               fullText += pageText + (i < pdf.numPages ? "\n\n" : "");
             }
             fileText = fullText.trim();
+          } else {
+            // Read TXT and allowed code files as text
+            fileText = await file.text();
           }
+
           fileContents.push(fileText);
+          fileContents.push(`\n--- END FILE: ${file.name} ---`);
         }
         finalContent = fileContents.join("\n\n");
-
-        // --- Optional: Append text from textarea if files are also present ---
-        // if (textContent.trim()) {
-        //   finalContent += `\n\n--- User Notes ---\n${textContent.trim()}`;
-        //   contentSource += " + pasted notes";
-        // }
-        // --- End Optional Append ---
 
       } catch (error) {
         console.error("Error reading files on submit:", error);
@@ -168,9 +191,7 @@ export function ContentSubmissionForm({
       } finally {
         setIsReadingFileOnSubmit(false);
       }
-    }
-    // If no files, use textarea content
-    else {
+    } else {
       if (!textContent.trim()) {
         toast.error(
           "Content cannot be empty. Please type, paste, or upload files.",
@@ -197,6 +218,8 @@ export function ContentSubmissionForm({
     userBackground.trim() &&
     !anyLoading;
 
+  const acceptedFileTypes = ".txt,.pdf," + Array.from(ALLOWED_CODE_EXTENSIONS).join(',');
+
   return (
     <div className="flex flex-col items-center justify-center h-full w-full px-4 pt-8 pb-20">
       <h2 className="text-3xl font-semibold mb-8 text-center text-foreground/90">
@@ -213,7 +236,7 @@ export function ContentSubmissionForm({
           <Input
             id="fileUploadHidden"
             type="file"
-            accept=".txt,.pdf"
+            accept={acceptedFileTypes}
             onChange={handleFileChange}
             disabled={anyLoading}
             className="hidden"
@@ -240,18 +263,15 @@ export function ContentSubmissionForm({
             id="textContent"
             placeholder={
               selectedFiles.length > 0
-                ? `${selectedFiles.length} file(s) selected. Add optional context or paste different text...` // Modified placeholder
-                : "Paste text, code, or upload file(s)..."
+                ? `${selectedFiles.length} file(s) selected. Add optional context or paste different text...`
+                : "Paste text, code, or upload file(s) (.txt, .pdf, .py, .js...)"
             }
             rows={3}
             value={textContent}
             onChange={handleTextChange}
-            // --- MODIFIED: Removed file selection from disabled condition ---
             disabled={anyLoading}
-            // --- End Modification ---
             className={cn(
               "block w-full resize-y rounded-2xl border border-border/50 bg-muted/30 focus:bg-muted/50 dark:bg-input/20 dark:focus:bg-input/40 shadow-lg p-4 pr-12 pl-12 min-h-[48px] text-base focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:ring-primary transition-shadow duration-200",
-              // --- MODIFIED: Removed opacity change ---
             )}
           />
           <Button
