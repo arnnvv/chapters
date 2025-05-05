@@ -8,11 +8,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Upload, SendHorizontal, Loader2, Paperclip, X, FileText } from "lucide-react";
-import * as pdfjsLib from "pdfjs-dist";
+import * as pdfjsLib from "pdfjs-dist"; // Import pdfjs library
 import { cn } from "@/lib/utils";
 
-// Ensure the worker is available in your public folder
-const PDF_WORKER_SRC = "/pdf.worker.min.mjs";
+// --- MODIFIED: Use CDN URL instead of local path ---
+// Make sure this version (5.2.133) matches the one in your pnpm-lock.yaml
+const PDF_WORKER_CDN_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.2.133/pdf.worker.min.mjs';
+// Alternative CDNs (ensure version match):
+// const PDF_WORKER_CDN_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.2.133/build/pdf.worker.min.mjs';
+// const PDF_WORKER_CDN_URL = 'https://unpkg.com/pdfjs-dist@5.2.133/build/pdf.worker.min.mjs';
+// --- End Modification ---
+
 
 const ALLOWED_CODE_EXTENSIONS = new Set([
   ".py", ".js", ".jsx", ".ts", ".tsx", ".html", ".css", ".java", ".c",
@@ -20,20 +26,17 @@ const ALLOWED_CODE_EXTENSIONS = new Set([
   ".sql", ".sh", ".json", ".yml", ".yaml", ".md",
 ]);
 
-// --- REFINED: Function to get file extension (including the dot) ---
 const getFileExtension = (filename: string): string => {
   const lastDotIndex = filename.lastIndexOf(".");
-  // Ensure dot exists, is not the first character, and there's something after it
   if (lastDotIndex > 0 && lastDotIndex < filename.length - 1) {
-    return filename.substring(lastDotIndex).toLowerCase(); // Includes the dot
+    return filename.substring(lastDotIndex).toLowerCase();
   }
-  return ""; // No valid extension found
+  return "";
 };
-// --- End Refined ---
 
 interface ContentSubmissionFormProps {
   onSubmit: (text: string, background: string) => void;
-  isLoading: boolean; // Loading state from parent (API call)
+  isLoading: boolean;
 }
 
 export function ContentSubmissionForm({
@@ -48,11 +51,14 @@ export function ContentSubmissionForm({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // --- MODIFIED: Set worker source using CDN URL ---
   useEffect(() => {
     if (typeof window !== "undefined") {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_SRC;
+      // Set the worker source for PDF.js globally
+      pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_CDN_URL;
     }
   }, []);
+  // --- End Modification ---
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextContent(e.target.value);
@@ -69,8 +75,6 @@ export function ContentSubmissionForm({
     if (!files || files.length === 0) return;
 
     setIsProcessingFileSelection(true);
-    // Don't clear text content anymore
-    // setTextContent("");
 
     const newlyAddedFiles: File[] = [];
     const newlyAddedFileNames: string[] = [];
@@ -81,24 +85,17 @@ export function ContentSubmissionForm({
         skippedFiles.push(`${file.name} (duplicate)`);
         continue;
       }
-
-      // --- ADDED: Debugging Logs ---
       const fileExtension = getFileExtension(file.name);
       const isAllowedCodeFile = ALLOWED_CODE_EXTENSIONS.has(fileExtension);
-      console.log(`File: ${file.name}, Type: ${file.type}, Extension: "${fileExtension}", Is Code Allowed: ${isAllowedCodeFile}`);
-      // --- End Debugging Logs ---
-
       const isAllowedType =
         file.type === "text/plain" ||
         file.type === "application/pdf" ||
-        isAllowedCodeFile; // Relies on isAllowedCodeFile check
+        isAllowedCodeFile;
 
       if (!isAllowedType) {
-        console.log(`Skipping ${file.name} because isAllowedType is false.`); // Added skip log
         skippedFiles.push(`${file.name} (unsupported type)`);
         continue;
       }
-
       newlyAddedFiles.push(file);
       newlyAddedFileNames.push(file.name);
     }
@@ -172,7 +169,6 @@ export function ContentSubmissionForm({
             }
             fileText = fullText.trim();
           } else {
-            // Read TXT and allowed code files as text
             fileText = await file.text();
           }
 
@@ -232,7 +228,6 @@ export function ContentSubmissionForm({
       >
         {/* Main Input Area Container */}
         <div className="relative w-full">
-          {/* --- Main Textarea and its icons --- */}
           <Input
             id="fileUploadHidden"
             type="file"

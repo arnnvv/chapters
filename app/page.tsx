@@ -3,20 +3,15 @@
 import { useEffect, useReducer, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import dynamic from "next/dynamic";
+import dynamic from "next/dynamic"; // Make sure dynamic is imported
 
 import { AppShell } from "@/components/layout/app-shell";
 import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { ChapterDisplay } from "@/components/content/chapter-display";
 import { QASidebar } from "@/components/content/qa-sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+// Removed static import of ContentSubmissionForm
+// import { ContentSubmissionForm } from "@/components/content/content-submission-form";
 
 import {
   getUserConversations,
@@ -31,8 +26,30 @@ import type { AskQuestionResponse, QAItem } from "./api/ask-question/route";
 import type { GenerateChapterResponse } from "./api/generate-chapter/route";
 import type { GenerateIndexApiResponse } from "./api/generate-index/route";
 import { Loader2 } from "lucide-react";
-// Import ContentSubmissionForm statically now, as it's part of the main initial view
-import { ContentSubmissionForm } from "@/components/content/content-submission-form";
+
+// --- ADDED: Dynamic import for ContentSubmissionForm ---
+const ContentSubmissionForm = dynamic(
+  () =>
+    import("@/components/content/content-submission-form").then(
+      (mod) => mod.ContentSubmissionForm,
+    ),
+  {
+    ssr: false, // <-- This is crucial
+    loading: () => ( // Optional: Add a loading skeleton for the form
+      <div className="flex flex-col items-center justify-center h-full w-full px-4 pt-8 pb-20">
+        <h2 className="text-3xl font-semibold mb-8 text-center text-foreground/90">
+          Upload papers or code you want to understand
+        </h2>
+        <div className="w-full max-w-3xl space-y-4">
+          <Skeleton className="h-[56px] w-full rounded-2xl" />
+          <Skeleton className="h-[56px] w-full rounded-2xl" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </div>
+      </div>
+    ),
+  },
+);
+// --- End Dynamic Import ---
 
 // State and Reducer definitions remain the same...
 type Status =
@@ -101,7 +118,7 @@ const initialState: ChatState = {
 };
 
 interface UserData {
-  id: number; // Ensure UserData includes ID if used in dispatch
+  id: number;
   google_id: string;
   email: string;
   name: string | null;
@@ -109,7 +126,7 @@ interface UserData {
 }
 
 function chatReducer(state: ChatState, action: ChatAction): ChatState {
-  // --- Keep your existing reducer logic ---
+  // ... Keep your existing reducer logic ...
   switch (action.type) {
     case "INITIALIZE":
       return {
@@ -203,7 +220,6 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
       )
         return state;
       if (!state.generatedChapters[action.payload.chapterNumber]) {
-        // Don't change if the chapter isn't loaded yet (user clicked too fast)
         return state;
       }
       return {
@@ -220,7 +236,7 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
           ...state.qaHistory,
           { question: action.payload.question, answer: "" },
         ],
-        generatingChapterNumber: null, // Stop chapter gen if asking question
+        generatingChapterNumber: null,
         error: null,
       };
     case "ANSWERING_SUCCESS": {
@@ -275,11 +291,11 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
 
       const initialChapterNum =
         firstGeneratedChapter === Number.POSITIVE_INFINITY
-          ? 0 // No chapters generated, stay at 0
-          : firstGeneratedChapter; // Start at the first available chapter
+          ? 0
+          : firstGeneratedChapter;
 
       const needsFirstChapterGeneration =
-        simpleIndex.length > 0 && initialChapterNum === 0; // Needs gen if index exists but no chapters loaded
+        simpleIndex.length > 0 && initialChapterNum === 0;
 
       return {
         ...initialState,
@@ -289,7 +305,7 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
         userBackground: conversation.user_background,
         chapterIndex: simpleIndex,
         currentChapterNumber: initialChapterNum,
-        generatingChapterNumber: needsFirstChapterGeneration ? 1 : null, // Start generating Ch 1 if needed
+        generatingChapterNumber: needsFirstChapterGeneration ? 1 : null,
         generatedChapters: initialChapters,
         qaHistory: messages,
         error: null,
@@ -304,11 +320,10 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
     case "RESET":
       return { ...initialState, status: "idle" };
     default:
-      // Ensure exhaustive check if necessary, or just return state
-      // const exhaustiveCheck: never = action;
       return state;
   }
 }
+
 
 export default function HomePage() {
   const [state, dispatch] = useReducer(chatReducer, initialState);
@@ -322,10 +337,10 @@ export default function HomePage() {
   const isPrefetchingRef = useRef(false);
   const prefetchTargetRef = useRef<number | null>(null);
 
-  // Sidebar State
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
 
+  // Callbacks (fetchConversations, initialize, toggles, handlers) remain the same...
   // Fetch Conversations Callback
   const fetchConversations = useCallback(async () => {
     setIsLoadingConversations(true);
@@ -390,9 +405,6 @@ export default function HomePage() {
       }
       prefetchTargetRef.current = null;
       isPrefetchingRef.current = false;
-      // Don't force sidebars open/closed here, let user control them
-      // setIsRightSidebarOpen(false);
-      // setIsLeftSidebarOpen(true);
 
       dispatch({
         type: "START_INDEXING",
@@ -422,7 +434,6 @@ export default function HomePage() {
           });
           await fetchConversations(); // Refresh list
           toast.success("Index generated. Loading first chapter...");
-          // setIsRightSidebarOpen(true); // Open QA sidebar automatically
         } else {
           throw new Error("Invalid response when generating index.");
         }
@@ -438,7 +449,7 @@ export default function HomePage() {
     [dispatch, fetchConversations],
   );
 
-  // Fetch Chapter Content Handler (remains the same as before)
+  // Fetch Chapter Content Handler
   const fetchChapterContent = useCallback(
     async (chapterNumber: number, isPrefetch = false) => {
       if (
@@ -501,7 +512,6 @@ export default function HomePage() {
           const num = Number.parseInt(key, 10);
           if (!isNaN(num) && num < chapterNumber) {
             const content = state.generatedChapters[num];
-            // Limit context size to avoid overly large prompts
             previousChaptersContext[num] =
               content.length > 500
                 ? content.substring(0, 500) + "..."
@@ -577,7 +587,7 @@ export default function HomePage() {
     ],
   );
 
-  // Start Prefetch Sequence Handler (remains the same)
+  // Start Prefetch Sequence Handler
   const startPrefetchSequence = useCallback(async () => {
     if (
       isPrefetchingRef.current ||
@@ -594,7 +604,7 @@ export default function HomePage() {
     await fetchChapterContent(target, true);
   }, [state.status, state.chapterIndex.length, fetchChapterContent]);
 
-  // Prefetching Effect (remains the same)
+  // Prefetching Effect
   useEffect(() => {
     if (
       state.status === "generatingChapter" &&
@@ -646,7 +656,7 @@ export default function HomePage() {
     startPrefetchSequence,
   ]);
 
-  // Load Conversation Handler (remains the same)
+  // Load Conversation Handler
   const handleLoadConversation = useCallback(
     async (id: number) => {
       if (state.status === "loadingConversation" && state.conversationId === id)
@@ -658,9 +668,6 @@ export default function HomePage() {
 
       prefetchTargetRef.current = null;
       isPrefetchingRef.current = false;
-      // Don't force sidebars here
-      // setIsLeftSidebarOpen(true);
-      // setIsRightSidebarOpen(true);
 
       dispatch({
         type: "LOAD_CONVERSATION_START",
@@ -705,7 +712,7 @@ export default function HomePage() {
     [state.status, state.conversationId, dispatch],
   );
 
-  // Ask Question Handler (remains the same)
+  // Ask Question Handler
   const handleAskQuestion = useCallback(
     async (question: string) => {
       if (
@@ -729,7 +736,6 @@ export default function HomePage() {
 
       prefetchTargetRef.current = null;
       isPrefetchingRef.current = false;
-      // setIsRightSidebarOpen(true); // Automatically open QA on question
 
       dispatch({ type: "START_ANSWERING", payload: { question } });
 
@@ -780,7 +786,7 @@ export default function HomePage() {
     ],
   );
 
-  // Delete Conversation Handler (remains the same)
+  // Delete Conversation Handler
   const handleDeleteConversation = useCallback(
     async (idToDelete: number) => {
       if (
@@ -808,22 +814,19 @@ export default function HomePage() {
             prefetchTargetRef.current = null;
             isPrefetchingRef.current = false;
             dispatch({ type: "RESET" });
-            // Don't force sidebars
-            // setIsLeftSidebarOpen(true);
-            // setIsRightSidebarOpen(false);
           }
         } else {
           toast.error(result.message || "Failed to delete conversation");
         }
       } catch (error) {
-        toast.error("An error occurred while deleting the conversation");
+        toast.error("An unexpected error occurred while deleting the conversation");
         console.error("Delete conversation error:", error);
       }
     },
     [state.conversationId, state.status, dispatch],
   );
 
-  // New Conversation Handler (remains the same)
+  // New Conversation Handler
   const handleNewConversation = useCallback(() => {
     if (state.status !== "idle" && state.status !== "error") {
       toast.warning("Please wait for the current action to finish.");
@@ -832,17 +835,13 @@ export default function HomePage() {
     prefetchTargetRef.current = null;
     isPrefetchingRef.current = false;
     dispatch({ type: "RESET" });
-    // Don't force sidebars
-    // setIsLeftSidebarOpen(false);
-    // setIsRightSidebarOpen(false);
   }, [dispatch, state.status]);
 
-  // Chapter Selection Handler (remains the same)
+  // Chapter Selection Handler
   const handleChapterSelect = useCallback(
     (chapterNumber: number) => {
       if (state.generatedChapters[chapterNumber]) {
         dispatch({ type: "SET_DISPLAYED_CHAPTER", payload: { chapterNumber } });
-        // setIsLeftSidebarOpen(false); // Close sidebar after selection (optional)
       } else {
         fetchChapterContent(chapterNumber, false);
       }
@@ -850,7 +849,7 @@ export default function HomePage() {
     [state.generatedChapters, fetchChapterContent, dispatch],
   );
 
-  // Navigation Handlers (remain the same)
+  // Navigation Handlers
   const handleNextChapter = useCallback(() => {
     const nextChapter = (state.currentChapterNumber || 0) + 1;
     if (nextChapter <= state.chapterIndex.length) {
@@ -868,6 +867,7 @@ export default function HomePage() {
       handleChapterSelect(prevChapter);
     }
   }, [state.currentChapterNumber, handleChapterSelect]);
+
 
   // Derived State
   const currentChapterTitle =
@@ -889,7 +889,6 @@ export default function HomePage() {
     state.status === "answering" ||
     state.status === "initializing";
 
-  // Render Loading Spinner if Initializing
   if (state.status === "initializing" || !userData) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -930,18 +929,14 @@ export default function HomePage() {
           isLoading={state.status === "answering"}
         />
       }
-      // Conditionally render the right sidebar based on content submission
       showRightSidebar={isContentSubmitted}
     >
-      {/* CONDITIONAL RENDERING: Form or Chapter Display */}
       {!isContentSubmitted ? (
-        // The form now handles its own full-page layout
         <ContentSubmissionForm
           onSubmit={handleContentSubmit}
           isLoading={state.status === "indexing"}
         />
       ) : (
-        // Render chapter display inside standard padding when content is submitted
         <div className="h-full p-4 md:p-6 lg:p-8">
           <ChapterDisplay
             title={currentChapterTitle}
@@ -953,8 +948,6 @@ export default function HomePage() {
             onPrev={handlePrevChapter}
             isNavDisabled={isNavigatingDisabled}
           />
-
-          {/* Error Display */}
           {state.status === "error" && state.error && (
             <div className="mt-4 p-3 border border-destructive/50 bg-destructive/10 rounded-md text-destructive text-sm max-w-xl mx-auto">
               <p>
@@ -962,7 +955,6 @@ export default function HomePage() {
               </p>
             </div>
           )}
-          {/* Prefetch Indicator */}
           {isPrefetchingRef.current && (
             <div className="fixed bottom-4 right-4 text-xs text-muted-foreground animate-pulse z-50">
               Loading next chapter...
