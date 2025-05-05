@@ -35,7 +35,7 @@ export default function LoginPage() {
           <CardTitle className="text-2xl font-bold tracking-tight">
             {" "}
             {/* Adjusted tracking */}
-            Welcome to Chapters
+            Welcome to Ace
           </CardTitle>
           <CardDescription>
             Your AI-powered document teaching assistant
