@@ -3,7 +3,10 @@ CREATE TABLE users (
     google_id TEXT NOT NULL UNIQUE,
     email VARCHAR NOT NULL UNIQUE,
     name TEXT NOT NULL,
-    picture TEXT NOT NULL
+    picture TEXT NOT NULL,
+    last_login_at TIMESTAMPTZ NULL,
+    last_active_at TIMESTAMPTZ NULL,
+    session_count INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX idx_users_google_id ON users (google_id);
 CREATE INDEX idx_users_email ON users (email);
@@ -14,6 +17,8 @@ CREATE TABLE sessions (
     expires_at TIMESTAMPTZ NOT NULL
 );
 CREATE INDEX idx_sessions_user_id ON sessions (user_id);
+CREATE INDEX idx_users_last_active ON users (last_active_at DESC NULLS LAST);
+CREATE INDEX idx_users_session_count ON users (session_count DESC);
 
 CREATE TABLE conversations (
     id SERIAL PRIMARY KEY,

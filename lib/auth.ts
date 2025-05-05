@@ -3,6 +3,8 @@ import type { User, Session } from "./db/types";
 import { sha256 } from "./sha";
 import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "./encoding";
 
+const LAST_ACTIVE_UPDATE_THRESHOLD_MS = 15 * 60 * 1000;
+
 export type SessionValidationResult =
   | { session: Session; user: User }
   | { session: null; user: null };
@@ -42,13 +44,13 @@ export async function validateSessionToken(
   );
 
   const res = await db.query(
-    `SELECT
-       u.id as u_id, u.google_id, u.email, u.name, u.picture,
-       s.id as s_id, s.user_id, s.expires_at
-     FROM sessions s
-     INNER JOIN users u ON s.user_id = u.id
-     WHERE s.id = $1
-     LIMIT 1`,
+    `SELECT /* User and Session data */
+        u.id as u_id, u.google_id, u.email, u.name, u.picture,
+        s.id as s_id, s.user_id, s.expires_at
+      FROM sessions s
+      INNER JOIN users u ON s.user_id = u.id
+      WHERE s.id = $1
+      LIMIT 1`,
     [sessionId],
   );
 
@@ -69,6 +71,9 @@ export async function validateSessionToken(
     email: row.email,
     name: row.name,
     picture: row.picture,
+    last_login_at: null,
+    last_active_at: null,
+    session_count: 0,
   };
 
   const now = Date.now();
@@ -79,7 +84,6 @@ export async function validateSessionToken(
     return { session: null, user: null };
   }
 
-  // Refresh if expiring in less than 15 days
   const fifteenDays = 1000 * 60 * 60 * 24 * 15;
   if (now >= expiresAtMs - fifteenDays) {
     const newExpiresAt = new Date(now + 1000 * 60 * 60 * 24 * 30);
@@ -90,6 +94,24 @@ export async function validateSessionToken(
     session.expires_at = newExpiresAt;
   }
 
+  try {
+    const userActiveResult = await db.query<{ last_active_at: Date | null }>(
+      "SELECT last_active_at FROM users WHERE id = $1 LIMIT 1",
+      [user.id],
+    );
+    const lastActiveDb = userActiveResult.rows[0]?.last_active_at;
+    const lastActiveMs = lastActiveDb ? lastActiveDb.getTime() : 0;
+
+    if (now - lastActiveMs > LAST_ACTIVE_UPDATE_THRESHOLD_MS) {
+      db.query("UPDATE users SET last_active_at = NOW() WHERE id = $1", [
+        user.id,
+      ]).catch((err) => {
+        console.error("Failed to update last_active_at:", err);
+      });
+    }
+  } catch (err) {
+    console.error("Error checking/updating last_active_at:", err);
+  }
   return { session, user };
 }
 

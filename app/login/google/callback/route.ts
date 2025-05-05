@@ -7,6 +7,7 @@ import { ObjectParser } from "@/lib/parser";
 import type { OAuth2Tokens } from "@/lib/oauth-token";
 import { globalGETRateLimit } from "@/lib/requests";
 import { getCurrentSession } from "@/app/actions";
+import { db } from "@/lib/db";
 
 export async function GET(request: Request): Promise<Response> {
   const { session } = await getCurrentSession();
@@ -67,6 +68,10 @@ export async function GET(request: Request): Promise<Response> {
   if (existingUser !== null) {
     const sessionToken = generateSessionToken();
     const session2 = await createSession(sessionToken, existingUser.id);
+    await db.query(
+      "UPDATE users SET last_login_at = NOW(), last_active_at = NOW(), session_count = session_count + 1 WHERE id = $1",
+      [existingUser.id],
+    );
     setSessionTokenCookie(sessionToken, session2.expires_at);
     return new Response(null, {
       status: 302,
@@ -79,6 +84,9 @@ export async function GET(request: Request): Promise<Response> {
   const user = await createUser(googleId, email, name, picture);
   const sessionToken = generateSessionToken();
   const session2 = await createSession(sessionToken, user.id);
+  await db.query("UPDATE users SET last_active_at = NOW() WHERE id = $1", [
+    user.id,
+  ]);
   setSessionTokenCookie(sessionToken, session2.expires_at);
   return new Response(null, {
     status: 302,
