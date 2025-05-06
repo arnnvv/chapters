@@ -95,6 +95,18 @@ export async function validateSessionToken(
   }
 
   try {
+    const incrementResult = await db.query<{ session_count: number }>(
+      "UPDATE users SET session_count = session_count + 1 WHERE id = $1 RETURNING session_count",
+      [user.id],
+    );
+    if (incrementResult.rowCount! > 0 && incrementResult.rows[0]) {
+      user.session_count = incrementResult.rows[0].session_count;
+    }
+  } catch (err) {
+    console.error("Failed to increment session_count for user:", user.id, err);
+  }
+
+  try {
     const userActiveResult = await db.query<{ last_active_at: Date | null }>(
       "SELECT last_active_at FROM users WHERE id = $1 LIMIT 1",
       [user.id],
