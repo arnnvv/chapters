@@ -1,7 +1,7 @@
 import { ObjectParser } from "./parser";
 
 const API_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta";
-const MODEL_NAME = "models/gemini-2.5-pro-preview-03-25";
+const MODEL_NAME = "models/gemini-2.5-flash-preview-04-17";
 
 interface GeminiGenerateContentRequest {
   contents: Array<{
