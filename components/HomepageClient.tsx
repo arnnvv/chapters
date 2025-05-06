@@ -4,17 +4,17 @@ import { useEffect, useReducer, useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 import { Skeleton } from "./ui/skeleton";
-import { ChapterIndexItem } from "@/lib/db/types";
-import { AskQuestionResponse, QAItem } from "@/app/api/ask-question/route";
+import type { ChapterIndexItem } from "@/lib/db/types";
+import type { AskQuestionResponse, QAItem } from "@/app/api/ask-question/route";
 import {
-  ConversationDetails,
-  ConversationListItem,
+  type ConversationDetails,
+  type ConversationListItem,
   deleteConversationAction,
   getConversationDetails,
   getUserConversations,
 } from "@/app/actions";
-import { GenerateIndexApiResponse } from "@/app/api/generate-index/route";
-import { GenerateChapterResponse } from "@/app/api/generate-chapter/route";
+import type { GenerateIndexApiResponse } from "@/app/api/generate-index/route";
+import type { GenerateChapterResponse } from "@/app/api/generate-chapter/route";
 import { Loader2 } from "lucide-react";
 import { AppShell } from "./layout/app-shell";
 import { SidebarNav } from "./layout/sidebar-nav";

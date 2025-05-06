@@ -60,7 +60,7 @@ export function AppShell({
               isLeftSidebarOpen ? "md:translate-x-0" : "md:-translate-x-full",
               // Add absolute positioning when closed to prevent layout shifts
               !isLeftSidebarOpen &&
-              "md:absolute md:left-0 md:top-0 md:bottom-0",
+                "md:absolute md:left-0 md:top-0 md:bottom-0",
               // Ensure it's visually hidden when closed
               !isLeftSidebarOpen && "md:opacity-0 md:pointer-events-none",
             )}
@@ -173,7 +173,7 @@ export function AppShell({
                     : "md:translate-x-full",
                   // Hide when closed using width and opacity for smoother transition
                   !isRightSidebarOpen &&
-                  "md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0",
+                    "md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0",
                 )}
               >
                 {rightSidebar}
